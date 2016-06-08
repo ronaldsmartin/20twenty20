@@ -1,8 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">@color/solarized_base1</color>
+    <color name="colorPrimaryDark">@color/solarized_base0</color>
+    <color name="colorAccent">@color/solarized_blue</color>
 
     <color name="black_overlay">#66000000</color>
+
+    <color name="windowBackground">@color/solarized_base3</color>
+
+    <!--Solarized color scheme by Ethan Schoonover-->
+    <!--http://ethanschoonover.com/solarized-->
+    <color name="solarized_base03">#002b36</color>
+    <color name="solarized_base02">#073642</color>
+    <color name="solarized_base01">#586e75</color>
+    <color name="solarized_base00">#657b83</color>
+    <color name="solarized_base0">#839496</color>
+    <color name="solarized_base1">#93a1a1</color>
+    <color name="solarized_base2">#eee8d5</color>
+    <color name="solarized_base3">#fdf6e3</color>
+    <color name="solarized_yellow">#b58900</color>
+    <color name="solarized_orange">#cb4b16</color>
+    <color name="solarized_red">#dc322f</color>
+    <color name="solarized_magenta">#d33682</color>
+    <color name="solarized_violet">#6c71c4</color>
+    <color name="solarized_blue">#268bd2</color>
+    <color name="solarized_cyan">#2aa198</color>
+    <color name="solarized_green"> #859900</color>
 </resources>
