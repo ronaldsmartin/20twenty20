@@ -6,7 +6,7 @@
 
     <color name="black_overlay">#66000000</color>
 
-    <color name="background">@color/solarized_base3</color>
+    <color name="windowBackground">@color/solarized_base3</color>
 
     <!--Solarized color scheme by Ethan Schoonover-->
     <!--http://ethanschoonover.com/solarized-->
