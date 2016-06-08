@@ -1,11 +1,11 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0099cc"
-    tools:context="com.itsronald.twenty2020.MainActivity"
-    android:id="@+id/constraintLayout2">
+    tools:context="com.itsronald.twenty2020.MainActivity">
 
     <ProgressBar
         android:id="@+id/fullscreen_content"
@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
+        android:fitsSystemWindows="true"
         style="?metaButtonBarStyle"
         app:layout_constraintLeft_toLeftOf="@+id/constraintLayout2"
         app:layout_constraintTop_toBottomOf="@+id/fullscreen_content"
