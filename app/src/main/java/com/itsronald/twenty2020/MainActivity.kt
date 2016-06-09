@@ -1,10 +1,14 @@
 package com.itsronald.twenty2020
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.AppCompatDelegate
+import android.view.Menu
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 
@@ -47,6 +51,8 @@ class MainActivity : AppCompatActivity() {
         false
     }
 
+    //region: Activity lifecycle
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -74,6 +80,47 @@ class MainActivity : AppCompatActivity() {
         // are available.
         delayedHide(100)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater?.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    //endregion
+
+    //region Menu interaction
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.menu_settings -> {
+                showSettings()
+                return true
+            }
+            R.id.menu_help_feedback -> {
+                showFeedback()
+                return true
+            }
+            else ->
+                return super.onOptionsItemSelected(item)
+        }
+    }
+
+    /**
+     * Start the Settings activity.
+     */
+    private fun showSettings() {
+        // TODO: Implement MVP
+        startActivity(Intent(this, SettingsActivity::class.java))
+    }
+
+    /**
+     * Show Help & Feedback info.
+     */
+    private fun showFeedback() {
+        // TODO: Implement
+    }
+
+    //endregion
 
     private fun toggle() {
         if (mVisible) {
@@ -134,5 +181,11 @@ class MainActivity : AppCompatActivity() {
          * and a change of the status and navigation bar.
          */
         private val UI_ANIMATION_DELAY = 300
+
+        init {
+            // Automatically switch theme at night.
+            // TODO: Make this a user setting?
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO)
+        }
     }
 }
