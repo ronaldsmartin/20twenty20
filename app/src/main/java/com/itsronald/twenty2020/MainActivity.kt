@@ -109,7 +109,8 @@ class MainActivity : AppCompatActivity() {
      * Start the Settings activity.
      */
     private fun showSettings() {
-        // TODO: Implement
+        // TODO: Implement MVP
+        startActivity(Intent(this, SettingsActivity::class.java))
     }
 
     /**
