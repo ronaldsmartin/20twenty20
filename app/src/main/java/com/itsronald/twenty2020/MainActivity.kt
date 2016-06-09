@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.AppCompatDelegate
 import android.view.MotionEvent
 import android.view.View
 
@@ -134,5 +135,11 @@ class MainActivity : AppCompatActivity() {
          * and a change of the status and navigation bar.
          */
         private val UI_ANIMATION_DELAY = 300
+
+        init {
+            // Automatically switch theme at night.
+            // TODO: Make this a user setting?
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO)
+        }
     }
 }
