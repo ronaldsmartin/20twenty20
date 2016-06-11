@@ -8,6 +8,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.android.tools.build:gradle:2.2.0-alpha3'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -40,6 +41,9 @@ ext {
     rxJavProguardRulesVersion = "$rxJavaVersion.0"
     rxAndroidVersion = "1.2.0"
     rxKotlinVersion = "0.55.0"
+
+    daggerVersion = "2.2"
+    javaAnnotationsVersion = "1.0"
 
     timberVersion = "4.1.2"
 }
