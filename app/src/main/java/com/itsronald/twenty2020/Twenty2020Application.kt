@@ -1,6 +1,7 @@
 package com.itsronald.twenty2020
 
 import android.app.Application
+import com.squareup.leakcanary.LeakCanary
 
 import timber.log.Timber
 
@@ -15,5 +16,6 @@ class Twenty2020Application : Application() {
             Timber.plant(Timber.DebugTree())
             Timber.i("Timber logger planted.")
         }
+        LeakCanary.install(this)
     }
 }

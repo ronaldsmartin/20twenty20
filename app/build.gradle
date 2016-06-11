@@ -37,6 +37,9 @@ android {
 dependencies {
     // Tools
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
+    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
