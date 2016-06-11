@@ -38,12 +38,20 @@ dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
+    // Android Support Libs
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     compile "com.android.support:design:$rootProject.supportLibraryVersion"
     compile "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutLibraryVersion"
     compile "com.android.support:support-vector-drawable:$rootProject.supportLibraryVersion"
-    testCompile 'junit:junit:4.12'
+
+    // RxJava
+    compile "io.reactivex:rxandroid:$rootProject.rxAndroidVersion"
+    compile "io.reactivex:rxjava:$rootProject.rxJavaVersion"
+    compile "io.reactivex:rxkotlin:$rootProject.rxKotlinVersion"
+    compile "com.artemzin.rxjava:proguard-rules:$rootProject.rxJavProguardRulesVersion"
+
+    testCompile "junit:junit:$rootProject.jUnitVersion"
 }
 repositories {
     mavenCentral()

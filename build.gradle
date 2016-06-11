@@ -30,8 +30,14 @@ ext {
     targetSdkVersion = 23
     compileSdkVersion = 23
     buildToolsVersion = "23.0.3"
+    jUnitVersion = "4.12"
 
     // App dependencies
     supportLibraryVersion = "23.4.0"
     constraintLayoutLibraryVersion = "1.0.0-alpha1"
+
+    rxJavaVersion = "1.1.5"
+    rxJavProguardRulesVersion = "$rxJavaVersion.0"
+    rxAndroidVersion = "1.2.0"
+    rxKotlinVersion = "0.55.0"
 }
