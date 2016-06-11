@@ -34,6 +34,7 @@ android {
 }
 
 dependencies {
+    // Tools
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -50,6 +51,8 @@ dependencies {
     compile "io.reactivex:rxjava:$rootProject.rxJavaVersion"
     compile "io.reactivex:rxkotlin:$rootProject.rxKotlinVersion"
     compile "com.artemzin.rxjava:proguard-rules:$rootProject.rxJavProguardRulesVersion"
+
+    compile "com.jakewharton.timber:timber:$rootProject.timberVersion"
 
     testCompile "junit:junit:$rootProject.jUnitVersion"
 }
