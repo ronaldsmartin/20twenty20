@@ -1,4 +1,4 @@
-package com.itsronald.twenty2020
+package com.itsronald.twenty2020.timer
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -11,6 +11,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.settings.SettingsActivity
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.

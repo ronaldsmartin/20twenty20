@@ -1,4 +1,4 @@
-package com.itsronald.twenty2020
+package com.itsronald.twenty2020.settings
 
 import android.content.res.Configuration
 import android.os.Bundle
