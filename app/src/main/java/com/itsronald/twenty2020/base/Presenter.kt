@@ -5,9 +5,9 @@ import android.os.Bundle
 /**
  * Base interface for Presenters.
  */
-interface Presenter<V : View> {
+interface Presenter<View> {
 
-    var view: V?
+    var view: View?
 
     fun onCreate(bundle: Bundle?)
 

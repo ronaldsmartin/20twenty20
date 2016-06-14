@@ -4,7 +4,7 @@
     android:id="@+id/constraintLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.itsronald.twenty2020.timer.MainActivity">
+    tools:context="com.itsronald.twenty2020.timer.TimerActivity">
 
     <ProgressBar
         android:id="@+id/fullscreen_content"

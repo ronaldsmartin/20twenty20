@@ -1,24 +1,24 @@
 package com.itsronald.twenty2020.timer
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.support.v7.app.ActionBar
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatDelegate
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import com.itsronald.twenty2020.R
-import com.itsronald.twenty2020.settings.SettingsActivity
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class MainActivity : AppCompatActivity() {
+class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
+
+    //region Fullscreen handlers
+
     private val mHideHandler = Handler()
     private var mContentView: View? = null
 
@@ -53,7 +53,9 @@ class MainActivity : AppCompatActivity() {
         false
     }
 
-    //region: Activity lifecycle
+    //endregion
+
+    //region Activity lifecycle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,11 +97,11 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId) {
             R.id.menu_settings -> {
-                showSettings()
+                presenter?.openSettings()
                 return true
             }
             R.id.menu_help_feedback -> {
-                showFeedback()
+                presenter?.openHelpFeedback()
                 return true
             }
             else ->
@@ -107,22 +109,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Start the Settings activity.
-     */
-    private fun showSettings() {
-        // TODO: Implement MVP
-        startActivity(Intent(this, SettingsActivity::class.java))
-    }
-
-    /**
-     * Show Help & Feedback info.
-     */
-    private fun showFeedback() {
-        // TODO: Implement
-    }
-
     //endregion
+
+    //region Fullscreen interaction
 
     private fun toggle() {
         if (mVisible) {
@@ -164,6 +153,28 @@ class MainActivity : AppCompatActivity() {
         mHideHandler.removeCallbacks(mHideRunnable)
         mHideHandler.postDelayed(mHideRunnable, delayMillis.toLong())
     }
+
+    //endregion
+
+    //region TimerContract.TimerView
+
+    override val context: Context = this
+
+    override var presenter: TimerContract.UserActionsListener? = null
+
+    override fun showTimeRemaining(formattedTime: String) {
+        throw UnsupportedOperationException()
+    }
+
+    override fun showMajorProgress(progress: Int, maxProgress: Int) {
+        throw UnsupportedOperationException()
+    }
+
+    override fun showMinorProgress(progress: Int, maxProgress: Int) {
+        throw UnsupportedOperationException()
+    }
+
+    //endregion
 
     companion object {
         /**
