@@ -1,6 +1,7 @@
-package com.itsronald.twenty2020
+package com.itsronald.twenty2020.settings
 
 
+import android.R
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
@@ -57,8 +58,8 @@ class SettingsActivity : AppCompatPreferenceActivity() {
      * {@inheritDoc}
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    override fun onBuildHeaders(target: List<PreferenceActivity.Header>) {
-        loadHeadersFromResource(R.xml.pref_headers, target)
+    override fun onBuildHeaders(target: List<Header>) {
+        loadHeadersFromResource(com.itsronald.twenty2020.R.xml.pref_headers, target)
     }
 
     /**
@@ -80,7 +81,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
     class GeneralPreferenceFragment : PreferenceFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            addPreferencesFromResource(R.xml.pref_general)
+            addPreferencesFromResource(com.itsronald.twenty2020.R.xml.pref_general)
             setHasOptionsMenu(true)
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
@@ -93,7 +94,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
             val id = item.itemId
-            if (id == android.R.id.home) {
+            if (id == R.id.home) {
                 startActivity(Intent(activity, SettingsActivity::class.java))
                 return true
             }
@@ -109,7 +110,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
     class NotificationPreferenceFragment : PreferenceFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            addPreferencesFromResource(R.xml.pref_notification)
+            addPreferencesFromResource(com.itsronald.twenty2020.R.xml.pref_notification)
             setHasOptionsMenu(true)
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
@@ -121,7 +122,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
             val id = item.itemId
-            if (id == android.R.id.home) {
+            if (id == R.id.home) {
                 startActivity(Intent(activity, SettingsActivity::class.java))
                 return true
             }
@@ -137,7 +138,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
     class DataSyncPreferenceFragment : PreferenceFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            addPreferencesFromResource(R.xml.pref_data_sync)
+            addPreferencesFromResource(com.itsronald.twenty2020.R.xml.pref_data_sync)
             setHasOptionsMenu(true)
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
@@ -149,7 +150,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
             val id = item.itemId
-            if (id == android.R.id.home) {
+            if (id == R.id.home) {
                 startActivity(Intent(activity, SettingsActivity::class.java))
                 return true
             }
@@ -182,7 +183,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                 // using RingtoneManager.
                 if (TextUtils.isEmpty(stringValue)) {
                     // Empty values correspond to 'silent' (no ringtone).
-                    preference.setSummary(R.string.pref_ringtone_silent)
+                    preference.setSummary(com.itsronald.twenty2020.R.string.pref_ringtone_silent)
 
                 } else {
                     val ringtone = RingtoneManager.getRingtone(
