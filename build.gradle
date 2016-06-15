@@ -36,10 +36,10 @@ ext {
 
     // App dependencies
     supportLibraryVersion = "23.4.0"
-    constraintLayoutLibraryVersion = "1.0.0-alpha2"
+    constraintLayoutLibraryVersion = "1.0.0-alpha1"
 
     rxJavaVersion = "1.1.5"
-    rxJavProguardRulesVersion = "$rxJavaVersion.0"
+    rxJavaProguardRulesVersion = "$rxJavaVersion.0"
     rxAndroidVersion = "1.2.0"
     rxKotlinVersion = "0.55.0"
 
