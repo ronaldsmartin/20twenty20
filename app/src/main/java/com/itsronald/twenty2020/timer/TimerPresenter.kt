@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
 import com.itsronald.twenty2020.R
@@ -16,26 +15,6 @@ import javax.inject.Inject
 class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView)
     : TimerContract.UserActionsListener {
-
-    override fun onCreate(bundle: Bundle?) {
-        throw UnsupportedOperationException()
-    }
-
-    override fun onStart() {
-        throw UnsupportedOperationException()
-    }
-
-    override fun onStop() {
-        throw UnsupportedOperationException()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        throw UnsupportedOperationException()
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        throw UnsupportedOperationException()
-    }
 
     override fun toggleCycleRunning() {
         throw UnsupportedOperationException()

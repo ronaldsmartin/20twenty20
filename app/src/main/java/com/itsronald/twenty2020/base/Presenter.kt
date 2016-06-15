@@ -9,13 +9,13 @@ interface Presenter<View> {
 
     var view: View
 
-    fun onCreate(bundle: Bundle?)
+    fun onCreate(bundle: Bundle?) = Unit
 
-    fun onStart()
+    fun onStart() = Unit
 
-    fun onStop()
+    fun onStop() = Unit
 
-    fun onSaveInstanceState(outState: Bundle)
+    fun onSaveInstanceState(outState: Bundle?) = Unit
 
-    fun onRestoreInstanceState(savedInstanceState: Bundle?)
+    fun onRestoreInstanceState(savedInstanceState: Bundle?) = Unit
 }
