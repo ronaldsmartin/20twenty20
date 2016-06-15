@@ -3,11 +3,12 @@ package com.itsronald.twenty2020.timer
 import android.content.Intent
 import android.os.Bundle
 import com.itsronald.twenty2020.settings.SettingsActivity
+import javax.inject.Inject
 
 
-class TimerPresenter(timerView: TimerContract.TimerView): TimerContract.UserActionsListener {
-
-    override var view: TimerContract.TimerView? = timerView
+class TimerPresenter
+    @Inject constructor(override var view: TimerContract.TimerView)
+    : TimerContract.UserActionsListener {
 
     override fun onCreate(bundle: Bundle?) {
         throw UnsupportedOperationException()
@@ -42,10 +43,8 @@ class TimerPresenter(timerView: TimerContract.TimerView): TimerContract.UserActi
     }
 
     override fun openSettings() {
-        val context = view?.context
-        if (context != null) {
-            context.startActivity(Intent(context, SettingsActivity::class.java))
-        }
+        val context = view.context
+        context.startActivity(Intent(context, SettingsActivity::class.java))
     }
 
     override fun openHelpFeedback() {

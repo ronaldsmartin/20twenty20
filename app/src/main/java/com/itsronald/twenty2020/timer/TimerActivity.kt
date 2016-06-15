@@ -10,6 +10,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.itsronald.twenty2020.R
+import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -74,6 +76,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button)!!.setOnTouchListener(mDelayHideTouchListener)
+
+        DaggerTimerComponent.builder().timerModule(TimerModule(this)).build().inject(this)
+        Timber.d("Injected presenter: $presenter")
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -160,7 +165,8 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override val context: Context = this
 
-    override var presenter: TimerContract.UserActionsListener? = null
+    @Inject
+    override lateinit var presenter: TimerContract.UserActionsListener
 
     override fun showTimeRemaining(formattedTime: String) {
         throw UnsupportedOperationException()
