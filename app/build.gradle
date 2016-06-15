@@ -18,7 +18,7 @@ android {
             applicationIdSuffix ".debug"
             versionNameSuffix "-DEBUG"
 
-            minifyEnabled false
+            minifyEnabled false // Currently breaks build when enabled (Kotlin 1.0.2, Dagger 2.2)
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
