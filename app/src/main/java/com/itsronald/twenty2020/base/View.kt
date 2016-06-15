@@ -7,7 +7,7 @@ import android.content.Context
  */
 interface View<Presenter> {
 
-    var presenter: Presenter?
+    var presenter: Presenter
 
     val context: Context
 }

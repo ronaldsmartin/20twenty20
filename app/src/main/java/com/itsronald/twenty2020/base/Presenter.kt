@@ -7,7 +7,7 @@ import android.os.Bundle
  */
 interface Presenter<View> {
 
-    var view: View?
+    var view: View
 
     fun onCreate(bundle: Bundle?)
 
