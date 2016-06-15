@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -34,6 +33,10 @@ android {
     }
 }
 
+kapt {
+    generateStubs = true
+}
+
 dependencies {
     // Tools
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -51,7 +54,7 @@ dependencies {
     compile "com.android.support:support-vector-drawable:$rootProject.supportLibraryVersion"
 
     // Dagger2
-    apt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     compile "com.google.dagger:dagger:$rootProject.daggerVersion"
     provided "javax.annotation:jsr250-api:$rootProject.javaAnnotationsVersion"
 
