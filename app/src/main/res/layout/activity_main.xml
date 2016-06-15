@@ -1,7 +1,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout2"
+    android:id="@+id/constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.itsronald.twenty2020.timer.TimerActivity">
@@ -16,24 +16,24 @@
         android:max="20"
         android:progress="20"
         style="?android:attr/progressBarStyleHorizontal"
-        app:layout_constraintLeft_toLeftOf="@+id/constraintLayout2"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout2"
-        app:layout_constraintRight_toRightOf="@+id/constraintLayout2"
-        app:layout_constraintBottom_toTopOf="@+id/fullscreen_content_controls" />
+        app:layout_constraintLeft_toLeftOf="@+id/constraint_layout"
+        app:layout_constraintTop_toTopOf="@+id/constraint_layout"
+        app:layout_constraintRight_toRightOf="@+id/constraint_layout"
+        app:layout_constraintBottom_toTopOf="@+id/controls_layout" />
 
     <!--Controls-->
     <LinearLayout
-        android:id="@+id/fullscreen_content_controls"
+        android:id="@+id/controls_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         android:fitsSystemWindows="true"
         style="?metaButtonBarStyle"
-        app:layout_constraintLeft_toLeftOf="@+id/constraintLayout2"
+        app:layout_constraintLeft_toLeftOf="@+id/constraint_layout"
         app:layout_constraintTop_toBottomOf="@+id/fullscreen_content"
-        app:layout_constraintRight_toRightOf="@+id/constraintLayout2"
-        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout2">
+        app:layout_constraintRight_toRightOf="@+id/constraint_layout"
+        app:layout_constraintBottom_toBottomOf="@+id/constraint_layout">
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

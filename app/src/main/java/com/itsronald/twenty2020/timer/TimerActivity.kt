@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.itsronald.twenty2020.R
+import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -34,12 +35,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // at compile-time and do nothing on earlier devices.
         mContentView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LOW_PROFILE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
     }
-    private var mControlsView: View? = null
     private val mShowPart2Runnable = Runnable {
         // Delayed display of UI elements
         val actionBar = supportActionBar
         actionBar?.show()
-        mControlsView?.visibility = View.VISIBLE
+        controls_layout.visibility = View.VISIBLE
     }
     private var mVisible: Boolean = false
     private val mHideRunnable = Runnable { hide() }
@@ -65,8 +65,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         setContentView(R.layout.activity_main)
 
         mVisible = true
-        mControlsView = findViewById(R.id.fullscreen_content_controls)
-        mContentView = findViewById(R.id.fullscreen_content)
+        mContentView = findViewById(R.id.constraint_layout)
 
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -102,11 +101,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId) {
             R.id.menu_settings -> {
-                presenter?.openSettings()
+                presenter.openSettings()
                 return true
             }
             R.id.menu_help_feedback -> {
-                presenter?.openHelpFeedback()
+                presenter.openHelpFeedback()
                 return true
             }
             else ->
@@ -130,7 +129,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // Hide UI first
         val actionBar = supportActionBar
         actionBar?.hide()
-        mControlsView?.visibility = View.GONE
+        controls_layout.visibility = View.GONE
         mVisible = false
 
         // Schedule a runnable to remove the status and navigation bar after a delay
