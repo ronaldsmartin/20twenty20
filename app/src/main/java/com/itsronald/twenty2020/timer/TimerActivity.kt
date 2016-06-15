@@ -1,26 +1,28 @@
 package com.itsronald.twenty2020.timer
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.support.v7.app.ActionBar
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatDelegate
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import com.itsronald.twenty2020.R
-import com.itsronald.twenty2020.settings.SettingsActivity
+import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class MainActivity : AppCompatActivity() {
+class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
+
+    //region Fullscreen handlers
+
     private val mHideHandler = Handler()
-    private var mContentView: View? = null
 
     // Normally we'd suppress "InlinedApi" here, but Kotlin doesn't support this yet.
     @SuppressLint("NewApi")
@@ -30,14 +32,18 @@ class MainActivity : AppCompatActivity() {
         // Note that some of these constants are new as of API 16 (Jelly Bean)
         // and API 19 (KitKat). It is safe to use them, as they are inlined
         // at compile-time and do nothing on earlier devices.
-        mContentView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LOW_PROFILE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        constraint_layout.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
     }
-    private var mControlsView: View? = null
     private val mShowPart2Runnable = Runnable {
         // Delayed display of UI elements
         val actionBar = supportActionBar
         actionBar?.show()
-        mControlsView?.visibility = View.VISIBLE
+        controls_layout.visibility = View.VISIBLE
     }
     private var mVisible: Boolean = false
     private val mHideRunnable = Runnable { hide() }
@@ -53,7 +59,9 @@ class MainActivity : AppCompatActivity() {
         false
     }
 
-    //region: Activity lifecycle
+    //endregion
+
+    //region Activity lifecycle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,17 +69,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         mVisible = true
-        mControlsView = findViewById(R.id.fullscreen_content_controls)
-        mContentView = findViewById(R.id.fullscreen_content)
-
 
         // Set up the user interaction to manually show or hide the system UI.
-        mContentView?.setOnClickListener { toggle() }
+        constraint_layout.setOnClickListener { toggle() }
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button)!!.setOnTouchListener(mDelayHideTouchListener)
+        timer_fab.setOnTouchListener(mDelayHideTouchListener)
+
+        DaggerTimerComponent.builder().timerModule(TimerModule(this)).build().inject(this)
+        Timber.d("Injected presenter: $presenter")
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -95,11 +103,11 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId) {
             R.id.menu_settings -> {
-                showSettings()
+                presenter.openSettings()
                 return true
             }
             R.id.menu_help_feedback -> {
-                showFeedback()
+                presenter.openHelpFeedback()
                 return true
             }
             else ->
@@ -107,22 +115,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Start the Settings activity.
-     */
-    private fun showSettings() {
-        // TODO: Implement MVP
-        startActivity(Intent(this, SettingsActivity::class.java))
-    }
-
-    /**
-     * Show Help & Feedback info.
-     */
-    private fun showFeedback() {
-        // TODO: Implement
-    }
-
     //endregion
+
+    //region Fullscreen interaction
 
     private fun toggle() {
         if (mVisible) {
@@ -136,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         // Hide UI first
         val actionBar = supportActionBar
         actionBar?.hide()
-        mControlsView?.visibility = View.GONE
+        controls_layout.visibility = View.GONE
         mVisible = false
 
         // Schedule a runnable to remove the status and navigation bar after a delay
@@ -148,7 +143,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("NewApi")
     private fun show() {
         // Show the system bar
-        mContentView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        constraint_layout.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
         mVisible = true
 
         // Schedule a runnable to display UI elements after a delay
@@ -164,6 +160,29 @@ class MainActivity : AppCompatActivity() {
         mHideHandler.removeCallbacks(mHideRunnable)
         mHideHandler.postDelayed(mHideRunnable, delayMillis.toLong())
     }
+
+    //endregion
+
+    //region TimerContract.TimerView
+
+    override val context: Context = this
+
+    @Inject
+    override lateinit var presenter: TimerContract.UserActionsListener
+
+    override fun showTimeRemaining(formattedTime: String) {
+        throw UnsupportedOperationException()
+    }
+
+    override fun showMajorProgress(progress: Int, maxProgress: Int) {
+        throw UnsupportedOperationException()
+    }
+
+    override fun showMinorProgress(progress: Int, maxProgress: Int) {
+        throw UnsupportedOperationException()
+    }
+
+    //endregion
 
     companion object {
         /**

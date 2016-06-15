@@ -8,7 +8,7 @@ import com.itsronald.twenty2020.base.View
  */
 interface TimerContract {
 
-    interface TimerView: View {
+    interface TimerView: View<UserActionsListener> {
 
         fun showTimeRemaining(formattedTime: String)
 

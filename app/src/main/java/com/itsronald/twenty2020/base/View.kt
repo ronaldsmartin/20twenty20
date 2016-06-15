@@ -5,9 +5,9 @@ import android.content.Context
 /**
  * Base interface for Views.
  */
-interface View {
+interface View<Presenter> {
 
-    var presenter: Presenter<View>?
+    var presenter: Presenter
 
     val context: Context
 }
