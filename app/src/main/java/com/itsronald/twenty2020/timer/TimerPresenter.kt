@@ -1,8 +1,14 @@
 package com.itsronald.twenty2020.timer
 
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.support.customtabs.CustomTabsIntent
+import android.support.v4.content.ContextCompat
+import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.settings.SettingsActivity
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -48,7 +54,14 @@ class TimerPresenter
     }
 
     override fun openHelpFeedback() {
-        throw UnsupportedOperationException()
+        Timber.v("Opening Help/Feedback Chrome Custom Tab.")
+        val context = view.context
+        val customTabsIntent = CustomTabsIntent.Builder()
+            .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
+            .build()
+        if (context is Activity) {
+            customTabsIntent.launchUrl(context, Uri.parse(context.getString(R.string.help_feedback_url)))
+        }
     }
 
 }
