@@ -2,9 +2,9 @@ package com.itsronald.twenty2020.timer
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.view.Menu
 import android.view.MenuItem
@@ -65,8 +65,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
+        DaggerTimerComponent.builder().timerModule(TimerModule(this)).build().inject(this)
+        Timber.d("Injected presenter: $presenter")
 
         mVisible = true
 
@@ -77,9 +78,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         timer_fab.setOnTouchListener(mDelayHideTouchListener)
-
-        DaggerTimerComponent.builder().timerModule(TimerModule(this)).build().inject(this)
-        Timber.d("Injected presenter: $presenter")
+        timer_fab.setOnClickListener { fab -> presenter.toggleCycleRunning() }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -171,7 +170,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override lateinit var presenter: TimerContract.UserActionsListener
 
     override fun showTimeRemaining(formattedTime: String) {
-        throw UnsupportedOperationException()
+        center_text.text = formattedTime
     }
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {

@@ -21,6 +21,15 @@
         app:layout_constraintRight_toRightOf="@+id/constraint_layout"
         app:layout_constraintBottom_toTopOf="@+id/controls_layout" />
 
+    <TextView
+        android:id="@+id/center_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintCenterX_toCenterX="@id/fullscreen_content"
+        app:layout_constraintCenterY_toCenterY="@id/fullscreen_content"
+        tools:text="20"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3" />
+
     <!--Controls-->
     <LinearLayout
         android:id="@+id/controls_layout"
