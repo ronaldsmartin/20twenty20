@@ -8,7 +8,13 @@ import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.settings.SettingsActivity
+import rx.Observable
+import rx.Subscription
+import rx.android.schedulers.AndroidSchedulers
+import rx.lang.kotlin.onError
+import rx.schedulers.Schedulers
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -16,8 +22,71 @@ class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView)
     : TimerContract.UserActionsListener {
 
+    companion object {
+        /// Time that the long (work) cycle should take, in seconds.
+        private val WORK_CYCLE_TIME: Int = 20
+        /// Time that the short (break) cycle should take, in seconds.
+        private val BREAK_CYCLE_TIME: Int = 10
+    }
+
+    private var inWorkCycle = true
+
+    private val currentCycleName: String
+        get() = if (inWorkCycle) "WORK" else "BREAK"
+
+    private var running = false
+
+    private var timeLeft = WORK_CYCLE_TIME
+
+    private var timeElapsed = 0
+
+    private var timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeLeft)
+
+    private var timeLeftSubscription: Subscription? = null
+
+    private var timerStringSubscription: Subscription? = null
+
+    private fun startNextCycle() {
+        inWorkCycle     = !inWorkCycle
+        timeLeft        = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
+        timeElapsed     = 0
+        timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeLeft)
+        toggleCycleRunning()
+    }
+
     override fun toggleCycleRunning() {
-        throw UnsupportedOperationException()
+        running = !running
+
+        if (running) {
+            Timber.v("Starting $currentCycleName cycle. Time elapsed: $timeElapsed; Time left: $timeLeft")
+            timeLeftSubscription = timerObservable
+                    .subscribeOn(Schedulers.computation())
+                    .onError { Timber.e(it, "Unable to update time left.") }
+                    .doOnCompleted {
+                        Timber.i("Cycle complete.")
+                        running = !running
+                        startNextCycle()
+                    }
+                    .subscribe {
+                        timeElapsed = it.toInt()
+                    }
+
+            timerStringSubscription = timerObservable
+                    .map { "${timeLeft - it}" }
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onError { Timber.e(it, "Unable to update time string.") }
+                    .doOnCompleted {
+                        Timber.i("timerStringSubscription finished!")
+                    }
+                    .subscribe { view.showTimeRemaining(it) }
+
+        } else {
+            timeLeftSubscription?.unsubscribe()
+            timerStringSubscription?.unsubscribe()
+            timeLeft -= timeElapsed
+            Timber.v("Pausing cycle. Time elapsed: $timeElapsed; Time left: $timeLeft")
+        }
     }
 
     override fun delayCycle() {
@@ -27,6 +96,8 @@ class TimerPresenter
     override fun restartCycle() {
         throw UnsupportedOperationException()
     }
+
+    //region Menu interaction
 
     override fun openSettings() {
         val context = view.context
@@ -54,4 +125,5 @@ class TimerPresenter
         }
     }
 
+    //endregion
 }
