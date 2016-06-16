@@ -8,13 +8,13 @@
         android:id="@+id/menu_settings"
         android:title="@string/settings"
         android:icon="@android:drawable/ic_menu_preferences"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
     <!--Help & Feedback-->
     <item
         android:id="@+id/menu_help_feedback"
         android:title="@string/help_feedback"
         android:icon="@android:drawable/ic_menu_help"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
 </menu>
