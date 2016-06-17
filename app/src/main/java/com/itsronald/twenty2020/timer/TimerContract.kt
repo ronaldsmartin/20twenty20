@@ -1,5 +1,6 @@
 package com.itsronald.twenty2020.timer
 
+import android.support.annotation.DrawableRes
 import com.itsronald.twenty2020.base.Presenter
 import com.itsronald.twenty2020.base.View
 
@@ -15,6 +16,8 @@ interface TimerContract {
         fun showMajorProgress(progress: Int, maxProgress: Int)
 
         fun showMinorProgress(progress: Int, maxProgress: Int)
+
+        fun setFABDrawable(@DrawableRes drawableId: Int)
     }
 
     interface UserActionsListener: Presenter<TimerView> {

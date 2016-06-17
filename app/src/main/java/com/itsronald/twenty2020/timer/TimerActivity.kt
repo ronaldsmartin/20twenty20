@@ -2,9 +2,10 @@ package com.itsronald.twenty2020.timer
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.support.annotation.DrawableRes
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.view.Menu
 import android.view.MenuItem
@@ -65,8 +66,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
+        DaggerTimerComponent.builder().timerModule(TimerModule(this)).build().inject(this)
+        Timber.d("Injected presenter: $presenter")
 
         mVisible = true
 
@@ -78,8 +80,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // while interacting with the UI.
         timer_fab.setOnTouchListener(mDelayHideTouchListener)
 
-        DaggerTimerComponent.builder().timerModule(TimerModule(this)).build().inject(this)
-        Timber.d("Injected presenter: $presenter")
+        timer_fab.setOnClickListener { fab -> presenter.toggleCycleRunning() }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -94,6 +95,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater?.inflate(R.menu.menu_main, menu)
         return true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        presenter.onStart()
     }
 
     //endregion
@@ -171,7 +177,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override lateinit var presenter: TimerContract.UserActionsListener
 
     override fun showTimeRemaining(formattedTime: String) {
-        throw UnsupportedOperationException()
+        center_text.text = formattedTime
     }
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {
@@ -180,6 +186,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {
         throw UnsupportedOperationException()
+    }
+
+    override fun setFABDrawable(@DrawableRes drawableId: Int) {
+        timer_fab.setImageDrawable(getDrawable(drawableId))
     }
 
     //endregion
