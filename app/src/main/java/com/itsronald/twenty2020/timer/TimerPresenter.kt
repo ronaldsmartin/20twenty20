@@ -145,11 +145,11 @@ class TimerPresenter
         Timber.v("Building cycle complete notification")
 
         val context = view.context
-        val contentText = if (inWorkCycle) "Time to take a break!" else "Get back to work!"
+        val contentTitle = if (inWorkCycle) "Time to take a break!" else "Get back to work!"
         val notificationBuilder = NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("${currentCycleName} cycle complete!")
-                .setContentText(contentText)
+                .setContentTitle(contentTitle)
+                .setContentText("$currentCycleName cycle complete")
                 .setDefaults(NotificationCompat.DEFAULT_SOUND)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setLights(Color.WHITE, 1000, 100)
