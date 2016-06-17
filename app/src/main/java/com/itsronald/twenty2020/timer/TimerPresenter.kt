@@ -24,9 +24,9 @@ class TimerPresenter
 
     companion object {
         /// Time that the long (work) cycle should take, in seconds.
-        private val WORK_CYCLE_TIME: Int = 20
+        private val WORK_CYCLE_TIME: Int = 60
         /// Time that the short (break) cycle should take, in seconds.
-        private val BREAK_CYCLE_TIME: Int = 10
+        private val BREAK_CYCLE_TIME: Int = 30
     }
 
     private var inWorkCycle = true
@@ -36,21 +36,45 @@ class TimerPresenter
 
     private var running = false
 
-    private var totalCycleTime = WORK_CYCLE_TIME
+    private var timeRemaining = WORK_CYCLE_TIME
 
     private var timeElapsed = 0
 
-    private var timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(totalCycleTime)
+    private var timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeRemaining)
 
     private var timeLeftSubscription: Subscription? = null
 
     private var timerStringSubscription: Subscription? = null
 
+    override fun onStart() {
+        super.onStart()
+        view.showTimeRemaining(formatTimeRemaining(timeRemaining))
+    }
+
+    private fun formatTimeRemaining(timeLeft: Number): String {
+        val timeLeftSeconds  = timeLeft.toInt()
+        val secondsLeft = timeLeftSeconds % 60
+        val minutesLeft = (timeLeftSeconds / 60).toInt() % 60
+        val hoursLeft   = (timeLeftSeconds / (60 * 60)).toInt()
+        return when {
+            hoursLeft > 0   -> {
+                val minutes = "$minutesLeft".padStart(2, padChar = '0')
+                val seconds = "$secondsLeft".padStart(2, padChar = '0')
+                "$hoursLeft:$minutes:$seconds"
+            }
+            minutesLeft > 0 -> {
+                val seconds = "$secondsLeft".padStart(2, padChar = '0')
+                "$minutesLeft:$seconds"
+            }
+            else            -> "$secondsLeft"
+        }
+    }
+
     private fun startNextCycle() {
         inWorkCycle     = !inWorkCycle
-        totalCycleTime = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
+        timeRemaining = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
         timeElapsed     = 0
-        timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(totalCycleTime)
+        timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeRemaining)
         toggleCycleRunning()
     }
 
@@ -64,7 +88,7 @@ class TimerPresenter
     }
 
     private fun startCycle() {
-        Timber.v("Starting $currentCycleName cycle. Time elapsed: $timeElapsed; Time left: $totalCycleTime")
+        Timber.v("Starting $currentCycleName cycle. Time elapsed: $timeElapsed; Time left: $timeRemaining")
         timeLeftSubscription = timerObservable
                 .subscribeOn(Schedulers.computation())
                 .onError { Timber.e(it, "Unable to update time left.") }
@@ -78,7 +102,7 @@ class TimerPresenter
                 }
 
         timerStringSubscription = timerObservable
-                .map { "${totalCycleTime - it}" }
+                .map { formatTimeRemaining(timeRemaining - it) }
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onError { Timber.e(it, "Unable to update time string.") }
@@ -94,10 +118,10 @@ class TimerPresenter
         timeLeftSubscription?.unsubscribe()
         timerStringSubscription?.unsubscribe()
 
-        totalCycleTime -= timeElapsed
+        timeRemaining -= timeElapsed
 
         view.setFABDrawable(android.R.drawable.ic_media_play)
-        Timber.v("Pausing cycle. Time elapsed: $timeElapsed; Time left: $totalCycleTime")
+        Timber.v("Pausing cycle. Time elapsed: $timeElapsed; Time left: $timeRemaining")
     }
 
     override fun delayCycle() {
