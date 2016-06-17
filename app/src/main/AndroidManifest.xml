@@ -22,7 +22,11 @@
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.itsronald.twenty2020.timer.TimerActivity" />
+        </activity>
     </application>
 
 </manifest>

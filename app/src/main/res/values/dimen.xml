@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--activity_timer-->
+    <dimen name="timer_layout_margin_fab">30dp</dimen>
+    <dimen name="timer_padding_button">8dp</dimen>
+
+</resources>

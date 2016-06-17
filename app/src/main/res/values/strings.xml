@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">20 twenty 20</string>
 
+    <string name="timer_restart_current_cycle">Restart current cycle</string>
+    <string name="timer_skip_to_next_cycle">Skip to next cycle</string>
+
     <!--Menu-->
     <string name="settings">Settings</string>
     <string name="help_feedback">Help &amp; Feedback</string>
