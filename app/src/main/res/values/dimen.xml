@@ -5,4 +5,7 @@
     <dimen name="timer_layout_margin_fab">30dp</dimen>
     <dimen name="timer_padding_button">8dp</dimen>
 
+    <dimen name="timer_ring_background_thickness">100dp</dimen>
+    <dimen name="timer_ring_inner_thickness">50dp</dimen>
+
 </resources>

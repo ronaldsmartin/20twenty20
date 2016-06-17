@@ -7,12 +7,12 @@
     tools:context="com.itsronald.twenty2020.timer.TimerActivity">
 
     <ProgressBar
-        android:id="@+id/fullscreen_content"
+        android:id="@+id/progress_ring_background"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:keepScreenOn="true"
         android:indeterminate="false"
-        android:progressDrawable="@drawable/progress_ring"
+        android:progressDrawable="@drawable/progress_ring_background"
         android:max="20"
         android:progress="20"
         style="?android:attr/progressBarStyleHorizontal"
@@ -21,15 +21,45 @@
         app:layout_constraintRight_toRightOf="@+id/constraint_layout"
         app:layout_constraintBottom_toTopOf="@+id/controls_layout" />
 
+    <ProgressBar
+        android:id="@+id/progress_ring_foreground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:indeterminate="false"
+        android:progressDrawable="@drawable/progress_ring_background"
+        android:max="20"
+        android:progress="20"
+        style="?android:attr/progressBarStyleHorizontal"
+        app:layout_constraintLeft_toLeftOf="@+id/constraint_layout"
+        app:layout_constraintTop_toTopOf="@+id/constraint_layout"
+        app:layout_constraintRight_toRightOf="@+id/constraint_layout"
+        app:layout_constraintBottom_toTopOf="@+id/controls_layout" />
+
+    <ProgressBar
+        android:id="@+id/progress_ring_inner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:indeterminate="false"
+        android:progressDrawable="@drawable/progress_ring_inner"
+        android:max="20"
+        android:progress="20"
+        app:layout_constraintCenterX_toCenterX="@id/progress_ring_background"
+        app:layout_constraintCenterY_toCenterY="@id/progress_ring_background"
+        style="?android:attr/progressBarStyleHorizontal" />
+
     <TextView
         android:id="@+id/center_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Display3"
         android:textColor="?android:attr/textColorPrimary"
-        app:layout_constraintCenterX_toCenterX="@id/fullscreen_content"
-        app:layout_constraintCenterY_toCenterY="@id/fullscreen_content"
-        tools:text="20" />
+        app:layout_constraintCenterX_toCenterX="@id/progress_ring_background"
+        app:layout_constraintCenterY_toCenterY="@id/progress_ring_background"
+        tools:text="20:00"
+        app:layout_constraintLeft_toLeftOf="@+id/progress_ring_background"
+        app:layout_constraintTop_toTopOf="@+id/progress_ring_background"
+        app:layout_constraintRight_toRightOf="@+id/progress_ring_background"
+        app:layout_constraintBottom_toBottomOf="@+id/progress_ring_background" />
 
     <!--Controls-->
     <LinearLayout
@@ -41,14 +71,18 @@
         android:fitsSystemWindows="true"
         style="?metaButtonBarStyle"
         app:layout_constraintLeft_toLeftOf="@+id/constraint_layout"
-        app:layout_constraintTop_toBottomOf="@+id/fullscreen_content"
+        app:layout_constraintTop_toBottomOf="@+id/progress_ring_background"
         app:layout_constraintRight_toRightOf="@+id/constraint_layout"
         app:layout_constraintBottom_toBottomOf="@+id/constraint_layout">
 
         <ImageButton
             android:contentDescription="@string/timer_restart_current_cycle"
             app:srcCompat="@drawable/ic_restore_black_24dp"
-            style="@style/timer_button_secondary" />
+            style="@style/timer_button_secondary"
+            tools:layout_editor_absoluteX="78dp"
+            tools:layout_editor_absoluteY="30dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/timer_fab"
@@ -56,12 +90,18 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/timer_layout_margin_fab"
             android:layout_gravity="bottom|center_horizontal"
-            android:src="@android:drawable/ic_media_play" />
+            android:src="@android:drawable/ic_media_play"
+            tools:layout_editor_absoluteX="164dp"
+            tools:layout_editor_absoluteY="30dp" />
 
         <ImageButton
             android:contentDescription="@string/timer_skip_to_next_cycle"
             app:srcCompat="@drawable/ic_alarm_on_black_24dp"
-            style="@style/timer_button_secondary" />
+            style="@style/timer_button_secondary"
+            tools:layout_editor_absoluteX="250dp"
+            tools:layout_editor_absoluteY="30dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp" />
 
     </LinearLayout>
 
