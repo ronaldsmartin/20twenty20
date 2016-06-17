@@ -49,6 +49,8 @@ class TimerPresenter
 
     private var timerStringSubscription: Subscription? = null
 
+    private var timerProgressMajorSubscription: Subscription? = null
+
     private fun createSecondsTimer(): Observable<Int> =
             Observable.interval(1, TimeUnit.SECONDS).take(timeRemaining).map { it.toInt() }
 
@@ -56,7 +58,7 @@ class TimerPresenter
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to update time left.") }
-            .doOnNext { timeElapsed = it.toInt() }
+            .doOnNext { timeElapsed = it }
             .doOnCompleted {
                 Timber.i("${currentCycleName.toUpperCase()} cycle complete.")
                 running = !running
@@ -72,16 +74,30 @@ class TimerPresenter
             .doOnNext { view.showTimeRemaining(it) }
             .doOnCompleted { Timber.i("timerStringSubscription finished!") }
 
+    private fun updateMajorProgressBar(): Observable<Int> = secondsTimer
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { Timber.e(it, "Unable to update major progress bar.") }
+            .doOnNext { elapsedSeconds ->
+                val cycleDuration        = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
+                val majorProgressMax     = (cycleDuration / 60).toInt() // Minutes in work cycle
+                val majorProgressCurrent = if (inWorkCycle)
+                    majorProgressMax - (elapsedSeconds / 60).toInt() else (elapsedSeconds / 60).toInt()
+                Timber.d("Updating progress: $majorProgressCurrent / $majorProgressMax")
+                view.showMajorProgress(majorProgressCurrent, majorProgressMax)
+            }
+            .doOnCompleted { Timber.i("Finished major progress bar update cycle.") }
+
+
     override fun onStart() {
         super.onStart()
         view.showTimeRemaining(formatTimeRemaining(timeRemaining))
     }
 
-    private fun formatTimeRemaining(timeLeft: Number): String {
-        val timeLeftSeconds  = timeLeft.toInt()
-        val secondsLeft = timeLeftSeconds % 60
-        val minutesLeft = (timeLeftSeconds / 60).toInt() % 60
-        val hoursLeft   = (timeLeftSeconds / (60 * 60)).toInt()
+    private fun formatTimeRemaining(timeLeft: Int): String {
+        val secondsLeft = timeLeft % 60
+        val minutesLeft = (timeLeft / 60).toInt() % 60
+        val hoursLeft   = (timeLeft / (60 * 60)).toInt()
         return when {
             hoursLeft > 0   -> {
                 val minutes = "$minutesLeft".padStart(2, padChar = '0')
@@ -97,10 +113,10 @@ class TimerPresenter
     }
 
     private fun startNextCycle() {
-        inWorkCycle     = !inWorkCycle
-        timeRemaining   = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
-        timeElapsed     = 0
-        secondsTimer = createSecondsTimer()
+        inWorkCycle   = !inWorkCycle
+        timeRemaining = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
+        timeElapsed   = 0
+        secondsTimer  = createSecondsTimer()
         toggleCycleRunning()
     }
 
@@ -115,8 +131,9 @@ class TimerPresenter
 
     private fun startCycle() {
         Timber.v("Starting $currentCycleName cycle. Time elapsed: $timeElapsed; Time left: $timeRemaining")
-        timeLeftSubscription = updateTime().subscribe()
-        timerStringSubscription = updateTimeText().subscribe()
+        timeLeftSubscription           = updateTime().subscribe()
+        timerStringSubscription        = updateTimeText().subscribe()
+        timerProgressMajorSubscription = updateMajorProgressBar().subscribe()
 
         view.setFABDrawable(android.R.drawable.ic_media_pause)
     }
@@ -124,6 +141,7 @@ class TimerPresenter
     private fun pauseCycle() {
         timeLeftSubscription?.unsubscribe()
         timerStringSubscription?.unsubscribe()
+        timerProgressMajorSubscription?.unsubscribe()
 
         timeRemaining -= timeElapsed
         secondsTimer = createSecondsTimer()

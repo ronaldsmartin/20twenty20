@@ -181,7 +181,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {
-        throw UnsupportedOperationException()
+        if (progress_ring_inner.max != maxProgress) {
+            progress_ring_inner.max = maxProgress
+        }
+        progress_ring_inner.progress = progress
     }
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {
