@@ -22,20 +22,6 @@
         app:layout_constraintBottom_toTopOf="@+id/controls_layout" />
 
     <ProgressBar
-        android:id="@+id/progress_ring_foreground"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:indeterminate="false"
-        android:progressDrawable="@drawable/progress_ring_background"
-        android:max="20"
-        android:progress="20"
-        style="?android:attr/progressBarStyleHorizontal"
-        app:layout_constraintLeft_toLeftOf="@+id/constraint_layout"
-        app:layout_constraintTop_toTopOf="@+id/constraint_layout"
-        app:layout_constraintRight_toRightOf="@+id/constraint_layout"
-        app:layout_constraintBottom_toTopOf="@+id/controls_layout" />
-
-    <ProgressBar
         android:id="@+id/progress_ring_inner"
         android:layout_width="0dp"
         android:layout_height="0dp"

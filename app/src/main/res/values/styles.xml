@@ -23,7 +23,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/timer_padding_button</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:tint">@color/colorAccentSecondary</item>
+        <item name="android:tint">@color/colorPrimaryDark</item>
     </style>
 
 </resources>
