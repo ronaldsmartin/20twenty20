@@ -11,7 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.itsronald.twenty2020.R
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_timer.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -66,7 +66,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_timer)
         DaggerTimerComponent.builder().timerModule(TimerModule(this)).build().inject(this)
         Timber.d("Injected presenter: $presenter")
 
