@@ -1,11 +1,15 @@
 package com.itsronald.twenty2020.timer
 
 import android.app.Activity
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.NotificationCompat
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.settings.SettingsActivity
 import rx.Observable
@@ -32,7 +36,7 @@ class TimerPresenter
     private var inWorkCycle = true
 
     private val currentCycleName: String
-        get() = if (inWorkCycle) "WORK" else "BREAK"
+        get() = if (inWorkCycle) "work" else "break"
 
     private var running = false
 
@@ -91,10 +95,12 @@ class TimerPresenter
         Timber.v("Starting $currentCycleName cycle. Time elapsed: $timeElapsed; Time left: $timeRemaining")
         timeLeftSubscription = timerObservable
                 .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
                 .onError { Timber.e(it, "Unable to update time left.") }
                 .doOnCompleted {
-                    Timber.i("$currentCycleName cycle complete.")
+                    Timber.i("${currentCycleName.toUpperCase()} cycle complete.")
                     running = !running
+                    notifyCycleComplete()
                     startNextCycle()
                 }
                 .subscribe {
@@ -130,6 +136,24 @@ class TimerPresenter
 
     override fun restartCycle() {
         throw UnsupportedOperationException()
+    }
+
+    private fun notifyCycleComplete() {
+        Timber.v("Building cycle complete notification")
+
+        val context = view.context
+        val contentText = if (inWorkCycle) "Time to take a break!" else "Get back to work!"
+        val notificationBuilder = NotificationCompat.Builder(context)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("${currentCycleName} cycle complete!")
+                .setContentText(contentText)
+                .setDefaults(NotificationCompat.DEFAULT_SOUND)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setLights(Color.WHITE, 1000, 100)
+
+        val notificationID = 20
+        val notifyManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+        notifyManager?.notify(notificationID, notificationBuilder.build())
     }
 
     //region Menu interaction
