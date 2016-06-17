@@ -44,21 +44,24 @@
         app:layout_constraintTop_toBottomOf="@+id/fullscreen_content"
         app:layout_constraintRight_toRightOf="@+id/constraint_layout"
         app:layout_constraintBottom_toBottomOf="@+id/constraint_layout">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:contentDescription="@string/timer_restart_current_cycle"
+            app:srcCompat="@drawable/ic_restore_black_24dp"
+            style="@style/timer_button_secondary" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/timer_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/timer_layout_margin_fab"
             android:layout_gravity="bottom|center_horizontal"
             android:src="@android:drawable/ic_media_play" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <ImageButton
+            android:contentDescription="@string/timer_skip_to_next_cycle"
+            app:srcCompat="@drawable/ic_alarm_on_black_24dp"
+            style="@style/timer_button_secondary" />
 
     </LinearLayout>
 
