@@ -125,8 +125,10 @@ class TimerPresenter
         timerStringSubscription?.unsubscribe()
 
         timeRemaining -= timeElapsed
+        timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeRemaining)
 
         view.setFABDrawable(android.R.drawable.ic_media_play)
+
         Timber.v("Pausing cycle. Time elapsed: $timeElapsed; Time left: $timeRemaining")
     }
 
