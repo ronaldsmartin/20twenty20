@@ -15,7 +15,6 @@ import com.itsronald.twenty2020.settings.SettingsActivity
 import rx.Observable
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
-import rx.lang.kotlin.onError
 import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -44,11 +43,34 @@ class TimerPresenter
 
     private var timeElapsed = 0
 
-    private var timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeRemaining)
+    private var secondsTimer = createSecondsTimer()
 
     private var timeLeftSubscription: Subscription? = null
 
     private var timerStringSubscription: Subscription? = null
+
+    private fun createSecondsTimer(): Observable<Int> =
+            Observable.interval(1, TimeUnit.SECONDS).take(timeRemaining).map { it.toInt() }
+
+    private fun updateTime(): Observable<Int> = secondsTimer
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { Timber.e(it, "Unable to update time left.") }
+            .doOnNext { timeElapsed = it.toInt() }
+            .doOnCompleted {
+                Timber.i("${currentCycleName.toUpperCase()} cycle complete.")
+                running = !running
+                notifyCycleComplete()
+                startNextCycle()
+            }
+
+    private fun updateTimeText(): Observable<String> = secondsTimer
+            .map { formatTimeRemaining(timeRemaining - it) }
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { Timber.e(it, "Unable to update time string.") }
+            .doOnNext { view.showTimeRemaining(it) }
+            .doOnCompleted { Timber.i("timerStringSubscription finished!") }
 
     override fun onStart() {
         super.onStart()
@@ -76,9 +98,9 @@ class TimerPresenter
 
     private fun startNextCycle() {
         inWorkCycle     = !inWorkCycle
-        timeRemaining = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
+        timeRemaining   = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
         timeElapsed     = 0
-        timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeRemaining)
+        secondsTimer = createSecondsTimer()
         toggleCycleRunning()
     }
 
@@ -93,29 +115,8 @@ class TimerPresenter
 
     private fun startCycle() {
         Timber.v("Starting $currentCycleName cycle. Time elapsed: $timeElapsed; Time left: $timeRemaining")
-        timeLeftSubscription = timerObservable
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onError { Timber.e(it, "Unable to update time left.") }
-                .doOnCompleted {
-                    Timber.i("${currentCycleName.toUpperCase()} cycle complete.")
-                    running = !running
-                    notifyCycleComplete()
-                    startNextCycle()
-                }
-                .subscribe {
-                    timeElapsed = it.toInt()
-                }
-
-        timerStringSubscription = timerObservable
-                .map { formatTimeRemaining(timeRemaining - it) }
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onError { Timber.e(it, "Unable to update time string.") }
-                .doOnCompleted {
-                    Timber.i("timerStringSubscription finished!")
-                }
-                .subscribe { view.showTimeRemaining(it) }
+        timeLeftSubscription = updateTime().subscribe()
+        timerStringSubscription = updateTimeText().subscribe()
 
         view.setFABDrawable(android.R.drawable.ic_media_pause)
     }
@@ -125,7 +126,7 @@ class TimerPresenter
         timerStringSubscription?.unsubscribe()
 
         timeRemaining -= timeElapsed
-        timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeRemaining)
+        secondsTimer = createSecondsTimer()
 
         view.setFABDrawable(android.R.drawable.ic_media_play)
 
