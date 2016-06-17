@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.support.annotation.DrawableRes
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.view.Menu
@@ -78,6 +79,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         timer_fab.setOnTouchListener(mDelayHideTouchListener)
+
         timer_fab.setOnClickListener { fab -> presenter.toggleCycleRunning() }
     }
 
@@ -179,6 +181,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {
         throw UnsupportedOperationException()
+    }
+
+    override fun setFABDrawable(@DrawableRes drawableId: Int) {
+        timer_fab.setImageDrawable(getDrawable(drawableId))
     }
 
     //endregion

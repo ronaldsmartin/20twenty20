@@ -36,11 +36,11 @@ class TimerPresenter
 
     private var running = false
 
-    private var timeLeft = WORK_CYCLE_TIME
+    private var totalCycleTime = WORK_CYCLE_TIME
 
     private var timeElapsed = 0
 
-    private var timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeLeft)
+    private var timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(totalCycleTime)
 
     private var timeLeftSubscription: Subscription? = null
 
@@ -48,45 +48,56 @@ class TimerPresenter
 
     private fun startNextCycle() {
         inWorkCycle     = !inWorkCycle
-        timeLeft        = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
+        totalCycleTime = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
         timeElapsed     = 0
-        timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(timeLeft)
+        timerObservable = Observable.interval(1, TimeUnit.SECONDS).take(totalCycleTime)
         toggleCycleRunning()
     }
 
     override fun toggleCycleRunning() {
         running = !running
-
         if (running) {
-            Timber.v("Starting $currentCycleName cycle. Time elapsed: $timeElapsed; Time left: $timeLeft")
-            timeLeftSubscription = timerObservable
-                    .subscribeOn(Schedulers.computation())
-                    .onError { Timber.e(it, "Unable to update time left.") }
-                    .doOnCompleted {
-                        Timber.i("Cycle complete.")
-                        running = !running
-                        startNextCycle()
-                    }
-                    .subscribe {
-                        timeElapsed = it.toInt()
-                    }
-
-            timerStringSubscription = timerObservable
-                    .map { "${timeLeft - it}" }
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .onError { Timber.e(it, "Unable to update time string.") }
-                    .doOnCompleted {
-                        Timber.i("timerStringSubscription finished!")
-                    }
-                    .subscribe { view.showTimeRemaining(it) }
-
+            startCycle()
         } else {
-            timeLeftSubscription?.unsubscribe()
-            timerStringSubscription?.unsubscribe()
-            timeLeft -= timeElapsed
-            Timber.v("Pausing cycle. Time elapsed: $timeElapsed; Time left: $timeLeft")
+            pauseCycle()
         }
+    }
+
+    private fun startCycle() {
+        Timber.v("Starting $currentCycleName cycle. Time elapsed: $timeElapsed; Time left: $totalCycleTime")
+        timeLeftSubscription = timerObservable
+                .subscribeOn(Schedulers.computation())
+                .onError { Timber.e(it, "Unable to update time left.") }
+                .doOnCompleted {
+                    Timber.i("$currentCycleName cycle complete.")
+                    running = !running
+                    startNextCycle()
+                }
+                .subscribe {
+                    timeElapsed = it.toInt()
+                }
+
+        timerStringSubscription = timerObservable
+                .map { "${totalCycleTime - it}" }
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onError { Timber.e(it, "Unable to update time string.") }
+                .doOnCompleted {
+                    Timber.i("timerStringSubscription finished!")
+                }
+                .subscribe { view.showTimeRemaining(it) }
+
+        view.setFABDrawable(android.R.drawable.ic_media_pause)
+    }
+
+    private fun pauseCycle() {
+        timeLeftSubscription?.unsubscribe()
+        timerStringSubscription?.unsubscribe()
+
+        totalCycleTime -= timeElapsed
+
+        view.setFABDrawable(android.R.drawable.ic_media_play)
+        Timber.v("Pausing cycle. Time elapsed: $timeElapsed; Time left: $totalCycleTime")
     }
 
     override fun delayCycle() {

@@ -25,10 +25,10 @@
         android:id="@+id/center_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
         app:layout_constraintCenterX_toCenterX="@id/fullscreen_content"
         app:layout_constraintCenterY_toCenterY="@id/fullscreen_content"
-        tools:text="20"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display3" />
+        tools:text="20" />
 
     <!--Controls-->
     <LinearLayout
