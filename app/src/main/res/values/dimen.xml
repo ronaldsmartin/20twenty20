@@ -4,5 +4,17 @@
     <!--activity_timer-->
     <dimen name="timer_layout_margin_fab">30dp</dimen>
     <dimen name="timer_padding_button">8dp</dimen>
+    <dimen name="timer_button_layout_width">56dp</dimen>
+    <dimen name="timer_button_layout_height">@dimen/timer_button_layout_width</dimen>
+
+    <dimen name="timer_ring_background_thickness">100dp</dimen>
+    <item name="timer_ring_background_radius_ratio" format="float" type="dimen">5.0</item>
+
+    <dimen name="timer_ring_outer_thickness">1dp</dimen>
+    <item name="timer_ring_outer_radius_ratio" format="float" type="dimen">3.0</item>
+
+    <dimen name="timer_ring_inner_thickness">50dp</dimen>
+    <item name="timer_ring_inner_radius_ratio" format="float" type="dimen">5.0</item>
+
 
 </resources>

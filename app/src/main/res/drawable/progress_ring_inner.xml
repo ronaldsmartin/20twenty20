@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:useLevel="true"
+    android:innerRadiusRatio="@dimen/timer_ring_inner_radius_ratio"
+    android:shape="ring"
+    android:thickness="@dimen/timer_ring_inner_thickness">
+    <solid android:color="@color/colorAccentSecondary" />
+</shape>

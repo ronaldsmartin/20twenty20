@@ -58,6 +58,7 @@ dependencies {
     debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
+    compile "com.android.support.constraint:constraint-layout:$rootProject.constraintLibVersion"
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -65,7 +66,6 @@ dependencies {
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     compile "com.android.support:design:$rootProject.supportLibraryVersion"
-    compile "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutLibraryVersion"
     compile "com.android.support:support-vector-drawable:$rootProject.supportLibraryVersion"
     compile "com.android.support:customtabs:$rootProject.supportLibraryVersion"
 
