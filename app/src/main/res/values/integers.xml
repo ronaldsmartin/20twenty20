@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <!--activity_timer-->
-    <integer name="timer_ring_background_radius_ratio">5</integer>
-    <integer name="timer_ring_inner_radius_ratio">5</integer>
-</resources>
