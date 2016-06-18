@@ -42,11 +42,7 @@
         android:textColor="?android:attr/textColorPrimary"
         app:layout_constraintCenterX_toCenterX="@id/progress_ring_background"
         app:layout_constraintCenterY_toCenterY="@id/progress_ring_background"
-        tools:text="20:00"
-        app:layout_constraintLeft_toLeftOf="@+id/progress_ring_background"
-        app:layout_constraintTop_toTopOf="@+id/progress_ring_background"
-        app:layout_constraintRight_toRightOf="@+id/progress_ring_background"
-        app:layout_constraintBottom_toBottomOf="@+id/progress_ring_background" />
+        tools:text="20:00" />
 
     <!--Controls-->
     <LinearLayout
@@ -67,9 +63,7 @@
             app:srcCompat="@drawable/ic_restore_black_24dp"
             style="@style/timer_button_secondary"
             tools:layout_editor_absoluteX="78dp"
-            tools:layout_editor_absoluteY="30dp"
-            android:layout_width="56dp"
-            android:layout_height="56dp" />
+            tools:layout_editor_absoluteY="30dp" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/timer_fab"
@@ -86,9 +80,7 @@
             app:srcCompat="@drawable/ic_alarm_on_black_24dp"
             style="@style/timer_button_secondary"
             tools:layout_editor_absoluteX="250dp"
-            tools:layout_editor_absoluteY="30dp"
-            android:layout_width="56dp"
-            android:layout_height="56dp" />
+            tools:layout_editor_absoluteY="30dp" />
 
     </LinearLayout>
 
