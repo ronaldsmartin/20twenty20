@@ -90,4 +90,6 @@
     <string name="notification_message_work_cycle_complete">Keep your eyes healthy!</string>
     <!--The argument for this string is the time until the next notification.-->
     <string name="notification_message_break_cycle_complete">Next break %s</string>
+
+    <string name="notification_action_timer_pause">Suspend</string>
 </resources>

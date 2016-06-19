@@ -9,6 +9,11 @@ import com.itsronald.twenty2020.base.View
  */
 interface TimerContract {
 
+    companion object {
+        /** Activity action: Pause the timer. */
+        val ACTION_PAUSE = "${this.javaClass.canonicalName}.ACTION_PAUSE"
+    }
+
     interface TimerView: View<UserActionsListener> {
 
         fun showTimeRemaining(formattedTime: String)

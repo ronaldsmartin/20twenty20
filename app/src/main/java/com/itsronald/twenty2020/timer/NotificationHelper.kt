@@ -30,11 +30,14 @@ class NotificationHelper(private val context: Context) {
         val titleID = if (phaseCompleted == Cycle.Phase.WORK)
                 R.string.notification_title_work_cycle_complete
             else R.string.notification_title_break_cycle_complete
+        Intent.ACTION_SEARCH
+        val actionPauseTitle = context.getString(R.string.notification_action_timer_pause)
         return NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(context.getString(titleID))
                 .setContentText(phaseCompleteMessage(phaseCompleted))
                 .setContentIntent(phaseCompleteIntent())
+                .addAction(android.R.drawable.ic_media_pause, actionPauseTitle, pauseTimerIntent())
                 .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_SOUND)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -67,6 +70,19 @@ class NotificationHelper(private val context: Context) {
         val timerIntent = Intent(context, TimerActivity::class.java)
         timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         timerIntent.component = ComponentName(context, TimerActivity::class.java)
+        return PendingIntent.getActivity(
+                context,
+                0,
+                timerIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+        )
+    }
+
+    private fun pauseTimerIntent(): PendingIntent {
+        val timerIntent = Intent(context, TimerActivity::class.java)
+        timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        timerIntent.component = ComponentName(context, TimerActivity::class.java)
+        timerIntent.setAction(TimerContract.ACTION_PAUSE)
         return PendingIntent.getActivity(
                 context,
                 0,
