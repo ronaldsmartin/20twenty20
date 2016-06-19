@@ -1,16 +1,13 @@
 package com.itsronald.twenty2020.timer
 
 import android.app.Activity
-import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.NotificationCompat
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.settings.SettingsActivity
 import rx.Observable
 import rx.Subscription
@@ -25,17 +22,15 @@ class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView)
     : TimerContract.UserActionsListener {
 
-    companion object {
-        /// Time that the long (work) cycle should take, in seconds.
-        private val WORK_CYCLE_TIME: Int = 60
-        /// Time that the short (break) cycle should take, in seconds.
-        private val BREAK_CYCLE_TIME: Int = 30
-    }
+    /// Time that the long (work) cycle should take, in seconds.
+    private val WORK_CYCLE_TIME  = Cycle.Phase.WORK.defaultDuration
+    /// Time that the short (break) cycle should take, in seconds.
+    private val BREAK_CYCLE_TIME = Cycle.Phase.BREAK.defaultDuration
 
-    private var inWorkCycle = true
+    private var currentPhase = Cycle.Phase.WORK
 
     private val currentCycleName: String
-        get() = if (inWorkCycle) "work" else "break"
+        get() = if (currentPhase == Cycle.Phase.WORK) "work" else "break"
 
     private var running = false
 
@@ -62,7 +57,7 @@ class TimerPresenter
             .doOnCompleted {
                 Timber.i("${currentCycleName.toUpperCase()} cycle complete.")
                 running = !running
-                notifyCycleComplete()
+                NotificationHelper(view.context).notifyPhaseComplete(currentPhase)
                 startNextCycle()
             }
 
@@ -79,9 +74,9 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to update major progress bar.") }
             .doOnNext { elapsedSeconds ->
-                val cycleDuration        = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
+                val cycleDuration        = if (currentPhase == Cycle.Phase.WORK) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
                 val majorProgressMax     = (cycleDuration / 60).toInt() // Minutes in work cycle
-                val majorProgressCurrent = if (inWorkCycle)
+                val majorProgressCurrent = if (currentPhase == Cycle.Phase.WORK)
                     majorProgressMax - (elapsedSeconds / 60).toInt() else (elapsedSeconds / 60).toInt()
                 Timber.d("Updating progress: $majorProgressCurrent / $majorProgressMax")
                 view.showMajorProgress(majorProgressCurrent, majorProgressMax)
@@ -113,8 +108,8 @@ class TimerPresenter
     }
 
     private fun startNextCycle() {
-        inWorkCycle   = !inWorkCycle
-        timeRemaining = if (inWorkCycle) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
+        currentPhase  = currentPhase.nextPhase
+        timeRemaining = if (currentPhase == Cycle.Phase.WORK) WORK_CYCLE_TIME else BREAK_CYCLE_TIME
         timeElapsed   = 0
         secondsTimer  = createSecondsTimer()
         toggleCycleRunning()
@@ -157,24 +152,6 @@ class TimerPresenter
 
     override fun restartCycle() {
         throw UnsupportedOperationException()
-    }
-
-    private fun notifyCycleComplete() {
-        Timber.v("Building cycle complete notification")
-
-        val context = view.context
-        val contentTitle = if (inWorkCycle) "Time to take a break!" else "Get back to work!"
-        val notificationBuilder = NotificationCompat.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(contentTitle)
-                .setContentText("$currentCycleName cycle complete")
-                .setDefaults(NotificationCompat.DEFAULT_SOUND)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setLights(Color.WHITE, 1000, 100)
-
-        val notificationID = 20
-        val notifyManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-        notifyManager?.notify(notificationID, notificationBuilder.build())
     }
 
     //region Menu interaction
