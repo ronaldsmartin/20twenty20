@@ -2,6 +2,7 @@ package com.itsronald.twenty2020.timer
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
@@ -100,6 +101,13 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override fun onStart() {
         super.onStart()
         presenter.onStart()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.action == TimerContract.ACTION_PAUSE && presenter.running) {
+            presenter.toggleCycleRunning()
+        }
     }
 
     //endregion

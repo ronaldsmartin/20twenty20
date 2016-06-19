@@ -32,7 +32,7 @@ class TimerPresenter
     private val currentCycleName: String
         get() = if (currentPhase == Cycle.Phase.WORK) "work" else "break"
 
-    private var running = false
+    override var running = false
 
     private var timeRemaining = WORK_CYCLE_TIME
 

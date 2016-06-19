@@ -11,7 +11,7 @@ interface TimerContract {
 
     companion object {
         /** Activity action: Pause the timer. */
-        val ACTION_PAUSE = "${this.javaClass.canonicalName}.ACTION_PAUSE"
+        val ACTION_PAUSE = "com.itsronald.twenty2020.timer.ACTION_PAUSE"
     }
 
     interface TimerView: View<UserActionsListener> {
@@ -26,6 +26,11 @@ interface TimerContract {
     }
 
     interface UserActionsListener: Presenter<TimerView> {
+
+        /**
+         * Whether or not the cycle is running.
+         */
+        val running: Boolean
 
         /**
          * Pause or resume the current cycle.
