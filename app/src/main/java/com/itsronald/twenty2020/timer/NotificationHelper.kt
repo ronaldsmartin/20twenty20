@@ -2,7 +2,10 @@ package com.itsronald.twenty2020.timer
 
 import android.app.Notification
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
@@ -31,6 +34,7 @@ class NotificationHelper(private val context: Context) {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(context.getString(titleID))
                 .setContentText(phaseCompleteMessage(phaseCompleted))
+                .setContentIntent(phaseCompleteIntent())
                 .setDefaults(NotificationCompat.DEFAULT_SOUND)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setLights(Color.WHITE, 1000, 100)
@@ -52,6 +56,22 @@ class NotificationHelper(private val context: Context) {
         val nextCycleTime = System.currentTimeMillis() + breakCycleMilliseconds
         val nextTime = DateUtils.getRelativeTimeSpanString(context, nextCycleTime, true)
         return context.getString(R.string.notification_message_break_cycle_complete, nextTime)
+    }
+
+    /**
+     * Create an intent that returns the user to TimerActivity.
+     * @return An intent to TimerActivity.
+     */
+    private fun phaseCompleteIntent(): PendingIntent {
+        val timerIntent = Intent(context, TimerActivity::class.java)
+        timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        timerIntent.component = ComponentName(context, TimerActivity::class.java)
+        return PendingIntent.getActivity(
+                context,
+                0,
+                timerIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+        )
     }
 
     /**
