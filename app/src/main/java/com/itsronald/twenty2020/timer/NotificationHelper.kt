@@ -35,6 +35,7 @@ class NotificationHelper(private val context: Context) {
                 .setContentTitle(context.getString(titleID))
                 .setContentText(phaseCompleteMessage(phaseCompleted))
                 .setContentIntent(phaseCompleteIntent())
+                .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_SOUND)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setLights(Color.WHITE, 1000, 100)
