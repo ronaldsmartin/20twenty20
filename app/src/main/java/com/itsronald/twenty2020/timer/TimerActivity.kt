@@ -208,6 +208,14 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     //endregion
 
+    fun restartPhase(view: View) {
+        presenter.restartPhase()
+    }
+
+    fun startNextPhase(view: View) {
+        presenter.startNextPhase()
+    }
+
     companion object {
         /**
          * Whether or not the system UI should be auto-hidden after

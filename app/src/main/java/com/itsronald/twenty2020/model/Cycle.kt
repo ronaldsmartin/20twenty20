@@ -169,7 +169,9 @@ class Cycle: TimerControl {
      * Restart the current phase.
      */
     override fun restartPhase() {
-        elapsedTime = 0
+        // Starting the elapsed time at -1 instead of 0 give us an extra second in which to display
+        // the full unelapsed time.
+        elapsedTime = -1
     }
 
     /**
@@ -177,9 +179,9 @@ class Cycle: TimerControl {
      */
     override fun startNextPhase(delay: Int) {
         countdown?.unsubscribe()
-        running     = false
-        phase       = phase.nextPhase
-        elapsedTime = 0
+        running = false
+        phase   = phase.nextPhase
+        restartPhase()
         start(delay)
     }
 

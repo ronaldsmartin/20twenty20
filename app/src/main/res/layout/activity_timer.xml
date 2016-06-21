@@ -59,7 +59,9 @@
         app:layout_constraintBottom_toBottomOf="@+id/constraint_layout">
 
         <ImageButton
+            android:id="@+id/btn_restart_phase"
             android:contentDescription="@string/timer_restart_current_cycle"
+            android:onClick="restartPhase"
             app:srcCompat="@drawable/ic_restore_black_24dp"
             style="@style/timer_button_secondary"
             tools:layout_editor_absoluteX="78dp"
@@ -76,7 +78,9 @@
             tools:layout_editor_absoluteY="30dp" />
 
         <ImageButton
+            android:id="@+id/btn_next_phase"
             android:contentDescription="@string/timer_skip_to_next_cycle"
+            android:onClick="startNextPhase"
             app:srcCompat="@drawable/ic_alarm_on_black_24dp"
             style="@style/timer_button_secondary"
             tools:layout_editor_absoluteX="250dp"
