@@ -8,6 +8,7 @@ import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
+import com.itsronald.twenty2020.model.TimerControl
 import com.itsronald.twenty2020.settings.SettingsActivity
 import rx.Observable
 import rx.Subscription
@@ -19,13 +20,8 @@ import javax.inject.Inject
 
 
 class TimerPresenter
-    @Inject constructor(override var view: TimerContract.TimerView)
-    : TimerContract.UserActionsListener {
-    
-    val cycle = Cycle()
-
-    override val running: Boolean
-        get() = cycle.running
+    @Inject constructor(override var view: TimerContract.TimerView, val cycle: Cycle = Cycle())
+    : TimerContract.UserActionsListener, TimerControl by cycle {
 
     private val timeStringUpdater = cycle.timer
             .map { it.remainingTimeText }
@@ -65,30 +61,14 @@ class TimerPresenter
         notificationsUpdater.unsubscribe()
     }
 
-    override fun toggleCycleRunning() {
+    override fun toggleRunning() {
         if (running) {
-            pauseCycle()
+            cycle.pause()
+            view.setFABDrawable(android.R.drawable.ic_media_play)
         } else {
-            startCycle()
+            cycle.start()
+            view.setFABDrawable(android.R.drawable.ic_media_pause)
         }
-    }
-
-    private fun startCycle() {
-        cycle.start()
-        view.setFABDrawable(android.R.drawable.ic_media_pause)
-    }
-
-    private fun pauseCycle() {
-        cycle.pause()
-        view.setFABDrawable(android.R.drawable.ic_media_play)
-    }
-
-    override fun delayCycle() {
-        cycle.restartPhase()
-    }
-
-    override fun restartCycle() {
-        throw UnsupportedOperationException()
     }
 
     //region Menu interaction

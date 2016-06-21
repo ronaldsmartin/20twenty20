@@ -2,7 +2,6 @@ package com.itsronald.twenty2020.model
 
 import rx.Observable
 import rx.Subscription
-import rx.lang.kotlin.onError
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
@@ -11,7 +10,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Encapsulates the state of the repeating work and break cycle.
  */
-class Cycle {
+class Cycle: TimerControl {
 
     /**
      * The alternating phases of the 20-20-20 cycle.
@@ -50,7 +49,7 @@ class Cycle {
         private set
 
     /** Whether or not the cycle timer is currently running. */
-    var running = false
+    override var running = false
         private set
 
     /** The time that has elapsed current phase, in seconds. **/
@@ -107,6 +106,7 @@ class Cycle {
 
     //endregion
 
+    //region TimerControl
     /**
      * Start the countdown for the current phase. If the phase countdown is already running, then
      * this command will be ignored.
@@ -157,21 +157,31 @@ class Cycle {
         running = false
     }
 
+    override fun toggleRunning() {
+        if (running) {
+            pause()
+        } else {
+            start()
+        }
+    }
+
     /**
      * Restart the current phase.
      */
-    fun restartPhase() {
+    override fun restartPhase() {
         elapsedTime = 0
     }
 
     /**
      * Start the next phase.
      */
-    fun startNextPhase(delay: Int = 0) {
+    override fun startNextPhase(delay: Int) {
         countdown?.unsubscribe()
         running     = false
         phase       = phase.nextPhase
         elapsedTime = 0
         start(delay)
     }
+
+    //endregion
 }

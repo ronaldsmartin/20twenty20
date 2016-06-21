@@ -3,6 +3,7 @@ package com.itsronald.twenty2020.timer
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
@@ -81,7 +82,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // while interacting with the UI.
         timer_fab.setOnTouchListener(mDelayHideTouchListener)
 
-        timer_fab.setOnClickListener { fab -> presenter.toggleCycleRunning() }
+        timer_fab.setOnClickListener { fab -> presenter.toggleRunning() }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -106,7 +107,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent?.action == TimerContract.ACTION_PAUSE && presenter.running) {
-            presenter.toggleCycleRunning()
+            presenter.toggleRunning()
         }
     }
 
@@ -200,7 +201,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {
-        timer_fab.setImageDrawable(getDrawable(drawableId))
+        val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) getDrawable(drawableId)
+            else resources.getDrawable(drawableId)
+        timer_fab.setImageDrawable(drawable)
     }
 
     //endregion
