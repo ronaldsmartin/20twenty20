@@ -1,5 +1,7 @@
 package com.itsronald.twenty2020.timer
 
+import com.itsronald.twenty2020.base.Activity
+import com.itsronald.twenty2020.model.Cycle
 import dagger.Module
 import dagger.Provides
 
@@ -7,8 +9,10 @@ import dagger.Provides
 class TimerModule(private val view: TimerContract.TimerView) {
 
     @Provides
+    @Activity
     fun provideTimerView(): TimerContract.TimerView = view
 
     @Provides
-    fun providePresenter(): TimerContract.UserActionsListener = TimerPresenter(view)
+    @Activity
+    fun providePresenter(cycle: Cycle): TimerContract.UserActionsListener = TimerPresenter(view, cycle)
 }

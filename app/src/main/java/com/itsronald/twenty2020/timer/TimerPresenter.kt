@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 
 class TimerPresenter
-    @Inject constructor(override var view: TimerContract.TimerView, val cycle: Cycle = Cycle())
+    @Inject constructor(override var view: TimerContract.TimerView, val cycle: Cycle)
     : TimerContract.UserActionsListener, TimerControl by cycle {
 
     private val timeStringUpdater = cycle.timer

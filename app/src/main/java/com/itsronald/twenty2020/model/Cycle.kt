@@ -6,11 +6,12 @@ import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 /**
  * Encapsulates the state of the repeating work and break cycle.
  */
-class Cycle: TimerControl {
+class Cycle @Inject constructor() : TimerControl {
 
     /**
      * The alternating phases of the 20-20-20 cycle.
