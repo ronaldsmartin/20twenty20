@@ -1,4 +1,4 @@
-package com.itsronald.twenty2020.timer
+package com.itsronald.twenty2020.notifications
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -11,6 +11,8 @@ import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
+import com.itsronald.twenty2020.timer.TimerActivity
+import com.itsronald.twenty2020.timer.TimerContract
 import timber.log.Timber
 
 

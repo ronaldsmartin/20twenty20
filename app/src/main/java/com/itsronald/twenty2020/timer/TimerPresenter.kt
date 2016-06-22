@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
+import com.itsronald.twenty2020.notifications.NotificationHelper
 import com.itsronald.twenty2020.settings.SettingsActivity
 import rx.Observable
 import rx.Subscription
