@@ -7,5 +7,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = arrayOf(CycleModule::class))
 interface CycleComponent {
+    fun cycle(): Cycle
     fun inject(cycleService: CycleService)
 }

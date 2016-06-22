@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
+import com.itsronald.twenty2020.notifications.CycleService
 import com.itsronald.twenty2020.notifications.NotificationHelper
 import com.itsronald.twenty2020.settings.SettingsActivity
 import rx.Observable
@@ -44,22 +45,18 @@ class TimerPresenter
                 view.showMajorProgress(majorProgressCurrent, majorProgressMax)
             }
 
-    private val notificationsUpdater = cycle.timer
-            .filter { it.elapsedTime == it.duration - 1 }
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { NotificationHelper(view.context).notifyPhaseComplete(it.phase) }
-
     override fun onStart() {
         super.onStart()
         view.showTimeRemaining(cycle.remainingTimeText)
+
+        val context = view.context
+        context.startService(Intent(context, CycleService::class.java))
     }
 
     override fun onStop() {
         super.onStop()
         timeStringUpdater.unsubscribe()
         progressBarUpdater.unsubscribe()
-        notificationsUpdater.unsubscribe()
     }
 
     override fun toggleRunning() {
