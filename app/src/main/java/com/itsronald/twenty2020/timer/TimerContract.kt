@@ -3,6 +3,7 @@ package com.itsronald.twenty2020.timer
 import android.support.annotation.DrawableRes
 import com.itsronald.twenty2020.base.Presenter
 import com.itsronald.twenty2020.base.View
+import com.itsronald.twenty2020.model.TimerControl
 
 /**
  * Specifies the contract between the timer view and its presenter.
@@ -25,27 +26,7 @@ interface TimerContract {
         fun setFABDrawable(@DrawableRes drawableId: Int)
     }
 
-    interface UserActionsListener: Presenter<TimerView> {
-
-        /**
-         * Whether or not the cycle is running.
-         */
-        val running: Boolean
-
-        /**
-         * Pause or resume the current cycle.
-         */
-        fun toggleCycleRunning()
-
-        /**
-         * Delay the current cycle using some preferred time period.
-         */
-        fun delayCycle()
-
-        /**
-         * Restart the cycle's time remaining to the starting time.
-         */
-        fun restartCycle()
+    interface UserActionsListener: Presenter<TimerView>, TimerControl {
 
         /// Menu options
 

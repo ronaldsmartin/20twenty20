@@ -28,7 +28,7 @@ ext {
     rxAndroidVersion = "1.2.0"
     rxKotlinVersion = "0.55.0"
 
-    daggerVersion = "2.4"
+    daggerVersion = "2.5"
     javaAnnotationsVersion = "1.0"
 
     timberVersion = "4.1.2"
