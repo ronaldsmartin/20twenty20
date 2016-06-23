@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Encapsulates the state of the repeating work and break cycle.
  */
-class Cycle: TimerControl {
+class Cycle() : TimerControl {
 
     /**
      * The alternating phases of the 20-20-20 cycle.

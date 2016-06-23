@@ -1,14 +1,15 @@
 package com.itsronald.twenty2020
 
 import android.app.Application
+import com.itsronald.twenty2020.model.CycleModule
+import com.itsronald.twenty2020.model.DaggerCycleComponent
 import com.squareup.leakcanary.LeakCanary
 
 import timber.log.Timber
 
-/**
- * Created by Ronald Martin on 11/6/16.
- */
 class Twenty2020Application : Application() {
+
+    val cycleComponent = DaggerCycleComponent.builder().cycleModule(CycleModule()).build()
 
     override fun onCreate() {
         super.onCreate()

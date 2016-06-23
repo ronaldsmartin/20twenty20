@@ -9,6 +9,11 @@
         android:name=".Twenty2020Application"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".notifications.CycleService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
         <activity
             android:name=".timer.TimerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

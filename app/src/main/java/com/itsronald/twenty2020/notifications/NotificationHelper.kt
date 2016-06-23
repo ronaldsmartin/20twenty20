@@ -1,4 +1,4 @@
-package com.itsronald.twenty2020.timer
+package com.itsronald.twenty2020.notifications
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -11,6 +11,8 @@ import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
+import com.itsronald.twenty2020.timer.TimerActivity
+import com.itsronald.twenty2020.timer.TimerContract
 import timber.log.Timber
 
 
@@ -30,7 +32,7 @@ class NotificationHelper(private val context: Context) {
         val titleID = if (phaseCompleted == Cycle.Phase.WORK)
                 R.string.notification_title_work_cycle_complete
             else R.string.notification_title_break_cycle_complete
-        Intent.ACTION_SEARCH
+
         val actionPauseTitle = context.getString(R.string.notification_action_timer_pause)
         return NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -82,7 +84,7 @@ class NotificationHelper(private val context: Context) {
         val timerIntent = Intent(context, TimerActivity::class.java)
         timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         timerIntent.component = ComponentName(context, TimerActivity::class.java)
-        timerIntent.setAction(TimerContract.ACTION_PAUSE)
+        timerIntent.action = TimerContract.ACTION_PAUSE
         return PendingIntent.getActivity(
                 context,
                 0,
@@ -94,7 +96,7 @@ class NotificationHelper(private val context: Context) {
     /**
      * Build and post a notification that a phase was completed.
      *
-     * @param phaseCompleted The phase that was completed.
+     * @param phase The phase that was completed.
      */
     fun notifyPhaseComplete(phase: Cycle.Phase) {
         Timber.v("Building cycle complete notification")
