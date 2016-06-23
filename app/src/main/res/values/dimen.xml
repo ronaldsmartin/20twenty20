@@ -10,8 +10,8 @@
     <dimen name="timer_ring_background_thickness">100dp</dimen>
     <item name="timer_ring_background_radius_ratio" format="float" type="dimen">5.0</item>
 
-    <dimen name="timer_ring_outer_thickness">1dp</dimen>
-    <item name="timer_ring_outer_radius_ratio" format="float" type="dimen">3.0</item>
+    <dimen name="timer_wave_view_width">180dp</dimen>
+    <dimen name="timer_wave_view_height">@dimen/timer_wave_view_width</dimen>
 
     <dimen name="timer_ring_inner_thickness">50dp</dimen>
     <item name="timer_ring_inner_radius_ratio" format="float" type="dimen">5.0</item>

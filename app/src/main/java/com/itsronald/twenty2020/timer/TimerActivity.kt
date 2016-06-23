@@ -14,8 +14,6 @@ import android.view.MenuItem
 import android.view.View
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.Twenty2020Application
-import com.itsronald.twenty2020.model.CycleModule
-import com.itsronald.twenty2020.model.DaggerCycleComponent
 import kotlinx.android.synthetic.main.activity_timer.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -197,10 +195,8 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {
-        if (progress_ring_inner.max != maxProgress) {
-            progress_ring_inner.max = maxProgress
-        }
-        progress_ring_inner.progress = progress
+        val progress = (progress.toDouble() / maxProgress.toDouble()) * 100
+        wave_view.setProgress(progress.toInt())
     }
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {

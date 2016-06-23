@@ -37,12 +37,10 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to update major progress bar.") }
             .subscribe { cycleState ->
-                val majorProgressMax     = cycleState.durationMinutes
-                val majorProgressCurrent = when (cycleState.phase) {
-                    Cycle.Phase.WORK  -> cycleState.durationMinutes - cycleState.elapsedTimeMinutes
-                    Cycle.Phase.BREAK -> cycleState.elapsedTimeMinutes
-                }
-                view.showMajorProgress(majorProgressCurrent, majorProgressMax)
+                val progress = if (cycleState.phase == Cycle.Phase.WORK)
+                    cycleState.duration - cycleState.elapsedTime
+                    else cycleState.elapsedTime
+                view.showMajorProgress(progress, cycleState.duration)
             }
 
     override fun onStart() {
