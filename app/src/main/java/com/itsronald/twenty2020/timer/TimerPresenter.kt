@@ -25,6 +25,9 @@ class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView, val cycle: Cycle)
     : TimerContract.UserActionsListener, TimerControl by cycle {
 
+    /**
+     * Updates the view's time text on each second tick.
+     */
     private val timeStringUpdater = cycle.timer
             .map { it.remainingTimeText }
             .subscribeOn(Schedulers.computation())
@@ -32,16 +35,32 @@ class TimerPresenter
             .doOnError { Timber.e(it, "Unable to update time string.") }
             .subscribe { view.showTimeRemaining(it) }
 
+    /**
+     * For each timer tick (one second apart), emits a series of new events mapping to an integer
+     * percentage of progress. This increases the update rate of the progress indicator to smooth
+     * out its animation.
+     */
     private val progressBarUpdater = cycle.timer
+            .concatMap { cycleState ->
+                val isWorkPhase = cycleState.phase == Cycle.Phase.WORK
+                val progress = if (isWorkPhase)
+                    cycleState.duration - cycleState.elapsedTime else cycleState.elapsedTime
+                val secondsPercent = progress.toDouble() / cycleState.duration
+
+                val updateRateMilliseconds = 55
+                val numChunks = 1000 / updateRateMilliseconds
+                Observable.interval(updateRateMilliseconds.toLong(), TimeUnit.MILLISECONDS)
+                        .take(numChunks)
+                        .map {
+                            val interpolation = it.toDouble() / numChunks / 50
+                            secondsPercent + if (isWorkPhase) -interpolation else interpolation
+                        }
+                        .map { (it * 100).toInt() }
+            }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to update major progress bar.") }
-            .subscribe { cycleState ->
-                val progress = if (cycleState.phase == Cycle.Phase.WORK)
-                    cycleState.duration - cycleState.elapsedTime
-                    else cycleState.elapsedTime
-                view.showMajorProgress(progress, cycleState.duration)
-            }
+            .subscribe { view.showMajorProgress(it, 100) }
 
     override fun onStart() {
         super.onStart()
