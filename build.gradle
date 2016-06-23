@@ -20,7 +20,7 @@ ext {
     leakCanaryVersion = "1.4-beta2"
 
     // App dependencies
-    supportLibraryVersion = "23.4.0"
+    supportLibraryVersion = "24.0.0"
     constraintLibVersion = "1.0.0-alpha3"
 
     rxJavaVersion = "1.1.5"
