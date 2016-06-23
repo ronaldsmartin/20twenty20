@@ -3,6 +3,7 @@
 allprojects {
     repositories {
         jcenter()
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -32,4 +33,6 @@ ext {
     javaAnnotationsVersion = "1.0"
 
     timberVersion = "4.1.2"
+
+    waveViewVersion = "3da6d4b"
 }

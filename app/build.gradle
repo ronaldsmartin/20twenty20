@@ -85,6 +85,8 @@ dependencies {
 
     compile "com.jakewharton.timber:timber:$rootProject.timberVersion"
 
+    compile "com.github.john990:WaveView:$rootProject.waveViewVersion"
+
     testCompile "junit:junit:$rootProject.jUnitVersion"
 }
 repositories {
