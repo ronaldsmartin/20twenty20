@@ -157,13 +157,7 @@ class Cycle() : TimerControl {
         running = false
     }
 
-    override fun toggleRunning() {
-        if (running) {
-            pause()
-        } else {
-            start()
-        }
-    }
+    override fun toggleRunning() = if (running) pause() else start()
 
     /**
      * Restart the current phase.

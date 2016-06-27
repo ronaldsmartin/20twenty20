@@ -11,7 +11,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.android.tools.build:gradle:2.2.0-alpha3'
+        classpath 'com.android.tools.build:gradle:2.2.0-alpha4'
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -84,6 +84,8 @@ dependencies {
     compile "com.artemzin.rxjava:proguard-rules:$rootProject.rxJavaProguardRulesVersion"
 
     compile "com.jakewharton.timber:timber:$rootProject.timberVersion"
+
+    compile "com.github.john990:WaveView:$rootProject.waveViewVersion"
 
     testCompile "junit:junit:$rootProject.jUnitVersion"
 }
