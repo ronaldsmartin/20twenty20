@@ -3,7 +3,6 @@ package com.itsronald.twenty2020.timer
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
@@ -173,7 +172,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
+     * Schedules a call to hide() in [delayMillis] milliseconds, canceling any
      * previously scheduled calls.
      */
     private fun delayedHide(delayMillis: Int) {
@@ -195,8 +194,8 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {
-        val progress = (progress.toDouble() / maxProgress.toDouble()) * 100
-        wave_view.setProgress(progress.toInt())
+        val progressPercent = (progress.toDouble() / maxProgress.toDouble()) * 100
+        wave_view.setProgress(progressPercent.toInt())
     }
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {
@@ -204,8 +203,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {
-        val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) getDrawable(drawableId)
-            else resources.getDrawable(drawableId)
+        val drawable = getDrawable(drawableId)
         timer_fab.setImageDrawable(drawable)
     }
 
