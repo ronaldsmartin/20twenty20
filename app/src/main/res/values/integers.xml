@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Default Night Mode setting. Corresponds to AppCompatDelegate.MODE_NIGHT_NO. -->
+    <integer name="pref_default_night_mode">1</integer>
+
+    <!-- Default duration for the break phase, in seconds. -->
+    <integer name="pref_default_work_phase_length">1200</integer>
+
+    <!-- Default duration for the break phase, in seconds. -->
+    <integer name="pref_default_break_phase_length">20</integer>
+
+
+</resources>

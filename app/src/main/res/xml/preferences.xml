@@ -1,60 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- General -->
     <PreferenceCategory android:title="@string/pref_header_general">
 
+        <ListPreference
+            android:title="@string/pref_title_general_work_phase_length"
+            android:key="@string/pref_key_general_work_phase_length"
+            android:entries="@array/pref_list_titles_work_phase_length"
+            android:entryValues="@array/pref_list_values_work_phase_length"
+            android:defaultValue="@integer/pref_default_work_phase_length"/>
+
+        <ListPreference
+            android:title="@string/pref_title_general_break_phase_length"
+            android:key="@string/pref_key_general_break_phase_length"
+            android:entries="@array/pref_list_titles_break_phase_length"
+            android:entryValues="@array/pref_list_values_break_phase_length"
+            android:defaultValue="@integer/pref_default_break_phase_length"/>
+
     </PreferenceCategory>
 
+    <!-- Display -->
     <PreferenceCategory android:title="@string/pref_header_display">
 
+        <ListPreference
+            android:title="@string/pref_title_display_night_mode"
+            android:key="@string/pref_key_display_night_mode"
+            android:entries="@array/pref_list_titles_night_mode"
+            android:entryValues="@array/pref_list_values_night_mode"
+            android:defaultValue="@integer/pref_default_night_mode"/>
+
         <SwitchPreference
-            android:defaultValue="false"
             android:title="@string/pref_title_display_location_based_night_mode"
-            android:key="switch_preference_1"
-            android:summary="Don't use sunrise/sunset times" />
+            android:key="@string/pref_key_display_location_based_night_mode"
+            android:defaultValue="false"
+            android:dependency="@string/pref_key_display_night_mode"
+            android:summaryOn="@string/pref_summary_display_location_based_night_mode_on"
+            android:summaryOff="@string/pref_summary_display_location_based_night_mode_off"/>
 
         <SwitchPreference
-            android:defaultValue="false"
             android:title="@string/pref_title_display_keep_screen_on"
-            android:key="switch_preference_1" />
+            android:key="@string/pref_key_display_keep_screen_on"
+            android:defaultValue="false" />
 
         <SwitchPreference
-            android:defaultValue="false"
             android:title="@string/pref_title_display_allow_full_screen"
-            android:key="switch_preference_1" />
+            android:key="@string/pref_key_display_allow_full_screen"
+            android:defaultValue="false" />
 
     </PreferenceCategory>
 
+    <!-- Notifications -->
     <PreferenceCategory android:title="@string/pref_header_notifications">
 
         <SwitchPreference
-            android:defaultValue="false"
             android:title="@string/pref_title_notifications_persistent_enabled"
-            android:key="switch_preference_1" />
+            android:key="@string/pref_key_notifications_persistent_enabled"
+            android:defaultValue="false" />
 
         <!-- A 'parent' preference, which enables/disables child preferences (below)
          when checked/unchecked. -->
         <SwitchPreference
-            android:defaultValue="true"
-            android:key="notifications_sound_enabled"
-            android:title="@string/pref_title_notifications_sound_enabled" />
+            android:title="@string/pref_title_notifications_sound_enabled"
+            android:key="@string/pref_key_notifications_sound_enabled"
+            android:defaultValue="true" />
 
         <!-- Allows the user to choose a ringtone in the 'notification' category. -->
         <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
         <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
         <RingtonePreference
+            android:title="@string/pref_title_notifications_ringtone"
+            android:key="@string/pref_key_notifications_ringtone"
             android:defaultValue="content://settings/system/notification_sound"
-            android:dependency="notifications_sound_enabled"
-            android:key="notifications_new_message_ringtone"
-            android:ringtoneType="notification"
-            android:title="@string/pref_title_notifications_ringtone" />
+            android:dependency="@string/pref_key_notifications_sound_enabled"
+            android:ringtoneType="notification"/>
 
         <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
         <SwitchPreference
+            android:title="@string/pref_title_notifications_vibrate"
+            android:key="@string/pref_key_notifications_vibrate"
             android:defaultValue="true"
-            android:dependency="notifications_sound_enabled"
-            android:key="com.itsronald.twenty2020.settings.notifications.vibrate_enabled"
-            android:title="@string/pref_title_vibrate" />
+            android:dependency="@string/pref_key_notifications_sound_enabled"/>
+
+        <SwitchPreference
+            android:title="@string/pref_title_notifications_led_enabled"
+            android:key="@string/pref_key_notifications_led_enabled"
+            android:defaultValue="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>
