@@ -14,6 +14,7 @@ import com.itsronald.twenty2020.settings.SettingsActivity
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -23,6 +24,8 @@ class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView, val cycle: Cycle)
     : TimerContract.UserActionsListener, TimerControl by cycle {
 
+    private lateinit var subscriptions: CompositeSubscription
+
     /**
      * Updates the view's time text on each second tick.
      */
@@ -31,7 +34,7 @@ class TimerPresenter
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to update time string.") }
-            .subscribe { view.showTimeRemaining(it) }
+            .doOnNext { view.showTimeRemaining(it) }
 
     /**
      * For each timer tick (one second apart), emits a series of new events mapping to an integer
@@ -58,7 +61,7 @@ class TimerPresenter
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to update major progress bar.") }
-            .subscribe { view.showMajorProgress(it, 100) }
+            .doOnNext { view.showMajorProgress(it, 100) }
 
     override fun onStart() {
         super.onStart()
@@ -66,12 +69,15 @@ class TimerPresenter
 
         val context = view.context
         context.startService(Intent(context, CycleService::class.java))
+
+        subscriptions = CompositeSubscription()
+        subscriptions.add(timeStringUpdater.subscribe())
+        subscriptions.add(progressBarUpdater.subscribe())
     }
 
     override fun onStop() {
         super.onStop()
-        timeStringUpdater.unsubscribe()
-        progressBarUpdater.unsubscribe()
+        subscriptions.unsubscribe()
     }
 
     override fun toggleRunning() {
