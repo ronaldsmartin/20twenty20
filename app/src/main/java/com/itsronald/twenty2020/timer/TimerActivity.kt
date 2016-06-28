@@ -69,12 +69,13 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timer)
+
         val cycleComponent = (application as? Twenty2020Application)?.cycleComponent
         DaggerTimerComponent.builder()
                 .cycleComponent(cycleComponent)
                 .timerModule(TimerModule(this))
                 .build().inject(this)
-        Timber.d("Injected presenter: $presenter")
+        presenter.onCreate(savedInstanceState)
 
         mVisible = true
 

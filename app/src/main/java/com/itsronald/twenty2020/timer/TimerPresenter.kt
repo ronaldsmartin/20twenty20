@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
 import com.itsronald.twenty2020.R
@@ -62,6 +64,11 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to update major progress bar.") }
             .doOnNext { view.showMajorProgress(it, 100) }
+
+    override fun onCreate(bundle: Bundle?) {
+        super.onCreate(bundle)
+        PreferenceManager.setDefaultValues(view.context, R.xml.preferences, false)
+    }
 
     override fun onStart() {
         super.onStart()
