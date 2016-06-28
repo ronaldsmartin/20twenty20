@@ -5,6 +5,7 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
 import android.preference.*
+import android.support.annotation.StringRes
 import android.support.v4.app.NavUtils
 import android.text.TextUtils
 import android.view.MenuItem
@@ -133,6 +134,28 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.preferences)
+            bindPreferenceSummariesToValues(
+                    R.string.pref_key_general_work_phase_length,
+                    R.string.pref_key_general_break_phase_length,
+                    R.string.pref_key_display_night_mode,
+                    R.string.pref_key_notifications_ringtone
+            )
+        }
+
+        /**
+         * Binds preference summaries to their values. More specifically, when the
+         * preference's value is changed, its summary (line of text below the
+         * preference title) is updated to reflect the value. The summary is also
+         * immediately updated upon calling this method. The exact display format is
+         * dependent on the type of preference.
+
+         * @see bindPreferenceSummaryToValue
+         */
+        private fun bindPreferenceSummariesToValues(@StringRes vararg prefIDs: Int) {
+            for (@StringRes prefID in prefIDs) {
+                val preference = findPreference(getString(prefID))
+                bindPreferenceSummaryToValue(preference)
+            }
         }
     }
 }
