@@ -1,7 +1,6 @@
 package com.itsronald.twenty2020.settings
 
 
-import android.R
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
@@ -97,7 +96,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
             val id = item.itemId
-            if (id == R.id.home) {
+            if (id == android.R.id.home) {
                 startActivity(Intent(activity, SettingsActivity::class.java))
                 return true
             }
@@ -125,7 +124,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
             val id = item.itemId
-            if (id == R.id.home) {
+            if (id == android.R.id.home) {
                 startActivity(Intent(activity, SettingsActivity::class.java))
                 return true
             }
@@ -153,7 +152,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
             val id = item.itemId
-            if (id == R.id.home) {
+            if (id == android.R.id.home) {
                 startActivity(Intent(activity, SettingsActivity::class.java))
                 return true
             }
