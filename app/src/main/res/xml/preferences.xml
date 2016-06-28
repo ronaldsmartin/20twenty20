@@ -79,7 +79,7 @@
         <SwitchPreference
             android:title="@string/pref_title_notifications_vibrate"
             android:key="@string/pref_key_notifications_vibrate"
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:dependency="@string/pref_key_notifications_sound_enabled"/>
 
         <SwitchPreference
