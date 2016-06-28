@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name">20 twenty 20</string>
 
     <string name="timer_restart_current_cycle">Restart current cycle</string>
@@ -18,7 +18,7 @@
 
     <string name="notification_message_work_cycle_complete">Keep your eyes healthy!</string>
     <!--The argument for this string is the time until the next notification.-->
-    <string name="notification_message_break_cycle_complete">Next break %s</string>
+    <string name="notification_message_break_cycle_complete">Next break <xliff:g id="time" example="at 10:31">%s</xliff:g></string>
 
     <string name="notification_action_timer_pause">Suspend</string>
 </resources>
