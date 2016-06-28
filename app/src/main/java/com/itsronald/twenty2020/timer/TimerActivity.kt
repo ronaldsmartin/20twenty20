@@ -115,6 +115,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        presenter.onStop()
+    }
+
     //endregion
 
     //region Menu interaction
