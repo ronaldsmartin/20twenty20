@@ -1,5 +1,9 @@
 package com.itsronald.twenty2020.model
 
+import android.content.Context
+import android.preference.PreferenceManager
+import com.f2prateek.rx.preferences.RxSharedPreferences
+import com.itsronald.twenty2020.R
 import rx.Observable
 import rx.Subscription
 import rx.schedulers.Schedulers
@@ -10,7 +14,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Encapsulates the state of the repeating work and break cycle.
  */
-class Cycle() : TimerControl {
+class Cycle(private val context: Context) : TimerControl {
 
     /**
      * The alternating phases of the 20-20-20 cycle.
@@ -25,9 +29,21 @@ class Cycle() : TimerControl {
          */
         BREAK;
 
-        /** The total duration of this phase, in seconds. **/
-        val duration: Int
-            get() = defaultDuration
+        /**
+         * The total duration of this phase, in seconds.
+         * @param context The context used to retrieve the preferred duration value from
+         *                SharedPreferences.
+         */
+        fun duration(context: Context): Int {
+            val preferredDurationID = when(this) {
+                WORK  -> R.string.pref_key_general_work_phase_length
+                BREAK -> R.string.pref_key_general_break_phase_length
+            }
+            val preferredDurationKey = context.getString(preferredDurationID)
+            return RxSharedPreferences
+                    .create(PreferenceManager.getDefaultSharedPreferences(context))
+                    .getString(preferredDurationKey).get()?.toInt() ?: defaultDuration
+        }
 
         /** The default duration for this phase. */
         val defaultDuration: Int
@@ -57,8 +73,8 @@ class Cycle() : TimerControl {
         private set
 
     /** The total duration of the current phase, in seconds. **/
-    val duration: Int
-        get() = phase.duration
+    var duration: Int = phase.duration(context)
+        private set
 
     /** The time remaining in the current phase, in seconds. **/
     val remainingTime: Int
@@ -166,6 +182,7 @@ class Cycle() : TimerControl {
         // Starting the elapsed time at -1 instead of 0 give us an extra second in which to display
         // the full unelapsed time.
         elapsedTime = -1
+        duration = phase.duration(context)
     }
 
     /**
