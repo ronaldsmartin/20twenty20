@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
+import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
@@ -23,8 +24,12 @@ import javax.inject.Inject
 
 
 class TimerPresenter
-    @Inject constructor(override var view: TimerContract.TimerView, val cycle: Cycle)
+    @Inject constructor(override var view: TimerContract.TimerView,
+                        val cycle: Cycle,
+                        val preferences: RxSharedPreferences)
     : TimerContract.UserActionsListener, TimerControl by cycle {
+
+    //region Observers
 
     private lateinit var subscriptions: CompositeSubscription
 
@@ -64,6 +69,8 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to update major progress bar.") }
             .doOnNext { view.showMajorProgress(it, 100) }
+
+    //endregion
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
