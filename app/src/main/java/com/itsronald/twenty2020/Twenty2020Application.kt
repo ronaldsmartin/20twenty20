@@ -4,8 +4,8 @@ import android.app.Application
 import com.itsronald.twenty2020.model.CycleComponent
 import com.itsronald.twenty2020.model.CycleModule
 import com.itsronald.twenty2020.model.DaggerCycleComponent
-import com.itsronald.twenty2020.settings.DaggerSettingsComponent
-import com.itsronald.twenty2020.settings.SettingsModule
+import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
+import com.itsronald.twenty2020.settings.PreferencesModule
 import com.squareup.leakcanary.LeakCanary
 
 import timber.log.Timber
@@ -13,8 +13,8 @@ import timber.log.Timber
 class Twenty2020Application : Application() {
 
     val cycleComponent: CycleComponent = DaggerCycleComponent.builder()
-            .settingsComponent(DaggerSettingsComponent.builder()
-                    .settingsModule(SettingsModule(this))
+            .preferencesComponent(DaggerPreferencesComponent.builder()
+                    .preferencesModule(PreferencesModule(this))
                     .build())
             .cycleModule(CycleModule(this)).build()
 

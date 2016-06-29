@@ -8,7 +8,7 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class SettingsModule(private val context: Context) {
+class PreferencesModule(private val context: Context) {
 
     @Provides
     fun provideSharedPreferences(): SharedPreferences =
