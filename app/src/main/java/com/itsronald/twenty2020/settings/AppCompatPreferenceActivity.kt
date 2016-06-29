@@ -86,7 +86,7 @@ abstract class AppCompatPreferenceActivity : PreferenceActivity() {
         delegate.invalidateOptionsMenu()
     }
 
-    private val delegate: AppCompatDelegate
+    protected val delegate: AppCompatDelegate
         get() {
             if (mDelegate == null) {
                 mDelegate = AppCompatDelegate.create(this, null)

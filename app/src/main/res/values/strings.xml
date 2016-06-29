@@ -21,4 +21,8 @@
     <string name="notification_message_break_cycle_complete">Next break <xliff:g id="time" example="at 10:31">%s</xliff:g></string>
 
     <string name="notification_action_timer_pause">Suspend</string>
+
+    <string name="toast_msg_night_mode_yes">Night mode is now on.</string>
+    <string name="toast_msg_night_mode_no">Night mode is now off.</string>
+    <string name="toast_msg_night_most_auto">Night mode is now automatic.</string>
 </resources>
