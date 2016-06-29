@@ -154,9 +154,7 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
     override lateinit var presenter: SettingsContract.Presenter
 
     override fun refreshNightMode(nightMode: Int) {
-        delegate.setLocalNightMode(nightMode)
-        delegate.applyDayNight()
-        recreate()
+        if (delegate.applyDayNight()) recreate()
     }
 
     //endregion
