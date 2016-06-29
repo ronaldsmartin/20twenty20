@@ -10,7 +10,6 @@ import android.support.v4.app.NavUtils
 import android.text.TextUtils
 import android.view.MenuItem
 import com.itsronald.twenty2020.R
-import javax.inject.Inject
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On
@@ -124,12 +123,11 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         }
     }
 
-    class SettingsFragment : PreferenceFragment(), SettingsContract.SettingsView {
-
-        override val context = activity
-
-        @Inject
-        override lateinit var presenter: SettingsContract.UserActionsListener
+    /**
+     * Creates and manages the layout for Settings management.
+     * Settings are defined in [R.xml.preferences].
+     */
+    class SettingsFragment : PreferenceFragment() {
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
