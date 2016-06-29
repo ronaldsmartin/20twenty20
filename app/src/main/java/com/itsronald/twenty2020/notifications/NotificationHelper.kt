@@ -6,15 +6,12 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.support.annotation.StringRes
 import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
-import com.itsronald.twenty2020.settings.DaggerSettingsComponent
-import com.itsronald.twenty2020.settings.SettingsModule
 import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
 import timber.log.Timber
@@ -64,7 +61,7 @@ class NotificationHelper(private val context: Context) {
      * Check a SharedPreferences [Boolean] value to determine if a Notification flag should be set.
      *
      * @param prefKeyID Resource ID for the String key under which the preference is stored
-     * @param prefFlag The flag to use if the preference corresponding to [prefKeyID] is set to [true].
+     * @param prefFlag The flag to use if the preference corresponding to [prefKeyID] is set to true.
      *
      * @return [prefFlag] if the preference for [prefKeyID] is enabled, 0 otherwise.
      */
