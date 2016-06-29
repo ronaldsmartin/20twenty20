@@ -8,10 +8,8 @@ import android.os.Bundle
 import android.preference.*
 import android.support.annotation.StringRes
 import android.support.v4.app.NavUtils
-import android.support.v7.app.AppCompatDelegate
 import android.text.TextUtils
 import android.view.MenuItem
-import android.widget.Toast
 import com.itsronald.twenty2020.R
 import javax.inject.Inject
 
@@ -156,13 +154,6 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
     override lateinit var presenter: SettingsContract.Presenter
 
     override fun refreshNightMode(nightMode: Int) {
-        val messageID = when(nightMode) {
-            AppCompatDelegate.MODE_NIGHT_YES  -> R.string.toast_msg_night_mode_yes
-            AppCompatDelegate.MODE_NIGHT_NO   -> R.string.toast_msg_night_mode_no
-            AppCompatDelegate.MODE_NIGHT_AUTO -> R.string.toast_msg_night_most_auto
-            else -> throw IllegalArgumentException("Unknown night mode value.")
-        }
-        Toast.makeText(this, messageID, Toast.LENGTH_LONG).show()
         delegate.setLocalNightMode(nightMode)
         delegate.applyDayNight()
         recreate()
