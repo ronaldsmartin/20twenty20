@@ -7,13 +7,18 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.support.annotation.StringRes
 import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
+import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
+import com.itsronald.twenty2020.settings.DaggerSettingsComponent
+import com.itsronald.twenty2020.settings.SettingsModule
 import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
 import timber.log.Timber
+import javax.inject.Inject
 
 
 class NotificationHelper(private val context: Context) {
@@ -21,6 +26,8 @@ class NotificationHelper(private val context: Context) {
     companion object {
         private val ID_PHASE_COMPLETE = 20
     }
+
+    @Inject lateinit var preferences: RxSharedPreferences
 
     /***
      * Build a new notification indicating that the current phase is complete.
@@ -34,17 +41,39 @@ class NotificationHelper(private val context: Context) {
             else R.string.notification_title_break_cycle_complete
 
         val actionPauseTitle = context.getString(R.string.notification_action_timer_pause)
-        return NotificationCompat.Builder(context)
+        val builder = NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(context.getString(titleID))
                 .setContentText(phaseCompleteMessage(phaseCompleted))
                 .setContentIntent(phaseCompleteIntent())
                 .addAction(android.R.drawable.ic_media_pause, actionPauseTitle, pauseTimerIntent())
                 .setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_SOUND)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setLights(Color.WHITE, 1000, 100)
-                .build()
+
+        var defaults = 0
+
+        val soundEnabledPref = preferences
+                .getBoolean(context.getString(R.string.pref_key_notifications_sound_enabled), false)
+        if (soundEnabledPref.get() ?: false) {
+            defaults = defaults or NotificationCompat.DEFAULT_SOUND
+            builder.setDefaults(defaults)
+        }
+
+        val vibrateEnabledPref = preferences
+                .getBoolean(context.getString(R.string.pref_key_notifications_vibrate), false)
+        if (vibrateEnabledPref.get() ?: false) {
+            defaults = defaults or NotificationCompat.DEFAULT_VIBRATE
+            builder.setDefaults(defaults)
+        }
+
+        val ledEnabled = preferences
+                .getBoolean(context.getString(R.string.pref_key_notifications_led_enabled), false)
+        if (ledEnabled.get() ?: false) {
+            defaults = defaults or NotificationCompat.DEFAULT_LIGHTS
+            builder.setDefaults(defaults)
+        }
+
+        return builder.build()
     }
 
     /**
