@@ -1,6 +1,7 @@
 package com.itsronald.twenty2020.settings
 
 
+import android.content.Context
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.support.v4.app.NavUtils
 import android.text.TextUtils
 import android.view.MenuItem
 import com.itsronald.twenty2020.R
+import javax.inject.Inject
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On
@@ -22,36 +24,7 @@ import com.itsronald.twenty2020.R
    * Android Design: Settings](http://developer.android.com/design/patterns/settings.html) for design guidelines and the [Settings
    * API Guide](http://developer.android.com/guide/topics/ui/settings.html) for more information on developing a Settings UI.
  */
-class SettingsActivity : AppCompatPreferenceActivity() {
-
-    //region Activity lifecycle
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupActionBar()
-        fragmentManager.beginTransaction()
-                .replace(android.R.id.content, SettingsFragment())
-                .commit()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean =
-        when (item?.itemId) {
-            android.R.id.home -> {
-                NavUtils.navigateUpFromSameTask(this)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-
-    /**
-     * Set up the [ActionBar], if the API is available.
-     */
-    private fun setupActionBar() {
-        val actionBar = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    //endregion
+class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.SettingsView {
 
     companion object {
         /**
@@ -122,6 +95,55 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                     PreferenceManager.getDefaultSharedPreferences(preference.context).getString(preference.key, ""))
         }
     }
+
+    //region Activity lifecycle
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupActionBar()
+        fragmentManager.beginTransaction()
+                .replace(android.R.id.content, SettingsFragment())
+                .commit()
+
+        val preferencesComponent = DaggerPreferencesComponent.builder()
+                .preferencesModule(PreferencesModule(this))
+                .build()
+        DaggerSettingsComponent.builder()
+                .preferencesComponent(preferencesComponent)
+                .settingsModule(SettingsModule(this))
+                .build()
+                .inject(this)
+        presenter.onCreate(savedInstanceState)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean =
+        when (item?.itemId) {
+            android.R.id.home -> {
+                NavUtils.navigateUpFromSameTask(this)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    /**
+     * Set up the ActionBar, if the API is available.
+     */
+    private fun setupActionBar() {
+        val actionBar = supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    //endregion
+
+    //region SettingsContract.SettingsView
+
+    override val context: Context
+        get() = this
+
+    @Inject
+    override lateinit var presenter: SettingsContract.Presenter
+
+    //endregion
 
     /**
      * Creates and manages the layout for Settings management.
