@@ -49,32 +49,38 @@ class NotificationHelper(private val context: Context) {
                 .addAction(android.R.drawable.ic_media_pause, actionPauseTitle, pauseTimerIntent())
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-
-        var defaults = 0
-
-        val soundEnabledPref = preferences
-                .getBoolean(context.getString(R.string.pref_key_notifications_sound_enabled), false)
-        if (soundEnabledPref.get() ?: false) {
-            defaults = defaults or NotificationCompat.DEFAULT_SOUND
-            builder.setDefaults(defaults)
-        }
-
-        val vibrateEnabledPref = preferences
-                .getBoolean(context.getString(R.string.pref_key_notifications_vibrate), false)
-        if (vibrateEnabledPref.get() ?: false) {
-            defaults = defaults or NotificationCompat.DEFAULT_VIBRATE
-            builder.setDefaults(defaults)
-        }
-
-        val ledEnabled = preferences
-                .getBoolean(context.getString(R.string.pref_key_notifications_led_enabled), false)
-        if (ledEnabled.get() ?: false) {
-            defaults = defaults or NotificationCompat.DEFAULT_LIGHTS
-            builder.setDefaults(defaults)
-        }
+                .setDefaults(
+                        defaultFlagsForSettings(mapOf(
+                                R.string.pref_key_notifications_sound_enabled to NotificationCompat.DEFAULT_SOUND,
+                                R.string.pref_key_notifications_vibrate to NotificationCompat.DEFAULT_VIBRATE,
+                                R.string.pref_key_notifications_led_enabled to NotificationCompat.DEFAULT_LIGHTS
+                        ))
+                )
 
         return builder.build()
     }
+
+    /**
+     * Check a SharedPreferences [Boolean] value to determine if a Notification flag should be set.
+     *
+     * @param prefKeyID Resource ID for the String key under which the preference is stored
+     * @param prefFlag The flag to use if the preference corresponding to [prefKeyID] is set to [true].
+     *
+     * @return [prefFlag] if the preference for [prefKeyID] is enabled, 0 otherwise.
+     */
+    private fun flagForSetting(@StringRes prefKeyID: Int, prefFlag: Int): Int =
+            if (preferences.getBoolean(context.getString(prefKeyID)).get() ?: false) prefFlag else 0
+
+    /**
+     * Build Notification flags using values from SharedPreferences.
+     *
+     * @param keysToFlags A map from String resource IDs to the Notification flags that should be
+     *                    set if the
+     * @return Notification flags to be used with [NotificationCompat.Builder.setDefaults]
+     */
+    private fun defaultFlagsForSettings(keysToFlags: Map<Int, Int>): Int = keysToFlags.entries
+                .map { flagForSetting(prefKeyID = it.key, prefFlag = it.value) }
+                .fold(0) { combined, nextFlag -> combined or nextFlag }
 
     /**
      * Generate a content message to be displayed in a PHASE_COMPLETE notification.
