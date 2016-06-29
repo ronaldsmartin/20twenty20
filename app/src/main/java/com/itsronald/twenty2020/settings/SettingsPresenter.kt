@@ -17,7 +17,7 @@ class SettingsPresenter
 
     private lateinit var subscriptions: CompositeSubscription
 
-    val nightModeObserver = preferences
+    private val nightModeObserver = preferences
             .getString(view.context.getString(R.string.pref_key_display_night_mode))
             .asObservable()
             .skip(1) // Skip the initial lookup (preference has not been changed).
