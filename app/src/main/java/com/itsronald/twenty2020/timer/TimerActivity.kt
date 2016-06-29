@@ -197,6 +197,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override val context: Context = this
 
+    override var keepScreenOn: Boolean
+        get() = constraint_layout.keepScreenOn
+        set(value) { constraint_layout.keepScreenOn = value }
+
     @Inject
     override lateinit var presenter: TimerContract.UserActionsListener
 
