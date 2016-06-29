@@ -3,6 +3,8 @@ package com.itsronald.twenty2020.settings
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
 import javax.inject.Inject
@@ -26,6 +28,8 @@ class SettingsPresenter
                         ||  it == AppCompatDelegate.MODE_NIGHT_YES
                         ||  it == AppCompatDelegate.MODE_NIGHT_AUTO)
             }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to observer night mode.") }
             .doOnNext {
                 val nightModeName = when (it) {
