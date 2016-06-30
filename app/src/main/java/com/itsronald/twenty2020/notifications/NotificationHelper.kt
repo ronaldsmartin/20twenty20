@@ -34,10 +34,6 @@ class NotificationHelper(private val context: Context) {
      * @return a new notification for posting
      */
     private fun phaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification {
-        val titleID = if (phaseCompleted == Cycle.Phase.WORK)
-                R.string.notification_title_work_cycle_complete
-            else R.string.notification_title_break_cycle_complete
-
         val actionPauseTitle = context.getString(R.string.notification_action_timer_pause)
         val builder = NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -45,7 +41,10 @@ class NotificationHelper(private val context: Context) {
                     Cycle.Phase.WORK  -> R.color.solarized_red
                     Cycle.Phase.BREAK -> R.color.solarized_green
                 }))
-                .setContentTitle(context.getString(titleID))
+                .setContentTitle(context.getString(when(phaseCompleted) {
+                    Cycle.Phase.WORK  -> R.string.notification_title_work_cycle_complete
+                    Cycle.Phase.BREAK -> R.string.notification_title_break_cycle_complete
+                }))
                 .setContentText(phaseCompleteMessage(phaseCompleted))
                 .setContentIntent(phaseCompleteIntent())
                 .addAction(android.R.drawable.ic_media_pause, actionPauseTitle, pauseTimerIntent())
