@@ -1,12 +1,12 @@
 package com.itsronald.twenty2020.notifications
 
 import android.app.Notification
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.support.annotation.StringRes
+import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
@@ -140,7 +140,7 @@ class NotificationHelper(private val context: Context) {
     fun notifyPhaseComplete(phase: Cycle.Phase) {
         Timber.v("Building cycle complete notification")
         val notification = phaseCompleteNotification(phase)
-        val notifyManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-        notifyManager?.notify(ID_PHASE_COMPLETE, notification)
+        val notifyManager = NotificationManagerCompat.from(context)
+        notifyManager.notify(ID_PHASE_COMPLETE, notification)
     }
 }
