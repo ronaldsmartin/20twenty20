@@ -1,6 +1,9 @@
 package com.itsronald.twenty2020
 
 import android.app.Application
+import android.preference.PreferenceManager
+import android.support.v7.app.AppCompatDelegate
+import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.model.CycleComponent
 import com.itsronald.twenty2020.model.CycleModule
 import com.itsronald.twenty2020.model.DaggerCycleComponent
@@ -25,5 +28,21 @@ class Twenty2020Application : Application() {
             Timber.i("Timber logger planted.")
         }
         LeakCanary.install(this)
+        useDefaultNightMode()
+    }
+
+    private fun useDefaultNightMode() {
+        val sharedPrefs  = PreferenceManager.getDefaultSharedPreferences(this)
+        val preferences  = RxSharedPreferences.create(sharedPrefs)
+        val nightModeKey = getString(R.string.pref_key_display_night_mode)
+        preferences.getString(nightModeKey)
+                .get()?.toInt()?.let {
+            if (it == AppCompatDelegate.MODE_NIGHT_YES
+                || it == AppCompatDelegate.MODE_NIGHT_NO
+                || it == AppCompatDelegate.MODE_NIGHT_AUTO) {
+                Timber.v("Setting DayNight Mode to last stored preference.")
+                AppCompatDelegate.setDefaultNightMode(it)
+            }
+        }
     }
 }

@@ -250,11 +250,5 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
          * and a change of the status and navigation bar.
          */
         private val UI_ANIMATION_DELAY = 300
-
-        init {
-            // Automatically switch theme at night.
-            // TODO: Make this a user setting?
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO)
-        }
     }
 }
