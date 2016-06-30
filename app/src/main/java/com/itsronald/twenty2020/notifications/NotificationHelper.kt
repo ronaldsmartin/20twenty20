@@ -46,6 +46,7 @@ class NotificationHelper(private val context: Context) {
                 .addAction(android.R.drawable.ic_media_pause, actionPauseTitle, pauseTimerIntent())
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
                 .setDefaults(
                         defaultFlagsForSettings(mapOf(
                                 R.string.pref_key_notifications_sound_enabled to NotificationCompat.DEFAULT_SOUND,
