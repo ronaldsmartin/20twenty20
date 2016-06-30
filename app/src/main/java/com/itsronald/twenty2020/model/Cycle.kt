@@ -1,16 +1,23 @@
 package com.itsronald.twenty2020.model
 
+import android.content.Context
+import com.f2prateek.rx.preferences.RxSharedPreferences
+import com.itsronald.twenty2020.R
 import rx.Observable
 import rx.Subscription
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 /**
  * Encapsulates the state of the repeating work and break cycle.
  */
-class Cycle() : TimerControl {
+class Cycle
+    @Inject constructor(val context: Context,
+                        val preferences: RxSharedPreferences)
+    : TimerControl {
 
     /**
      * The alternating phases of the 20-20-20 cycle.
@@ -25,9 +32,19 @@ class Cycle() : TimerControl {
          */
         BREAK;
 
-        /** The total duration of this phase, in seconds. **/
-        val duration: Int
-            get() = defaultDuration
+        /**
+         * The total duration of this phase, in seconds.
+         * @param context The context used to retrieve the preferred duration value from
+         *                SharedPreferences.
+         */
+        fun duration(context: Context, preferences: RxSharedPreferences): Int {
+            val preferredDurationID = when(this) {
+                WORK  -> R.string.pref_key_general_work_phase_length
+                BREAK -> R.string.pref_key_general_break_phase_length
+            }
+            val preferredDurationKey = context.getString(preferredDurationID)
+            return preferences.getString(preferredDurationKey).get()?.toInt() ?: defaultDuration
+        }
 
         /** The default duration for this phase. */
         val defaultDuration: Int
@@ -57,8 +74,8 @@ class Cycle() : TimerControl {
         private set
 
     /** The total duration of the current phase, in seconds. **/
-    val duration: Int
-        get() = phase.duration
+    var duration: Int = phase.duration(context, preferences)
+        private set
 
     /** The time remaining in the current phase, in seconds. **/
     val remainingTime: Int
@@ -71,7 +88,7 @@ class Cycle() : TimerControl {
     private var countdown: Subscription? = null
 
     /** Observable state of the cycle. */
-    val timer = timerSubject.asObservable()
+    val timer = timerSubject.asObservable().onBackpressureLatest()
 
     //region Convenience properties
 
@@ -165,7 +182,11 @@ class Cycle() : TimerControl {
     override fun restartPhase() {
         // Starting the elapsed time at -1 instead of 0 give us an extra second in which to display
         // the full unelapsed time.
-        elapsedTime = -1
+        elapsedTime = 0
+        duration = phase.duration(context, preferences)
+        if (timerSubject.hasObservers()) {
+            timerSubject.onNext(this)
+        }
     }
 
     /**

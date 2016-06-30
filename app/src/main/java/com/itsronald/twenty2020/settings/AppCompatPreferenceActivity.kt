@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 
 /**
- * A [android.preference.PreferenceActivity] which implements and proxies the necessary calls
+ * A [PreferenceActivity] which implements and proxies the necessary calls
  * to be used with AppCompat.
  */
 abstract class AppCompatPreferenceActivity : PreferenceActivity() {
@@ -86,7 +86,7 @@ abstract class AppCompatPreferenceActivity : PreferenceActivity() {
         delegate.invalidateOptionsMenu()
     }
 
-    private val delegate: AppCompatDelegate
+    protected val delegate: AppCompatDelegate
         get() {
             if (mDelegate == null) {
                 mDelegate = AppCompatDelegate.create(this, null)

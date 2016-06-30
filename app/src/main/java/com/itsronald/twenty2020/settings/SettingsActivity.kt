@@ -1,19 +1,17 @@
 package com.itsronald.twenty2020.settings
 
 
-import android.R
-import android.annotation.TargetApi
 import android.content.Context
-import android.content.Intent
-import android.content.res.Configuration
 import android.media.RingtoneManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.preference.*
+import android.support.annotation.StringRes
 import android.support.v4.app.NavUtils
 import android.text.TextUtils
 import android.view.MenuItem
+import com.itsronald.twenty2020.R
+import javax.inject.Inject
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On
@@ -26,140 +24,7 @@ import android.view.MenuItem
    * Android Design: Settings](http://developer.android.com/design/patterns/settings.html) for design guidelines and the [Settings
    * API Guide](http://developer.android.com/guide/topics/ui/settings.html) for more information on developing a Settings UI.
  */
-class SettingsActivity : AppCompatPreferenceActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupActionBar()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean =
-        when (item?.itemId) {
-            android.R.id.home -> {
-                NavUtils.navigateUpFromSameTask(this)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-
-    /**
-     * Set up the [android.app.ActionBar], if the API is available.
-     */
-    private fun setupActionBar() {
-        val actionBar = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun onIsMultiPane(): Boolean {
-        return isXLargeTablet(this)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    override fun onBuildHeaders(target: List<Header>) {
-        loadHeadersFromResource(com.itsronald.twenty2020.R.xml.pref_headers, target)
-    }
-
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
-    override fun isValidFragment(fragmentName: String): Boolean {
-        return PreferenceFragment::class.java.name == fragmentName
-                || GeneralPreferenceFragment::class.java.name == fragmentName
-                || DataSyncPreferenceFragment::class.java.name == fragmentName
-                || NotificationPreferenceFragment::class.java.name == fragmentName
-    }
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    class GeneralPreferenceFragment : PreferenceFragment() {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            addPreferencesFromResource(com.itsronald.twenty2020.R.xml.pref_general)
-            setHasOptionsMenu(true)
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"))
-            bindPreferenceSummaryToValue(findPreference("example_list"))
-        }
-
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            val id = item.itemId
-            if (id == R.id.home) {
-                startActivity(Intent(activity, SettingsActivity::class.java))
-                return true
-            }
-            return super.onOptionsItemSelected(item)
-        }
-    }
-
-    /**
-     * This fragment shows notification preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    class NotificationPreferenceFragment : PreferenceFragment() {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            addPreferencesFromResource(com.itsronald.twenty2020.R.xml.pref_notification)
-            setHasOptionsMenu(true)
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"))
-        }
-
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            val id = item.itemId
-            if (id == R.id.home) {
-                startActivity(Intent(activity, SettingsActivity::class.java))
-                return true
-            }
-            return super.onOptionsItemSelected(item)
-        }
-    }
-
-    /**
-     * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    class DataSyncPreferenceFragment : PreferenceFragment() {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            addPreferencesFromResource(com.itsronald.twenty2020.R.xml.pref_data_sync)
-            setHasOptionsMenu(true)
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"))
-        }
-
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            val id = item.itemId
-            if (id == R.id.home) {
-                startActivity(Intent(activity, SettingsActivity::class.java))
-                return true
-            }
-            return super.onOptionsItemSelected(item)
-        }
-    }
+class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.SettingsView {
 
     companion object {
         /**
@@ -212,14 +77,6 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         }
 
         /**
-         * Helper method to determine if the device has an extra-large screen. For
-         * example, 10" tablets are extra-large.
-         */
-        private fun isXLargeTablet(context: Context): Boolean {
-            return context.resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_XLARGE
-        }
-
-        /**
          * Binds a preference's summary to its value. More specifically, when the
          * preference's value is changed, its summary (line of text below the
          * preference title) is updated to reflect the value. The summary is also
@@ -236,6 +93,103 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             // current value.
             sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
                     PreferenceManager.getDefaultSharedPreferences(preference.context).getString(preference.key, ""))
+        }
+    }
+
+    //region Activity lifecycle
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupActionBar()
+        fragmentManager.beginTransaction()
+                .replace(android.R.id.content, SettingsFragment())
+                .commit()
+
+        val preferencesComponent = DaggerPreferencesComponent.builder()
+                .preferencesModule(PreferencesModule(this))
+                .build()
+        DaggerSettingsComponent.builder()
+                .preferencesComponent(preferencesComponent)
+                .settingsModule(SettingsModule(this))
+                .build()
+                .inject(this)
+        presenter.onCreate(savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        presenter.onStart()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean =
+        when (item?.itemId) {
+            android.R.id.home -> {
+                NavUtils.navigateUpFromSameTask(this)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    /**
+     * Set up the ActionBar, if the API is available.
+     */
+    private fun setupActionBar() {
+        val actionBar = supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.onStop()
+    }
+
+    //endregion
+
+    //region SettingsContract.SettingsView
+
+    override val context: Context
+        get() = this
+
+    @Inject
+    override lateinit var presenter: SettingsContract.Presenter
+
+    override fun refreshNightMode(nightMode: Int) {
+        if (delegate.applyDayNight()) recreate()
+    }
+
+    //endregion
+
+    /**
+     * Creates and manages the layout for Settings management.
+     * Settings are defined in [R.xml.preferences].
+     */
+    class SettingsFragment : PreferenceFragment() {
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            addPreferencesFromResource(R.xml.preferences)
+            bindPreferenceSummariesToValues(
+                    R.string.pref_key_general_work_phase_length,
+                    R.string.pref_key_general_break_phase_length,
+                    R.string.pref_key_display_night_mode,
+                    R.string.pref_key_notifications_ringtone
+            )
+        }
+
+        /**
+         * Binds preference summaries to their values. More specifically, when the
+         * preference's value is changed, its summary (line of text below the
+         * preference title) is updated to reflect the value. The summary is also
+         * immediately updated upon calling this method. The exact display format is
+         * dependent on the type of preference.
+
+         * @see bindPreferenceSummaryToValue
+         */
+        private fun bindPreferenceSummariesToValues(@StringRes vararg prefIDs: Int) {
+            for (@StringRes prefID in prefIDs) {
+                val preference = findPreference(getString(prefID))
+                bindPreferenceSummaryToValue(preference)
+            }
         }
     }
 }

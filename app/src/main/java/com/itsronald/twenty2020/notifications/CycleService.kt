@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.IBinder
 import com.itsronald.twenty2020.Twenty2020Application
 import com.itsronald.twenty2020.model.Cycle
+import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
+import com.itsronald.twenty2020.settings.PreferencesModule
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -32,6 +34,10 @@ class CycleService : Service() {
                     Timber.v("Dispatching phase complete notification for phase ${it.phase}.")
                     notifier.notifyPhaseComplete(it.phase)
                 }
+        DaggerPreferencesComponent.builder()
+                .preferencesModule(PreferencesModule(this))
+                .build()
+                .inject(notifier)
         Timber.v("Service created.")
     }
 

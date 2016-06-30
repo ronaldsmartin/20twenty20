@@ -6,14 +6,16 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
+import android.support.annotation.StringRes
 import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
+import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
 import timber.log.Timber
+import javax.inject.Inject
 
 
 class NotificationHelper(private val context: Context) {
@@ -21,6 +23,8 @@ class NotificationHelper(private val context: Context) {
     companion object {
         private val ID_PHASE_COMPLETE = 20
     }
+
+    @Inject lateinit var preferences: RxSharedPreferences
 
     /***
      * Build a new notification indicating that the current phase is complete.
@@ -34,18 +38,46 @@ class NotificationHelper(private val context: Context) {
             else R.string.notification_title_break_cycle_complete
 
         val actionPauseTitle = context.getString(R.string.notification_action_timer_pause)
-        return NotificationCompat.Builder(context)
+        val builder = NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(context.getString(titleID))
                 .setContentText(phaseCompleteMessage(phaseCompleted))
                 .setContentIntent(phaseCompleteIntent())
                 .addAction(android.R.drawable.ic_media_pause, actionPauseTitle, pauseTimerIntent())
                 .setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_SOUND)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setLights(Color.WHITE, 1000, 100)
-                .build()
+                .setDefaults(
+                        defaultFlagsForSettings(mapOf(
+                                R.string.pref_key_notifications_sound_enabled to NotificationCompat.DEFAULT_SOUND,
+                                R.string.pref_key_notifications_vibrate to NotificationCompat.DEFAULT_VIBRATE,
+                                R.string.pref_key_notifications_led_enabled to NotificationCompat.DEFAULT_LIGHTS
+                        ))
+                )
+
+        return builder.build()
     }
+
+    /**
+     * Check a SharedPreferences [Boolean] value to determine if a Notification flag should be set.
+     *
+     * @param prefKeyID Resource ID for the String key under which the preference is stored
+     * @param prefFlag The flag to use if the preference corresponding to [prefKeyID] is set to true.
+     *
+     * @return [prefFlag] if the preference for [prefKeyID] is enabled, 0 otherwise.
+     */
+    private fun flagForSetting(@StringRes prefKeyID: Int, prefFlag: Int): Int =
+            if (preferences.getBoolean(context.getString(prefKeyID)).get() ?: false) prefFlag else 0
+
+    /**
+     * Build Notification flags using values from SharedPreferences.
+     *
+     * @param keysToFlags A map from String resource IDs to the Notification flags that should be
+     *                    set if the
+     * @return Notification flags to be used with [NotificationCompat.Builder.setDefaults]
+     */
+    private fun defaultFlagsForSettings(keysToFlags: Map<Int, Int>): Int = keysToFlags.entries
+                .map { flagForSetting(prefKeyID = it.key, prefFlag = it.value) }
+                .fold(0) { combined, nextFlag -> combined or nextFlag }
 
     /**
      * Generate a content message to be displayed in a PHASE_COMPLETE notification.

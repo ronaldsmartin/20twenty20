@@ -1,11 +1,15 @@
 package com.itsronald.twenty2020.timer
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
+import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
@@ -21,8 +25,15 @@ import javax.inject.Inject
 
 
 class TimerPresenter
-    @Inject constructor(override var view: TimerContract.TimerView, val cycle: Cycle)
+    @Inject constructor(override var view: TimerContract.TimerView,
+                        val cycle: Cycle,
+                        val preferences: RxSharedPreferences)
     : TimerContract.UserActionsListener, TimerControl by cycle {
+
+    private val context: Context
+        get() = view.context
+
+    //region Observers
 
     private lateinit var subscriptions: CompositeSubscription
 
@@ -63,16 +74,40 @@ class TimerPresenter
             .doOnError { Timber.e(it, "Unable to update major progress bar.") }
             .doOnNext { view.showMajorProgress(it, 100) }
 
+    private val keepScreenOnObserver = preferences
+            .getBoolean(view.context.getString(R.string.pref_key_display_keep_screen_on))
+            .asObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
+            .doOnNext { view.keepScreenOn = it }
+
+    private val allowFullScreenObserver = preferences
+            .getBoolean(view.context.getString(R.string.pref_key_display_allow_full_screen))
+            .asObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
+            .doOnNext { view.fullScreenAllowed = it }
+
+    //endregion
+
+    override fun onCreate(bundle: Bundle?) {
+        super.onCreate(bundle)
+        PreferenceManager.setDefaultValues(view.context, R.xml.preferences, false)
+    }
+
     override fun onStart() {
         super.onStart()
         view.showTimeRemaining(cycle.remainingTimeText)
 
-        val context = view.context
         context.startService(Intent(context, CycleService::class.java))
 
         subscriptions = CompositeSubscription()
         subscriptions.add(timeStringUpdater.subscribe())
         subscriptions.add(progressBarUpdater.subscribe())
+        subscriptions.add(keepScreenOnObserver.subscribe())
+        subscriptions.add(allowFullScreenObserver.subscribe())
     }
 
     override fun onStop() {
@@ -93,7 +128,6 @@ class TimerPresenter
     //region Menu interaction
 
     override fun openSettings() {
-        val context = view.context
         context.startActivity(Intent(context, SettingsActivity::class.java))
     }
 
@@ -101,7 +135,6 @@ class TimerPresenter
         Timber.v("Opening Help/Feedback Chrome Custom Tab.")
 
         // Build the intent, customizing action bar color and animations.
-        val context = view.context
         val customTabsIntent = CustomTabsIntent.Builder()
             .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
             .build()
@@ -113,8 +146,8 @@ class TimerPresenter
         }
 
         // Open the custom tab.
-        if (context is Activity) {
-            customTabsIntent.launchUrl(context, Uri.parse(context.getString(R.string.help_feedback_url)))
+        (context as? Activity)?.let {
+            customTabsIntent.launchUrl(it, Uri.parse(it.getString(R.string.help_feedback_url)))
         }
     }
 
