@@ -17,10 +17,11 @@ interface TimerContract {
 
     interface TimerView: View<UserActionsListener> {
 
-        /**
-         * Whether or not the screen with this view should stay awake.
-         */
+        /** Whether or not the screen with this view should stay awake. */
         var keepScreenOn: Boolean
+
+        /** Whether or not this view may go full screen. This is controlled by user preference. */
+        var fullScreenAllowed: Boolean
 
         /**
          * Display time text in the view.

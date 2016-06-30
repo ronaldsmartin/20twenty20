@@ -82,6 +82,14 @@ class TimerPresenter
             .doOnError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
             .doOnNext { view.keepScreenOn = it }
 
+    private val allowFullScreenObserver = preferences
+            .getBoolean(view.context.getString(R.string.pref_key_display_allow_full_screen))
+            .asObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
+            .doOnNext { view.fullScreenAllowed = it }
+
     //endregion
 
     override fun onCreate(bundle: Bundle?) {
@@ -99,6 +107,7 @@ class TimerPresenter
         subscriptions.add(timeStringUpdater.subscribe())
         subscriptions.add(progressBarUpdater.subscribe())
         subscriptions.add(keepScreenOnObserver.subscribe())
+        subscriptions.add(allowFullScreenObserver.subscribe())
     }
 
     override fun onStop() {

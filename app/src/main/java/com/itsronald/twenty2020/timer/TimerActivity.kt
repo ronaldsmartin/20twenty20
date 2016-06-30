@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.app.AppCompatDelegate
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,6 +15,7 @@ import com.itsronald.twenty2020.Twenty2020Application
 import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
 import kotlinx.android.synthetic.main.activity_timer.*
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -158,6 +158,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     private fun hide() {
+        if (!fullScreenAllowed) {
+            Timber.v("Ignoring full screen hide command: full screen is not allowed.")
+            return
+        }
+
         // Hide UI first
         val actionBar = supportActionBar
         actionBar?.hide()
@@ -187,6 +192,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
      * previously scheduled calls.
      */
     private fun delayedHide(delayMillis: Int) {
+        if (!fullScreenAllowed) {
+            Timber.v("Ignoring full screen hide command: full screen is not allowed.")
+            return
+        }
+
         mHideHandler.removeCallbacks(mHideRunnable)
         mHideHandler.postDelayed(mHideRunnable, delayMillis.toLong())
     }
@@ -200,6 +210,8 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override var keepScreenOn: Boolean
         get() = constraint_layout.keepScreenOn
         set(value) { constraint_layout.keepScreenOn = value }
+
+    override var fullScreenAllowed = false
 
     @Inject
     override lateinit var presenter: TimerContract.UserActionsListener
