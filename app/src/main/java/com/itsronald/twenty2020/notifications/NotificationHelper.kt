@@ -7,6 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.support.annotation.StringRes
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
@@ -40,6 +41,10 @@ class NotificationHelper(private val context: Context) {
         val actionPauseTitle = context.getString(R.string.notification_action_timer_pause)
         val builder = NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setColor(ContextCompat.getColor(context, when(phaseCompleted) {
+                    Cycle.Phase.WORK  -> R.color.solarized_red
+                    Cycle.Phase.BREAK -> R.color.solarized_green
+                }))
                 .setContentTitle(context.getString(titleID))
                 .setContentText(phaseCompleteMessage(phaseCompleted))
                 .setContentIntent(phaseCompleteIntent())
