@@ -15,6 +15,9 @@ import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
+import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,6 +26,7 @@ class NotificationHelper(private val context: Context) {
 
     companion object {
         private val ID_PHASE_COMPLETE = 20
+        val ID_FOREGROUND_PROGRESS = 30
     }
 
     @Inject lateinit var preferences: RxSharedPreferences
@@ -46,7 +50,7 @@ class NotificationHelper(private val context: Context) {
                     Cycle.Phase.BREAK -> R.string.notification_title_break_cycle_complete
                 }))
                 .setContentText(phaseCompleteMessage(phaseCompleted))
-                .setContentIntent(phaseCompleteIntent())
+                .setContentIntent(buildOpenTimerIntent())
                 .addAction(android.R.drawable.ic_media_pause, actionPauseTitle, pauseTimerIntent())
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -106,7 +110,7 @@ class NotificationHelper(private val context: Context) {
      * Create an intent that returns the user to TimerActivity.
      * @return An intent to TimerActivity.
      */
-    private fun phaseCompleteIntent(): PendingIntent {
+    private fun buildOpenTimerIntent(): PendingIntent {
         val timerIntent = Intent(context, TimerActivity::class.java)
         timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         timerIntent.component = ComponentName(context, TimerActivity::class.java)
@@ -118,6 +122,9 @@ class NotificationHelper(private val context: Context) {
         )
     }
 
+    /**
+     * Build an intent that pauses the cycle timer.
+     */
     private fun pauseTimerIntent(): PendingIntent {
         val timerIntent = Intent(context, TimerActivity::class.java)
         timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -142,4 +149,33 @@ class NotificationHelper(private val context: Context) {
         val notifyManager = NotificationManagerCompat.from(context)
         notifyManager.notify(ID_PHASE_COMPLETE, notification)
     }
+
+    //region Foreground progress notification
+
+    val foregroundNotePreference: Observable<Boolean>
+        get() = preferences
+                .getBoolean(context.getString(R.string.pref_key_notifications_persistent_enabled))
+                .asObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+
+    fun progressNotification(cycle: Cycle): Notification = NotificationCompat.Builder(context)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle("Foreground progress")
+            .setContentText("${cycle.phase.name} phase")
+            .setContentIntent(buildOpenTimerIntent())
+            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(cycle.running)
+            .setProgress(cycle.duration, cycle.elapsedTime, false)
+            .build()
+
+    fun notifyUpdatedProgress(cycle: Cycle) {
+        Timber.v("Updating foreground cycle progress notification")
+        val notification = progressNotification(cycle)
+        val notifyManager = NotificationManagerCompat.from(context)
+        notifyManager.notify(ID_FOREGROUND_PROGRESS, notification)
+    }
+
+    //endregion
 }
