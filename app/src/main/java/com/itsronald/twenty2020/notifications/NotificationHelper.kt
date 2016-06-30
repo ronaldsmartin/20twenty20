@@ -47,6 +47,7 @@ class NotificationHelper(private val context: Context) {
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setDefaults(
                         defaultFlagsForSettings(mapOf(
                                 R.string.pref_key_notifications_sound_enabled to NotificationCompat.DEFAULT_SOUND,
