@@ -13,6 +13,7 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -41,15 +42,8 @@ class CycleService : Service() {
                 .build()
                 .inject(notifier)
 
-        subscriptions.add(notifyUserPhaseCompleted.subscribe())
-        subscriptions.add(notifier.foregroundNotePreference.subscribe { foregroundEnabled ->
-            if (foregroundEnabled)
-                startForeground(NotificationHelper.ID_FOREGROUND_PROGRESS,
-                                notifier.progressNotification(cycle))
-            else stopForeground(true)
-        })
-        subscriptions.add(updateForegroundProgress.subscribe())
         Timber.v("Service created.")
+        startSubscriptions()
     }
 
     override fun onDestroy() {
@@ -68,25 +62,63 @@ class CycleService : Service() {
 
     //endregion
 
-    private val notifyUserPhaseCompleted: Observable<Cycle>
-        get() = cycle.timer
-                .filter { it.elapsedTime == it.duration - 1 }
+    private fun startSubscriptions() {
+        Timber.v("Starting subscriptions.")
+        subscriptions.add(watchPhaseCompletion().subscribe {
+            notifier.notifyPhaseComplete(it.phase)
+        })
+
+        subscriptions.add(watchForegroundNotificationPref().subscribe { foregroundEnabled ->
+            if (foregroundEnabled)
+                startForeground(NotificationHelper.ID_FOREGROUND_PROGRESS,
+                        notifier.progressNotification(cycle))
+            else stopForeground(true)
+        })
+
+        subscriptions.add(updateForegroundProgress().subscribe {
+            notifier.notifyUpdatedProgress(it)
+        })
+    }
+
+    /**
+     * Observe events when the current Cycle phase completes.
+     */
+    private fun watchPhaseCompletion(): Observable<Cycle> = cycle.timer
+                .filter { it.isFinishingPhase }
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError { Timber.e(it, "Unable to notify user of phase completion!") }
                 .doOnNext {
                     Timber.v("Dispatching phase complete notification for phase ${it.phase}.")
-                    notifier.notifyPhaseComplete(it.phase)
                 }
 
-    private val updateForegroundProgress: Observable<Cycle>
-        get() = cycle.timer
+    /**
+     * Watch the user preference for notifications_persistent_enabled, signaling when it changes.
+     */
+    private fun watchForegroundNotificationPref(): Observable<Boolean> = notifier
+            .foregroundNotePreference
+            .doOnError { Timber.e(it, "Unable to watch foreground notification preference") }
+            .doOnNext { foregroundEnabled ->
+                if (foregroundEnabled)
+                    Timber.i("Starting foreground progress notification.")
+                else Timber.i("Stopping foreground progress notification.")
+            }
+
+    /**
+     * When the user preference notifications_persistent_enabled is enabled, signal with the current
+     * Cycle progress.
+     */
+    private fun updateForegroundProgress(): Observable<Cycle> = cycle.timer
+                .withLatestFrom(watchForegroundNotificationPref()) { cycle, foregroundNoteEnabled ->
+                    if (foregroundNoteEnabled) cycle else null
+                }
+                .filter { it != null }
+                .map { it!! }
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError { Timber.e(it, "Unable to notify user of cycle progress") }
                 .doOnNext {
                     Timber.v("Updating foreground cycle progress notification.")
-                    notifier.notifyUpdatedProgress(it)
                 }
 
 }
