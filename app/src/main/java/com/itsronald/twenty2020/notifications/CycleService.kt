@@ -8,12 +8,10 @@ import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
 import rx.Observable
-import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -71,7 +69,7 @@ class CycleService : Service() {
         subscriptions.add(watchForegroundNotificationPref().subscribe { foregroundEnabled ->
             if (foregroundEnabled)
                 startForeground(NotificationHelper.ID_FOREGROUND_PROGRESS,
-                        notifier.progressNotification(cycle))
+                        notifier.buildProgressNotification(cycle))
             else stopForeground(true)
         })
 
@@ -96,7 +94,9 @@ class CycleService : Service() {
      * Watch the user preference for notifications_persistent_enabled, signaling when it changes.
      */
     private fun watchForegroundNotificationPref(): Observable<Boolean> = notifier
-            .foregroundNotePreference
+            .foregroundNotificationPref()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it, "Unable to watch foreground notification preference") }
             .doOnNext { foregroundEnabled ->
                 if (foregroundEnabled)

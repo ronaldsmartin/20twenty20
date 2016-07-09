@@ -16,8 +16,6 @@ import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
 import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -152,14 +150,22 @@ class NotificationHelper(private val context: Context) {
 
     //region Foreground progress notification
 
-    val foregroundNotePreference: Observable<Boolean>
-        get() = preferences
+    /**
+     * Observe the current value of the notifications_persistent_enabled SharedPreference.
+     */
+    fun foregroundNotificationPref(): Observable<Boolean> = preferences
                 .getBoolean(context.getString(R.string.pref_key_notifications_persistent_enabled))
                 .asObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
 
-    fun progressNotification(cycle: Cycle): Notification = NotificationCompat.Builder(context)
+    /**
+     * Create a notification displaying a cycle's current progress.
+     *
+     * See also: [notifyUpdatedProgress]
+     *
+     * @param cycle The cycle whose progress should be displayed in the notification.
+     * @return A new notification displaying the progress of [cycle].
+     */
+    fun buildProgressNotification(cycle: Cycle): Notification = NotificationCompat.Builder(context)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Foreground progress")
             .setContentText("${cycle.phase.name} phase")
@@ -170,9 +176,16 @@ class NotificationHelper(private val context: Context) {
             .setProgress(cycle.duration, cycle.elapsedTime, false)
             .build()
 
+    /**
+     * Build and post a notification of the cycle's current progress.
+     *
+     * See also: [buildProgressNotification]
+     *
+     * @param cycle The cycle whose progress should be displayed in the notification.
+     */
     fun notifyUpdatedProgress(cycle: Cycle) {
         Timber.v("Updating foreground cycle progress notification")
-        val notification = progressNotification(cycle)
+        val notification = buildProgressNotification(cycle)
         val notifyManager = NotificationManagerCompat.from(context)
         notifyManager.notify(ID_FOREGROUND_PROGRESS, notification)
     }
