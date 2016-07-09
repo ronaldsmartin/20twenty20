@@ -187,6 +187,11 @@ class Cycle
         Timber.v("Pausing ${phase.name} phase. Time elapsed: $elapsedTime; Time left: $remainingTime")
         countdown?.unsubscribe()
         running = false
+
+        // Notify Observers that the Cycle has paused.
+        if (timerSubject.hasObservers()) {
+            timerSubject.onNext(this)
+        }
     }
 
     override fun toggleRunning() = if (running) pause() else start()
