@@ -26,6 +26,30 @@
     <string name="notification_message_break_cycle_complete">
         Next break <xliff:g id="time" example="at 10:31">%s</xliff:g>
     </string>
+    <!-- A list of possible messages for display when the work phase is complete. -->
+    <string-array name="notification_messages_work_cycle_complete">
+        <item>Do as many push-ups as you can!</item>
+        <item>Bend down and touch your toes. Roll up slowly.</item>
+        <item>And do the twist!</item>
+        <item>Time for crescent pose.</item>
+        <item>Hot feet will get your heart beating.</item>
+        <item>Reach for the sky.</item>
+        <item>Time for jumping jacks!</item>
+        <item>Flex your wrists back and forth.</item>
+        <item>March in place, soldier.</item>
+        <item>Raise the roof!</item>
+        <item>Roll your shoulders.</item>
+        <item>Squeeze your shoulder blades together.</item>
+        <item>Swing your legs at the knees.</item>
+        <item>Stand up and lift your knees one at a time.</item>
+        <item>Step from side to side, hands on your hips.</item>
+        <item>Punch your problems away!</item>
+        <item>Try inclined push-ups on the nearest chair.</item>
+        <item>Do some lunges.</item>
+        <item>Squat down and jump as high as you can!</item>
+        <item>Extend your legs and do some chair dips.</item>
+        <item>Just walk around!</item>
+    </string-array>
 
     <string name="notification_action_timer_pause">Suspend</string>
 

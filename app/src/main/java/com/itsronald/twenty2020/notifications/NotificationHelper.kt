@@ -17,6 +17,7 @@ import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
 import rx.Observable
 import timber.log.Timber
+import java.util.Random
 import javax.inject.Inject
 
 
@@ -35,9 +36,8 @@ class NotificationHelper(private val context: Context) {
      * @param phaseCompleted The phase that was completed.
      * @return a new notification for posting
      */
-    private fun phaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification {
-        val actionPauseTitle = context.getString(R.string.notification_action_timer_pause)
-        val builder = NotificationCompat.Builder(context)
+    private fun buildPhaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification =
+            NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setColor(ContextCompat.getColor(context, when(phaseCompleted) {
                     Cycle.Phase.WORK  -> R.color.solarized_red
@@ -47,9 +47,13 @@ class NotificationHelper(private val context: Context) {
                     Cycle.Phase.WORK  -> R.string.notification_title_work_cycle_complete
                     Cycle.Phase.BREAK -> R.string.notification_title_break_cycle_complete
                 }))
-                .setContentText(phaseCompleteMessage(phaseCompleted))
+                .setContentText(makePhaseCompleteMessage(phaseCompleted))
                 .setContentIntent(buildOpenTimerIntent())
-                .addAction(android.R.drawable.ic_media_pause, actionPauseTitle, pauseTimerIntent())
+                .addAction(
+                        android.R.drawable.ic_media_pause,
+                        context.getString(R.string.notification_action_timer_pause),
+                        pauseTimerIntent()
+                )
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_REMINDER)
@@ -61,9 +65,7 @@ class NotificationHelper(private val context: Context) {
                                 R.string.pref_key_notifications_led_enabled to NotificationCompat.DEFAULT_LIGHTS
                         ))
                 )
-
-        return builder.build()
-    }
+                .build()
 
     /**
      * Check a SharedPreferences [Boolean] value to determine if a Notification flag should be set.
@@ -87,21 +89,29 @@ class NotificationHelper(private val context: Context) {
                 .map { flagForSetting(prefKeyID = it.key, prefFlag = it.value) }
                 .fold(0) { combined, nextFlag -> combined or nextFlag }
 
+    /** RNG used for selecting strings in [makePhaseCompleteMessage]. */
+    private val random = Random()
+
     /**
      * Generate a content message to be displayed in a PHASE_COMPLETE notification.
      *
      * @param phase The phase that was completed.
      * @return The message to display in a notification.
      */
-    private fun phaseCompleteMessage(phase: Cycle.Phase): CharSequence {
-        if (phase == Cycle.Phase.WORK) {
-            return context.getString(R.string.notification_message_work_cycle_complete)
+    private fun makePhaseCompleteMessage(phase: Cycle.Phase): CharSequence = when(phase) {
+        Cycle.Phase.WORK  -> {
+            // Choose a random exercise to suggest for the break.
+            val messages = context.resources
+                    .getStringArray(R.array.notification_messages_work_cycle_complete)
+            messages[random.nextInt(messages.size)]
         }
-
-        val breakCycleMilliseconds = Cycle.Phase.WORK.defaultDuration * 1000
-        val nextCycleTime = System.currentTimeMillis() + breakCycleMilliseconds
-        val nextTime = DateUtils.getRelativeTimeSpanString(context, nextCycleTime, true)
-        return context.getString(R.string.notification_message_break_cycle_complete, nextTime)
+        Cycle.Phase.BREAK -> {
+            // Notify the user what time the next break will occur.
+            val breakCycleMilliseconds = Cycle.Phase.WORK.defaultDuration * 1000
+            val nextCycleTime = System.currentTimeMillis() + breakCycleMilliseconds
+            val nextTime = DateUtils.getRelativeTimeSpanString(context, nextCycleTime, true)
+            context.getString(R.string.notification_message_break_cycle_complete, nextTime)
+        }
     }
 
     /**
@@ -143,7 +153,7 @@ class NotificationHelper(private val context: Context) {
      */
     fun notifyPhaseComplete(phase: Cycle.Phase) {
         Timber.v("Building cycle complete notification")
-        val notification = phaseCompleteNotification(phase)
+        val notification = buildPhaseCompleteNotification(phase)
         val notifyManager = NotificationManagerCompat.from(context)
         notifyManager.notify(ID_PHASE_COMPLETE, notification)
     }
