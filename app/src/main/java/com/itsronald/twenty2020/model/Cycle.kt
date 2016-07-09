@@ -59,6 +59,17 @@ class Cycle
                 WORK  -> BREAK
                 BREAK -> WORK
             }
+
+        /**
+         * Retrieve the user-visible name for this phase.
+         *
+         * @param context The [Context] used to retrieve the localized name string.
+         * @return The localized string name of this phase.
+         */
+        fun localizedName(context: Context): String = context.getString(when(this) {
+            WORK  -> R.string.phase_name_work
+            BREAK -> R.string.phase_name_break
+        })
     }
 
     /** The current phase of the cycle. **/

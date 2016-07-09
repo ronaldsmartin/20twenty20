@@ -167,14 +167,31 @@ class NotificationHelper(private val context: Context) {
      */
     fun buildProgressNotification(cycle: Cycle): Notification = NotificationCompat.Builder(context)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Foreground progress")
-            .setContentText("${cycle.phase.name} phase")
+            .setContentTitle(context.getString(R.string.notification_title_foreground_progress))
+            .setContentText(progressNotificationMessage(cycle))
             .setContentIntent(buildOpenTimerIntent())
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(cycle.running)
             .setProgress(cycle.duration, cycle.elapsedTime, false)
             .build()
+
+    /**
+     * Generate the message to be used in the foreground progress notification.
+     *
+     * See: [buildProgressNotification].
+     *
+     * @param cycle The cycle whose progress will be displayed in the notification.
+     * @return The content title for the [Cycle] progress notification.
+     */
+    private fun progressNotificationMessage(cycle: Cycle): String =
+        if (cycle.running) context.getString(
+                R.string.notification_message_foreground_progress,
+                cycle.phase.localizedName(context)
+        ) else context.getString(
+                R.string.notification_message_foreground_progress_paused,
+                cycle.phase.localizedName(context)
+        )
 
     /**
      * Build and post a notification of the cycle's current progress.

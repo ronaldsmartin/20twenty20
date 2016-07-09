@@ -1,6 +1,11 @@
 <resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name">20 twenty 20</string>
 
+    <!-- Phase names-->
+    <string name="phase_name_work">Work</string>
+    <string name="phase_name_break">Break</string>
+
+    <!-- activity_timer -->
     <string name="timer_restart_current_cycle">Restart current cycle</string>
     <string name="timer_skip_to_next_cycle">Skip to next cycle</string>
 
@@ -21,4 +26,12 @@
     <string name="notification_message_break_cycle_complete">Next break <xliff:g id="time" example="at 10:31">%s</xliff:g></string>
 
     <string name="notification_action_timer_pause">Suspend</string>
+
+    <string name="notification_title_foreground_progress">20twenty20 cycle</string>
+    <string name="notification_message_foreground_progress">
+        <xliff:g id="phase_name" example="Work">%s</xliff:g> phase in progress.
+    </string>
+    <string name="notification_message_foreground_progress_paused">
+        <xliff:g id="phase_name" example="Break">%s</xliff:g> phase is paused.
+    </string>
 </resources>
