@@ -18,16 +18,19 @@
 
 
     <!--Notifications -->
-    <string name="notification_title_work_cycle_complete">Time to take a break</string>
+    <string name="notification_title_work_cycle_complete">Time to take a break!</string>
     <string name="notification_title_break_cycle_complete">Break complete</string>
 
-    <string name="notification_message_work_cycle_complete">Keep your eyes healthy!</string>
+    <string name="notification_message_work_cycle_complete">A short exercise or stretch might brighten your day!</string>
     <!--The argument for this string is the time until the next notification.-->
-    <string name="notification_message_break_cycle_complete">Next break <xliff:g id="time" example="at 10:31">%s</xliff:g></string>
+    <string name="notification_message_break_cycle_complete">
+        Next break <xliff:g id="time" example="at 10:31">%s</xliff:g>
+    </string>
 
     <string name="notification_action_timer_pause">Suspend</string>
 
-    <string name="notification_title_foreground_progress">20twenty20 cycle</string>
+    <string name="notification_title_foreground_progress">20&#8211;20&#8211;20 cycle</string>
+    <!--The argument for this string is the time until the next notification.-->
     <string name="notification_message_foreground_progress">
         <xliff:g id="phase_name" example="Work">%s</xliff:g> phase in progress.
     </string>
