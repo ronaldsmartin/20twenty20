@@ -46,7 +46,7 @@ ext {
     javaAnnotationsVersion = "1.0"
 
     timberVersion = "4.1.2"
-    dexterVersion = "2.2.2"
+    dexterVersion = "2.3.0"
 
     waveViewVersion = "3da6d4b"
 }
