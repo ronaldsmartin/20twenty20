@@ -169,6 +169,7 @@ class NotificationHelper(private val context: Context) {
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(context.getString(R.string.notification_title_foreground_progress))
             .setContentText(progressNotificationMessage(cycle))
+            .setColor(ContextCompat.getColor(context, R.color.colorAccent))
             .setContentIntent(buildOpenTimerIntent())
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setPriority(NotificationCompat.PRIORITY_LOW)
