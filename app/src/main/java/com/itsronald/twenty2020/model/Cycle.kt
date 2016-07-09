@@ -59,6 +59,17 @@ class Cycle
                 WORK  -> BREAK
                 BREAK -> WORK
             }
+
+        /**
+         * Retrieve the user-visible name for this phase.
+         *
+         * @param context The [Context] used to retrieve the localized name string.
+         * @return The localized string name of this phase.
+         */
+        fun localizedName(context: Context): String = context.getString(when(this) {
+            WORK  -> R.string.phase_name_work
+            BREAK -> R.string.phase_name_break
+        })
     }
 
     /** The current phase of the cycle. **/
@@ -80,6 +91,10 @@ class Cycle
     /** The time remaining in the current phase, in seconds. **/
     val remainingTime: Int
         get() = duration - elapsedTime
+
+    /** Indicates whether the current phase time left is about to run out. */
+    val isFinishingPhase: Boolean
+        get() = elapsedTime == duration - 1
 
     /** PublishSubject where we update the timer state. **/
     private val timerSubject = PublishSubject.create<Cycle>().toSerialized()
@@ -172,6 +187,11 @@ class Cycle
         Timber.v("Pausing ${phase.name} phase. Time elapsed: $elapsedTime; Time left: $remainingTime")
         countdown?.unsubscribe()
         running = false
+
+        // Notify Observers that the Cycle has paused.
+        if (timerSubject.hasObservers()) {
+            timerSubject.onNext(this)
+        }
     }
 
     override fun toggleRunning() = if (running) pause() else start()

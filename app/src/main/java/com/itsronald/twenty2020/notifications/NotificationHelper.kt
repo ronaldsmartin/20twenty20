@@ -1,12 +1,13 @@
 package com.itsronald.twenty2020.notifications
 
 import android.app.Notification
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.support.annotation.StringRes
+import android.support.v4.app.NotificationManagerCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
@@ -14,7 +15,9 @@ import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
+import rx.Observable
 import timber.log.Timber
+import java.util.Random
 import javax.inject.Inject
 
 
@@ -22,6 +25,7 @@ class NotificationHelper(private val context: Context) {
 
     companion object {
         private val ID_PHASE_COMPLETE = 20
+        val ID_FOREGROUND_PROGRESS = 30
     }
 
     @Inject lateinit var preferences: RxSharedPreferences
@@ -32,20 +36,28 @@ class NotificationHelper(private val context: Context) {
      * @param phaseCompleted The phase that was completed.
      * @return a new notification for posting
      */
-    private fun phaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification {
-        val titleID = if (phaseCompleted == Cycle.Phase.WORK)
-                R.string.notification_title_work_cycle_complete
-            else R.string.notification_title_break_cycle_complete
-
-        val actionPauseTitle = context.getString(R.string.notification_action_timer_pause)
-        val builder = NotificationCompat.Builder(context)
+    private fun buildPhaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification =
+            NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(context.getString(titleID))
-                .setContentText(phaseCompleteMessage(phaseCompleted))
-                .setContentIntent(phaseCompleteIntent())
-                .addAction(android.R.drawable.ic_media_pause, actionPauseTitle, pauseTimerIntent())
+                .setColor(ContextCompat.getColor(context, when(phaseCompleted) {
+                    Cycle.Phase.WORK  -> R.color.solarized_red
+                    Cycle.Phase.BREAK -> R.color.solarized_green
+                }))
+                .setContentTitle(context.getString(when(phaseCompleted) {
+                    Cycle.Phase.WORK  -> R.string.notification_title_work_cycle_complete
+                    Cycle.Phase.BREAK -> R.string.notification_title_break_cycle_complete
+                }))
+                .setContentText(makePhaseCompleteMessage(phaseCompleted))
+                .setContentIntent(buildOpenTimerIntent())
+                .addAction(
+                        android.R.drawable.ic_media_pause,
+                        context.getString(R.string.notification_action_timer_pause),
+                        pauseTimerIntent()
+                )
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setDefaults(
                         defaultFlagsForSettings(mapOf(
                                 R.string.pref_key_notifications_sound_enabled to NotificationCompat.DEFAULT_SOUND,
@@ -53,9 +65,7 @@ class NotificationHelper(private val context: Context) {
                                 R.string.pref_key_notifications_led_enabled to NotificationCompat.DEFAULT_LIGHTS
                         ))
                 )
-
-        return builder.build()
-    }
+                .build()
 
     /**
      * Check a SharedPreferences [Boolean] value to determine if a Notification flag should be set.
@@ -79,28 +89,36 @@ class NotificationHelper(private val context: Context) {
                 .map { flagForSetting(prefKeyID = it.key, prefFlag = it.value) }
                 .fold(0) { combined, nextFlag -> combined or nextFlag }
 
+    /** RNG used for selecting strings in [makePhaseCompleteMessage]. */
+    private val random = Random()
+
     /**
      * Generate a content message to be displayed in a PHASE_COMPLETE notification.
      *
      * @param phase The phase that was completed.
      * @return The message to display in a notification.
      */
-    private fun phaseCompleteMessage(phase: Cycle.Phase): CharSequence {
-        if (phase == Cycle.Phase.WORK) {
-            return context.getString(R.string.notification_message_work_cycle_complete)
+    private fun makePhaseCompleteMessage(phase: Cycle.Phase): CharSequence = when(phase) {
+        Cycle.Phase.WORK  -> {
+            // Choose a random exercise to suggest for the break.
+            val messages = context.resources
+                    .getStringArray(R.array.notification_messages_work_cycle_complete)
+            messages[random.nextInt(messages.size)]
         }
-
-        val breakCycleMilliseconds = Cycle.Phase.WORK.defaultDuration * 1000
-        val nextCycleTime = System.currentTimeMillis() + breakCycleMilliseconds
-        val nextTime = DateUtils.getRelativeTimeSpanString(context, nextCycleTime, true)
-        return context.getString(R.string.notification_message_break_cycle_complete, nextTime)
+        Cycle.Phase.BREAK -> {
+            // Notify the user what time the next break will occur.
+            val breakCycleMilliseconds = Cycle.Phase.WORK.defaultDuration * 1000
+            val nextCycleTime = System.currentTimeMillis() + breakCycleMilliseconds
+            val nextTime = DateUtils.getRelativeTimeSpanString(context, nextCycleTime, true)
+            context.getString(R.string.notification_message_break_cycle_complete, nextTime)
+        }
     }
 
     /**
      * Create an intent that returns the user to TimerActivity.
      * @return An intent to TimerActivity.
      */
-    private fun phaseCompleteIntent(): PendingIntent {
+    private fun buildOpenTimerIntent(): PendingIntent {
         val timerIntent = Intent(context, TimerActivity::class.java)
         timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         timerIntent.component = ComponentName(context, TimerActivity::class.java)
@@ -112,6 +130,9 @@ class NotificationHelper(private val context: Context) {
         )
     }
 
+    /**
+     * Build an intent that pauses the cycle timer.
+     */
     private fun pauseTimerIntent(): PendingIntent {
         val timerIntent = Intent(context, TimerActivity::class.java)
         timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -132,8 +153,70 @@ class NotificationHelper(private val context: Context) {
      */
     fun notifyPhaseComplete(phase: Cycle.Phase) {
         Timber.v("Building cycle complete notification")
-        val notification = phaseCompleteNotification(phase)
-        val notifyManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-        notifyManager?.notify(ID_PHASE_COMPLETE, notification)
+        val notification = buildPhaseCompleteNotification(phase)
+        val notifyManager = NotificationManagerCompat.from(context)
+        notifyManager.notify(ID_PHASE_COMPLETE, notification)
     }
+
+    //region Foreground progress notification
+
+    /**
+     * Observe the current value of the notifications_persistent_enabled SharedPreference.
+     */
+    fun foregroundNotificationPref(): Observable<Boolean> = preferences
+                .getBoolean(context.getString(R.string.pref_key_notifications_persistent_enabled))
+                .asObservable()
+
+    /**
+     * Create a notification displaying a cycle's current progress.
+     *
+     * See also: [notifyUpdatedProgress]
+     *
+     * @param cycle The cycle whose progress should be displayed in the notification.
+     * @return A new notification displaying the progress of [cycle].
+     */
+    fun buildProgressNotification(cycle: Cycle): Notification = NotificationCompat.Builder(context)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(context.getString(R.string.notification_title_foreground_progress))
+            .setContentText(progressNotificationMessage(cycle))
+            .setColor(ContextCompat.getColor(context, R.color.colorAccent))
+            .setContentIntent(buildOpenTimerIntent())
+            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(cycle.running)
+            .setProgress(cycle.duration, cycle.elapsedTime, false)
+            .build()
+
+    /**
+     * Generate the message to be used in the foreground progress notification.
+     *
+     * See: [buildProgressNotification].
+     *
+     * @param cycle The cycle whose progress will be displayed in the notification.
+     * @return The content title for the [Cycle] progress notification.
+     */
+    private fun progressNotificationMessage(cycle: Cycle): String =
+        if (cycle.running) context.getString(
+                R.string.notification_message_foreground_progress,
+                cycle.phase.localizedName(context)
+        ) else context.getString(
+                R.string.notification_message_foreground_progress_paused,
+                cycle.phase.localizedName(context)
+        )
+
+    /**
+     * Build and post a notification of the cycle's current progress.
+     *
+     * See also: [buildProgressNotification]
+     *
+     * @param cycle The cycle whose progress should be displayed in the notification.
+     */
+    fun notifyUpdatedProgress(cycle: Cycle) {
+        Timber.v("Updating foreground cycle progress notification")
+        val notification = buildProgressNotification(cycle)
+        val notifyManager = NotificationManagerCompat.from(context)
+        notifyManager.notify(ID_FOREGROUND_PROGRESS, notification)
+    }
+
+    //endregion
 }
