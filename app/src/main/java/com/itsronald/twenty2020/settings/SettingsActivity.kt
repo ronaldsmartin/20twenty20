@@ -10,6 +10,7 @@ import android.support.annotation.StringRes
 import android.support.v4.app.NavUtils
 import android.text.TextUtils
 import android.view.MenuItem
+import android.view.ViewGroup
 import com.itsronald.twenty2020.R
 import javax.inject.Inject
 
@@ -94,6 +95,11 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
             sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
                     PreferenceManager.getDefaultSharedPreferences(preference.context).getString(preference.key, ""))
         }
+
+        /**
+         * Tag used to identify this activity's [SettingsFragment].
+         */
+        private val TAG_SETTINGS_FRAGMENT = SettingsFragment::class.java.canonicalName
     }
 
     //region Activity lifecycle
@@ -101,8 +107,9 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupActionBar()
+
         fragmentManager.beginTransaction()
-                .replace(android.R.id.content, SettingsFragment())
+                .replace(android.R.id.content, SettingsFragment(), TAG_SETTINGS_FRAGMENT)
                 .commit()
 
         val preferencesComponent = DaggerPreferencesComponent.builder()
@@ -121,8 +128,7 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
         presenter.onStart()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean =
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
             android.R.id.home -> {
                 NavUtils.navigateUpFromSameTask(this)
                 true
@@ -150,11 +156,26 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
     override val context: Context
         get() = this
 
+    override val contentView: ViewGroup
+        get() = findViewById(android.R.id.content) as ViewGroup
+
     @Inject
     override lateinit var presenter: SettingsContract.Presenter
 
     override fun refreshNightMode(nightMode: Int) {
         if (delegate.applyDayNight()) recreate()
+    }
+
+    override fun setPreferenceChecked(@StringRes prefKeyID: Int, checked: Boolean): Boolean {
+        val settingsFragment = fragmentManager
+                .findFragmentByTag(TAG_SETTINGS_FRAGMENT) as? SettingsFragment
+        val preference = settingsFragment?.findPreference(getString(prefKeyID)) as? TwoStatePreference
+        if (preference == null) {
+            return false
+        } else {
+            preference.isChecked = checked
+            return true
+        }
     }
 
     //endregion

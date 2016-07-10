@@ -1,8 +1,13 @@
 package com.itsronald.twenty2020.settings
 
+import android.Manifest
+import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.onError
@@ -44,7 +49,21 @@ class SettingsPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to observe night mode setting.") }
 
+    private fun watchNightModeLocationPreference(): Observable<Boolean> = preferences
+            .getBoolean(view.context.getString(R.string.pref_key_display_location_based_night_mode))
+            .asObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onError { Timber.e(it, "Unable to observe night mode location setting.") }
+
     //endregion
+
+    //region Activity lifecycle
+
+    override fun onCreate(bundle: Bundle?) {
+        super.onCreate(bundle)
+        Dexter.initialize(view.context)
+    }
 
     override fun onStart() {
         super.onStart()
@@ -53,8 +72,17 @@ class SettingsPresenter
         startSubscriptions()
     }
 
+    override fun onStop() {
+        super.onStop()
+        Timber.v("SettingsPresenter is stopping.")
+        subscriptions.unsubscribe()
+    }
+
+    //endregion
+
     private fun startSubscriptions() {
         subscriptions = CompositeSubscription()
+
         subscriptions.add(watchNightModePreference().subscribe {
             val nightModeName = when (it) {
                 AppCompatDelegate.MODE_NIGHT_AUTO -> "MODE_NIGHT_AUTO"
@@ -66,11 +94,27 @@ class SettingsPresenter
             AppCompatDelegate.setDefaultNightMode(it)
             view.refreshNightMode(it)
         })
+
+        subscriptions.add(watchNightModeLocationPreference().subscribe { enabled ->
+            if (enabled) ensureLocationPermission()
+        })
     }
 
-    override fun onStop() {
-        super.onStop()
-        Timber.v("SettingsPresenter is stopping.")
-        subscriptions.unsubscribe()
+    private fun ensureLocationPermission() {
+        val snackbarPermissionListener = SnackbarOnDeniedPermissionListener.Builder
+                .with(view.contentView, R.string.location_permission_rationale)
+                .withOpenSettingsButton(R.string.settings)
+                .withCallback(object : Snackbar.Callback() {
+                    override fun onShown(snackbar: Snackbar?) {
+                        super.onShown(snackbar)
+                        // Un-check the setting if permission is denied.
+                        view.setPreferenceChecked(
+                                prefKeyID = R.string.pref_key_display_location_based_night_mode,
+                                checked = false
+                        )
+                    }
+                })
+                .build()
+        Dexter.checkPermission(snackbarPermissionListener, Manifest.permission.ACCESS_COARSE_LOCATION)
     }
 }

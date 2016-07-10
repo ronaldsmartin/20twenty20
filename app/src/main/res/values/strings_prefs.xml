@@ -108,6 +108,9 @@
     <string name="pref_summary_display_location_based_night_mode_off">Use default sunrise/sunset (6 a.m./10 p.m.)</string>
     <string name="pref_key_display_location_based_night_mode"
         translatable="false">com.itsronald.settings.key.night_mode_uses_location</string>
+    <string name="location_permission_rationale">
+        Location permission is required to calculate night mode sunrise and sunset times.
+    </string>
 
     <string name="pref_title_display_keep_screen_on">Keep screen on</string>
     <string name="pref_key_display_keep_screen_on"
