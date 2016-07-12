@@ -1,5 +1,6 @@
 package com.itsronald.twenty2020.settings
 
+import android.app.backup.BackupManager
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
@@ -55,5 +56,10 @@ class SettingsPresenter
         super.onStop()
         Timber.v("SettingsPresenter is stopping.")
         subscriptions.unsubscribe()
+
+        // Notify the Android Backup API that preferences should be backed up.
+        Timber.v("Notifying Android Backup API that data has changed.")
+        val backupManager = BackupManager(view.context)
+        backupManager.dataChanged()
     }
 }
