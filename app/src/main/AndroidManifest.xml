@@ -4,16 +4,21 @@
 
     <application
         android:allowBackup="true"
+        android:backupAgent=".backup.Twenty2020BackupAgent"
+        android:fullBackupContent="@xml/backup_scheme"
+        android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:name=".Twenty2020Application"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!-- Services -->
         <service
             android:name=".notifications.CycleService"
             android:enabled="true"
             android:exported="false">
         </service>
+        <!-- Activities -->
         <activity
             android:name=".timer.TimerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -35,6 +40,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.itsronald.twenty2020.timer.TimerActivity" />
         </activity>
+        <!-- meta-data -->
+        <meta-data
+            android:name="com.google.android.backup.api_key"
+            android:value="@string/android_backup_api_key" />
     </application>
 
 </manifest>

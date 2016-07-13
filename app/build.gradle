@@ -35,11 +35,19 @@ android {
             applicationIdSuffix ".debug"
             versionNameSuffix "-DEBUG"
 
+            // Get API Keys from Gradle properties. These are overridden in CI by environmental
+            // variables.
+            resValue 'string', 'android_backup_api_key', ANDROID_BACKUP_API_KEY_DEBUG
+
             minifyEnabled false // Currently breaks build when enabled (Kotlin 1.0.2, Dagger 2.2)
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
+            // Get API Keys from Gradle properties. These are overridden in CI by environmental
+            // variables.
+            resValue 'string', 'android_backup_api_key', ANDROID_BACKUP_API_KEY_RELEASE
+
             minifyEnabled true
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

@@ -1,1 +1,3 @@
 /build
+# Contains API keys should not be in source control.
+gradle.properties
