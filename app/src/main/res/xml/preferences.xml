@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shouldDisableView="true" >
 
     <!-- General -->
     <PreferenceCategory android:title="@string/pref_header_general">
@@ -34,7 +36,6 @@
             android:title="@string/pref_title_display_location_based_night_mode"
             android:key="@string/pref_key_display_location_based_night_mode"
             android:defaultValue="false"
-            android:dependency="@string/pref_key_display_night_mode"
             android:summaryOn="@string/pref_summary_display_location_based_night_mode_on"
             android:summaryOff="@string/pref_summary_display_location_based_night_mode_off"/>
 

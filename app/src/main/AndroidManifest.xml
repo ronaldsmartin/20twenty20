@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.itsronald.twenty2020">
 
+    <!-- Permissions -->
+    <!-- Optionally used by AppCompat for automatic Night Mode. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Application -->
     <application
         android:allowBackup="true"
         android:backupAgent=".backup.Twenty2020BackupAgent"

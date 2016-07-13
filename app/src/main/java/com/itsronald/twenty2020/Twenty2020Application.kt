@@ -9,6 +9,7 @@ import com.itsronald.twenty2020.model.CycleModule
 import com.itsronald.twenty2020.model.DaggerCycleComponent
 import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
+import com.karumi.dexter.Dexter
 import com.squareup.leakcanary.LeakCanary
 
 import timber.log.Timber
@@ -28,6 +29,7 @@ class Twenty2020Application : Application() {
             Timber.i("Timber logger planted.")
         }
         LeakCanary.install(this)
+        Dexter.initialize(this)
         useDefaultNightMode()
     }
 
