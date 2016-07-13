@@ -2,10 +2,10 @@ package com.itsronald.twenty2020.settings
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.app.backup.BackupManager
 import android.os.Build
+import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
@@ -41,7 +41,6 @@ class SettingsPresenter
     private fun watchNightModePreference(): Observable<Int> = preferences
             .getString(view.context.getString(R.string.pref_key_display_night_mode))
             .asObservable()
-            .skip(1) // Skip the initial lookup (preference has not been changed).
             .map { it.toInt() }
             .filter {
                 AppCompatDelegate.getDefaultNightMode() != it
@@ -90,6 +89,9 @@ class SettingsPresenter
         Timber.v("SettingsPresenter created.")
 
         startSubscriptions()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            refreshNightModeLocationPreference(AppCompatDelegate.getDefaultNightMode())
+        }
     }
 
     override fun onStop() {
@@ -106,18 +108,15 @@ class SettingsPresenter
     //endregion
 
     private fun startSubscriptions() {
+        Timber.i("Starting subscriptions.")
         subscriptions = CompositeSubscription()
 
         subscriptions.add(watchNightModePreference().subscribe {
-            val nightModeName = when (it) {
-                AppCompatDelegate.MODE_NIGHT_AUTO -> "MODE_NIGHT_AUTO"
-                AppCompatDelegate.MODE_NIGHT_NO   -> "MODE_NIGHT_NO"
-                AppCompatDelegate.MODE_NIGHT_YES  -> "MODE_NIGHT_YES"
-                else                              -> "UNKNOWN"
+            setNewNightMode(it)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                refreshNightModeLocationPreference(it)
             }
-            Timber.v("Night mode changed to $nightModeName")
-            AppCompatDelegate.setDefaultNightMode(it)
-            view.refreshNightMode(it)
         })
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -126,6 +125,49 @@ class SettingsPresenter
                 if (enabled) ensureLocationPermission()
             })
         }
+    }
+
+    /**
+     * Set a new default night mode.
+     * If the supplied [nightMode] is already the default, this will have no effect.
+     *
+     * @param nightMode The new night mode value to set as the default.
+     */
+    private fun setNewNightMode(nightMode: Int) {
+        val nightModeName = when (nightMode) {
+            AppCompatDelegate.MODE_NIGHT_AUTO -> "MODE_NIGHT_AUTO"
+            AppCompatDelegate.MODE_NIGHT_NO -> "MODE_NIGHT_NO"
+            AppCompatDelegate.MODE_NIGHT_YES -> "MODE_NIGHT_YES"
+            else -> "UNKNOWN"
+        }
+
+        if (AppCompatDelegate.getDefaultNightMode() == nightMode) {
+            Timber.v("Ignoring setNewNightMode($nightModeName): NightMode is already $nightModeName.")
+            return
+        }
+
+        Timber.i("Night mode changed to $nightModeName")
+        AppCompatDelegate.setDefaultNightMode(nightMode)
+        view.refreshNightMode(nightMode)
+    }
+
+    /**
+     * Enable or disable the preference for display_location_based_night_mode based on the current
+     * night mode setting. The preference will be enabled iff the night mode is MODE_NIGHT_AUTO.
+     *
+     * This method should only be called if runtime permissions are enabled. Otherwise, the
+     * preference is not exposed to the user at all.
+     *
+     * @param nightMode The current night mode.
+     */
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun refreshNightModeLocationPreference(nightMode: Int) {
+        val enabled = nightMode == AppCompatDelegate.MODE_NIGHT_AUTO
+        Timber.v("Setting preference display_location_based_night_mode enabled to $enabled.")
+        view.setPreferenceEnabled(
+                prefKeyID = R.string.pref_key_display_location_based_night_mode,
+                enabled = enabled
+        )
     }
 
     /**

@@ -180,6 +180,12 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
         }
     }
 
+    override fun setPreferenceEnabled(@StringRes prefKeyID: Int, enabled: Boolean): Boolean =
+        settingsFragment?.findPreference(getString(prefKeyID))?.let {
+            it.isEnabled = enabled
+            true
+        } ?: false
+
     override fun removePreference(@StringRes prefKeyID: Int): Boolean =
         settingsFragment?.findPreference(getString(prefKeyID))?.let {
             settingsFragment?.preferenceScreen?.removePreference(it)

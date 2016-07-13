@@ -32,6 +32,17 @@ interface SettingsContract {
          */
         fun setPreferenceChecked(@StringRes prefKeyID: Int, checked: Boolean): Boolean
 
+
+        /**
+         * Find and disable user interaction with the Preference item associated with a given key.
+         *
+         * @param prefKeyID The resource ID of the String key of the Preference to modify.
+         * @param enabled Whether to enable or disable the Preference associated with [prefKeyID].
+         *
+         * @return Whether or not the preference was found and modified.
+         */
+        fun setPreferenceEnabled(@StringRes prefKeyID: Int, enabled: Boolean): Boolean
+
         /**
          * Remove a preference item with key [prefKeyID] from the view.
          *
