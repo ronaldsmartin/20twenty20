@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Backup scheme for the Android Auto-Backup API. -->
+    <!-- See: https://developer.android.com/training/backup/autosyncapi.html -->
+
+    <!-- For the debug build config, the SharedPrefs path is modified to incorporate its -->
+    <!-- applicationIdSuffix. -->
+    <include domain="sharedpref" path="com.itsronald.twenty2020.debug_preferences.xml" />
+</full-backup-content>

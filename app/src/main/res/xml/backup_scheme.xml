@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Backup scheme for the Android Auto-Backup API. -->
+    <!-- See: https://developer.android.com/training/backup/autosyncapi.html -->
+    <include domain="sharedpref" path="com.itsronald.twenty2020_preferences.xml" />
+</full-backup-content>
