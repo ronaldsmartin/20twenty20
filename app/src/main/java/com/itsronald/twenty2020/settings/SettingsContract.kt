@@ -31,6 +31,13 @@ interface SettingsContract {
          * [checked]; false otherwise.
          */
         fun setPreferenceChecked(@StringRes prefKeyID: Int, checked: Boolean): Boolean
+
+        /**
+         * Remove a preference item with key [prefKeyID] from the view.
+         *
+         * @param prefKeyID The resource ID of the String key of the Preference to hide.
+         */
+        fun removePreference(@StringRes prefKeyID: Int)
     }
 
     interface Presenter : com.itsronald.twenty2020.base.Presenter<SettingsView> {

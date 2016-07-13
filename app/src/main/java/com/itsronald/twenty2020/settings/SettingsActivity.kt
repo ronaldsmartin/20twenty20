@@ -178,6 +178,14 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
         }
     }
 
+    override fun removePreference(@StringRes prefKeyID: Int) {
+        val settingsFragment = fragmentManager
+                .findFragmentByTag(TAG_SETTINGS_FRAGMENT) as? SettingsFragment
+        settingsFragment?.findPreference(getString(prefKeyID))?.let {
+            settingsFragment.preferenceScreen?.removePreference(it)
+        }
+    }
+
     //endregion
 
     /**

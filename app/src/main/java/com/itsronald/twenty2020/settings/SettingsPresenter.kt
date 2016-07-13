@@ -1,9 +1,11 @@
 package com.itsronald.twenty2020.settings
 
 import android.Manifest
+import android.annotation.TargetApi
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.app.backup.BackupManager
+import android.os.Build
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
@@ -59,6 +61,7 @@ class SettingsPresenter
      * @return A new Observable that reacts to changes to the display_location_based_night_mode
      * setting.
      */
+    @TargetApi(Build.VERSION_CODES.M)
     private fun watchNightModeLocationPreference(): Observable<Boolean> = preferences
             .getBoolean(view.context.getString(R.string.pref_key_display_location_based_night_mode))
             .asObservable()
@@ -72,7 +75,14 @@ class SettingsPresenter
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
-        Dexter.continuePendingRequestIfPossible(buildDexterPermissionDeniedListener())
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            // No need to opt-into locations runtime permission; it is granted by default.
+            view.removePreference(R.string.pref_key_display_location_based_night_mode)
+        } else {
+            // Runtime permissions are in effect. Continue any ongoing requests.
+            Dexter.continuePendingRequestIfPossible(buildDexterPermissionDeniedListener())
+        }
     }
 
     override fun onStart() {
@@ -110,9 +120,12 @@ class SettingsPresenter
             view.refreshNightMode(it)
         })
 
-        subscriptions.add(watchNightModeLocationPreference().subscribe { enabled ->
-            if (enabled) ensureLocationPermission()
-        })
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            // Below API 23, this option is hidden from the user.
+            subscriptions.add(watchNightModeLocationPreference().subscribe { enabled ->
+                if (enabled) ensureLocationPermission()
+            })
+        }
     }
 
     /**
@@ -121,6 +134,7 @@ class SettingsPresenter
      *
      * If the request is denied, display a Snackbar via Dexter.
      */
+    @TargetApi(Build.VERSION_CODES.M)
     private fun ensureLocationPermission() {
         if (Dexter.isRequestOngoing()) {
             Timber.v("Permissions request is already occurring. Skipping duplicate request.")
@@ -136,6 +150,7 @@ class SettingsPresenter
      * Create a PermissionListener to be used by Dexter for notifying the user when permissions
      * are denied.
      */
+    @TargetApi(Build.VERSION_CODES.M)
     private fun buildDexterPermissionDeniedListener(): PermissionListener =
             SnackbarOnDeniedPermissionListener.Builder
                     .with(view.contentView, R.string.location_permission_rationale)
