@@ -162,13 +162,15 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
     @Inject
     override lateinit var presenter: SettingsContract.Presenter
 
+    /** The SettingsFragment managing the PreferenceScreen. */
+    private val settingsFragment: SettingsFragment?
+        get() = fragmentManager.findFragmentByTag(TAG_SETTINGS_FRAGMENT) as? SettingsFragment
+
     override fun refreshNightMode(nightMode: Int) {
         if (delegate.applyDayNight()) recreate()
     }
 
     override fun setPreferenceChecked(@StringRes prefKeyID: Int, checked: Boolean): Boolean {
-        val settingsFragment = fragmentManager
-                .findFragmentByTag(TAG_SETTINGS_FRAGMENT) as? SettingsFragment
         val preference = settingsFragment?.findPreference(getString(prefKeyID)) as? TwoStatePreference
         if (preference == null) {
             return false
@@ -178,13 +180,10 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
         }
     }
 
-    override fun removePreference(@StringRes prefKeyID: Int) {
-        val settingsFragment = fragmentManager
-                .findFragmentByTag(TAG_SETTINGS_FRAGMENT) as? SettingsFragment
+    override fun removePreference(@StringRes prefKeyID: Int): Boolean =
         settingsFragment?.findPreference(getString(prefKeyID))?.let {
-            settingsFragment.preferenceScreen?.removePreference(it)
-        }
-    }
+            settingsFragment?.preferenceScreen?.removePreference(it)
+        } ?: false
 
     //endregion
 
