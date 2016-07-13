@@ -123,7 +123,7 @@ class SettingsPresenter
 
         Timber.v("Requesting permission ${Manifest.permission.ACCESS_COARSE_LOCATION}.")
         Dexter.checkPermission(buildDexterPermissionDeniedListener(),
-                Manifest.permission.ACCESS_COARSE_LOCATION)
+                Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     /**
