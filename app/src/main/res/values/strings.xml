@@ -9,13 +9,15 @@
     <string name="timer_restart_current_cycle">Restart current cycle</string>
     <string name="timer_skip_to_next_cycle">Skip to next cycle</string>
 
-    <!--Menu-->
+    <!-- activity_timer menu -->
     <string name="settings">Settings</string>
     <string name="help_feedback">Help &amp; Feedback</string>
     <string name="title_activity_settings">Settings</string>
 
     <string name="help_feedback_url">https://github.com/ronaldsmartin/20twenty20/issues</string>
 
+    <!-- App Widget -->
+    <string name="widget_label">Quick Controls</string>
 
     <!--Notifications -->
     <string name="notification_title_work_cycle_complete">Time to take a break!</string>

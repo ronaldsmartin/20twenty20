@@ -16,5 +16,10 @@
     <dimen name="timer_ring_inner_thickness">50dp</dimen>
     <item name="timer_ring_inner_radius_ratio" format="float" type="dimen">5.0</item>
 
+    <!-- appwidget -->
+    <dimen name="widget_default_width">40dp</dimen>
+    <dimen name="widget_default_height">40dp</dimen>
+    <dimen name="widget_min_resize_width">20dp</dimen>
+    <dimen name="widget_min_resize_height">20dp</dimen>
 
 </resources>

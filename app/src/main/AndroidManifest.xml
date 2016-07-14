@@ -45,6 +45,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.itsronald.twenty2020.timer.TimerActivity" />
         </activity>
+        <!-- Receivers -->
+        <receiver
+            android:name=".widget.Twenty2020WidgetProvider"
+            android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/appwidget_info"/>
+        </receiver>
         <!-- meta-data -->
         <meta-data
             android:name="com.google.android.backup.api_key"
