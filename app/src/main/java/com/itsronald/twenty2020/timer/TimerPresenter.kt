@@ -17,6 +17,8 @@ import com.itsronald.twenty2020.notifications.CycleService
 import com.itsronald.twenty2020.settings.SettingsActivity
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
+import rx.lang.kotlin.onError
+import rx.lang.kotlin.plusAssign
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
@@ -40,19 +42,18 @@ class TimerPresenter
     /**
      * Updates the view's time text on each second tick.
      */
-    private val timeStringUpdater = cycle.timer
+    private fun cycleTimeText(): Observable<String> = cycle.timer
             .map { it.remainingTimeText }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { Timber.e(it, "Unable to update time string.") }
-            .doOnNext { view.showTimeRemaining(it) }
+            .onError { Timber.e(it, "Unable to update time string.") }
 
     /**
      * For each timer tick (one second apart), emits a series of new events mapping to an integer
      * percentage of progress. This increases the update rate of the progress indicator to smooth
      * out its animation.
      */
-    private val progressBarUpdater = cycle.timer
+    private fun cycleProgress(): Observable<Int> = cycle.timer
             .concatMap { cycleState ->
                 val isWorkPhase = cycleState.phase == Cycle.Phase.WORK
                 val progress = if (isWorkPhase)
@@ -71,24 +72,21 @@ class TimerPresenter
             }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { Timber.e(it, "Unable to update major progress bar.") }
-            .doOnNext { view.showMajorProgress(it, 100) }
+            .onError { Timber.e(it, "Unable to update major progress bar.") }
 
-    private val keepScreenOnObserver = preferences
+    private fun keepScreenOnPreference(): Observable<Boolean> = preferences
             .getBoolean(view.context.getString(R.string.pref_key_display_keep_screen_on))
             .asObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
-            .doOnNext { view.keepScreenOn = it }
+            .onError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
 
-    private val allowFullScreenObserver = preferences
+    private fun allowFullScreenPreference(): Observable<Boolean> = preferences
             .getBoolean(view.context.getString(R.string.pref_key_display_allow_full_screen))
             .asObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
-            .doOnNext { view.fullScreenAllowed = it }
+            .onError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
 
     //endregion
 
@@ -103,16 +101,21 @@ class TimerPresenter
 
         context.startService(Intent(context, CycleService::class.java))
 
-        subscriptions = CompositeSubscription()
-        subscriptions.add(timeStringUpdater.subscribe())
-        subscriptions.add(progressBarUpdater.subscribe())
-        subscriptions.add(keepScreenOnObserver.subscribe())
-        subscriptions.add(allowFullScreenObserver.subscribe())
+        startSubscriptions()
     }
 
     override fun onStop() {
         super.onStop()
         subscriptions.unsubscribe()
+    }
+
+    private fun startSubscriptions() {
+        subscriptions = CompositeSubscription()
+
+        subscriptions += cycleTimeText().subscribe { view.showTimeRemaining(it) }
+        subscriptions += cycleProgress().subscribe { view.showMajorProgress(it, 100) }
+        subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
+        subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
     }
 
     override fun toggleRunning() {
