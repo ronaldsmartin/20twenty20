@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.support.annotation.StringRes
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
@@ -60,16 +61,30 @@ class NotificationHelper(private val context: Context) {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setDefaults(
                         defaultFlagsForSettings(mapOf(
-                                R.string.pref_key_notifications_sound_enabled to NotificationCompat.DEFAULT_SOUND,
                                 R.string.pref_key_notifications_vibrate to NotificationCompat.DEFAULT_VIBRATE,
                                 R.string.pref_key_notifications_led_enabled to NotificationCompat.DEFAULT_LIGHTS
                         ))
                 )
+                .setSound(preferredNotificationSound)
                 .build()
 
     /**
+     * A URI for the notification sound chosen by the user in Settings.
+     * If the user disabled sounds in the settings, this will be null.
+     */
+    private val preferredNotificationSound: Uri?
+        get() {
+            val soundPreferenceKey = context.getString(R.string.pref_key_notifications_sound_enabled)
+            val soundEnabled = preferences.getBoolean(soundPreferenceKey).get() ?: false
+            return if (soundEnabled) preferences
+                    .getString(context.getString(R.string.pref_key_notifications_ringtone))
+                    .get()?.let { Uri.parse(it) }
+                   else null
+        }
+
+    /**
      * Check a SharedPreferences [Boolean] value to determine if a Notification flag should be set.
-     *
+
      * @param prefKeyID Resource ID for the String key under which the preference is stored
      * @param prefFlag The flag to use if the preference corresponding to [prefKeyID] is set to true.
      *
