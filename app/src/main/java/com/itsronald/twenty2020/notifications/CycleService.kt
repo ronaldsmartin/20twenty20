@@ -9,6 +9,7 @@ import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
+import rx.lang.kotlin.filterNotNull
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
@@ -112,8 +113,7 @@ class CycleService : Service() {
                 .withLatestFrom(watchForegroundNotificationPref()) { cycle, foregroundNoteEnabled ->
                     if (foregroundNoteEnabled) cycle else null
                 }
-                .filter { it != null }
-                .map { it!! }
+                .filterNotNull()
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError { Timber.e(it, "Unable to notify user of cycle progress") }
