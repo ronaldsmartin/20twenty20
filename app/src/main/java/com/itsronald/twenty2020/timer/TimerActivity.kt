@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -230,7 +231,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {
-        val drawable = getDrawable(drawableId)
+        val drawable = ContextCompat.getDrawable(this, drawableId)
         timer_fab.setImageDrawable(drawable)
     }
 
