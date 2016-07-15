@@ -103,7 +103,7 @@ class Cycle
     private var countdown: Subscription? = null
 
     /** Observable state of the cycle. */
-    val timer = timerSubject.asObservable().onBackpressureLatest()
+    val timer: Observable<Cycle> = timerSubject.asObservable().onBackpressureLatest()
 
     //region Convenience properties
 
