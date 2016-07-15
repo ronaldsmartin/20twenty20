@@ -93,7 +93,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // while interacting with the UI.
         timer_fab.setOnTouchListener(mDelayHideTouchListener)
 
+        btn_restart_phase.setOnClickListener { presenter.restartPhase() }
         timer_fab.setOnClickListener { fab -> presenter.toggleRunning() }
+        btn_next_phase.setOnClickListener { presenter.startNextPhase() }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -236,14 +238,6 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     //endregion
-
-    fun restartPhase(view: View) {
-        presenter.restartPhase()
-    }
-
-    fun startNextPhase(view: View) {
-        presenter.startNextPhase()
-    }
 
     companion object {
         /**
