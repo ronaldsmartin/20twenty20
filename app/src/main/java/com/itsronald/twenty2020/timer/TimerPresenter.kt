@@ -49,6 +49,17 @@ class TimerPresenter
             .onError { Timber.e(it, "Unable to update time string.") }
 
     /**
+     * Watch changes to the cycle's running state.
+     */
+    private fun isCycleRunning(): Observable<Boolean> = cycle.timer
+            .map { it.running }
+            .distinctUntilChanged()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onError { Timber.e(it, "Unable to update time string.") }
+
+
+    /**
      * For each timer tick (one second apart), emits a series of new events mapping to an integer
      * percentage of progress. This increases the update rate of the progress indicator to smooth
      * out its animation.
@@ -116,15 +127,10 @@ class TimerPresenter
         subscriptions += cycleProgress().subscribe { view.showMajorProgress(it, 100) }
         subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
         subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
-    }
-
-    override fun toggleRunning() {
-        if (running) {
-            cycle.pause()
-            view.setFABDrawable(android.R.drawable.ic_media_play)
-        } else {
-            cycle.start()
-            view.setFABDrawable(android.R.drawable.ic_media_pause)
+        subscriptions += isCycleRunning().subscribe { running ->
+            Timber.v("Switching play/pause icon.")
+            view.setFABDrawable(if (running) android.R.drawable.ic_media_pause
+                                else android.R.drawable.ic_media_play)
         }
     }
 
