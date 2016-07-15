@@ -17,6 +17,8 @@ import com.itsronald.twenty2020.notifications.CycleService
 import com.itsronald.twenty2020.settings.SettingsActivity
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
+import rx.lang.kotlin.onError
+import rx.lang.kotlin.plusAssign
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
@@ -38,21 +40,31 @@ class TimerPresenter
     private lateinit var subscriptions: CompositeSubscription
 
     /**
-     * Updates the view's time text on each second tick.
+     * Observe the most recent formatted time for the cycle.
      */
-    private val timeStringUpdater = cycle.timer
+    private fun cycleTimeText(): Observable<String> = cycle.timer
             .map { it.remainingTimeText }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { Timber.e(it, "Unable to update time string.") }
-            .doOnNext { view.showTimeRemaining(it) }
+            .onError { Timber.e(it, "Unable to update time string.") }
+
+    /**
+     * Watch changes to the cycle's running state.
+     */
+    private fun isCycleRunning(): Observable<Boolean> = cycle.timer
+            .map { it.running }
+            .distinctUntilChanged()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onError { Timber.e(it, "Unable to update time string.") }
+
 
     /**
      * For each timer tick (one second apart), emits a series of new events mapping to an integer
      * percentage of progress. This increases the update rate of the progress indicator to smooth
      * out its animation.
      */
-    private val progressBarUpdater = cycle.timer
+    private fun cycleProgress(): Observable<Int> = cycle.timer
             .concatMap { cycleState ->
                 val isWorkPhase = cycleState.phase == Cycle.Phase.WORK
                 val progress = if (isWorkPhase)
@@ -71,24 +83,27 @@ class TimerPresenter
             }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { Timber.e(it, "Unable to update major progress bar.") }
-            .doOnNext { view.showMajorProgress(it, 100) }
+            .onError { Timber.e(it, "Unable to update major progress bar.") }
 
-    private val keepScreenOnObserver = preferences
+    /**
+     * Watch changes to the user's display_keep_screen_on preference.
+     */
+    private fun keepScreenOnPreference(): Observable<Boolean> = preferences
             .getBoolean(view.context.getString(R.string.pref_key_display_keep_screen_on))
             .asObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
-            .doOnNext { view.keepScreenOn = it }
+            .onError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
 
-    private val allowFullScreenObserver = preferences
+    /**
+     * Watch changes to the user's display_allow_full_screen preference.
+     */
+    private fun allowFullScreenPreference(): Observable<Boolean> = preferences
             .getBoolean(view.context.getString(R.string.pref_key_display_allow_full_screen))
             .asObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
-            .doOnNext { view.fullScreenAllowed = it }
+            .onError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
 
     //endregion
 
@@ -103,11 +118,7 @@ class TimerPresenter
 
         context.startService(Intent(context, CycleService::class.java))
 
-        subscriptions = CompositeSubscription()
-        subscriptions.add(timeStringUpdater.subscribe())
-        subscriptions.add(progressBarUpdater.subscribe())
-        subscriptions.add(keepScreenOnObserver.subscribe())
-        subscriptions.add(allowFullScreenObserver.subscribe())
+        startSubscriptions()
     }
 
     override fun onStop() {
@@ -115,13 +126,17 @@ class TimerPresenter
         subscriptions.unsubscribe()
     }
 
-    override fun toggleRunning() {
-        if (running) {
-            cycle.pause()
-            view.setFABDrawable(android.R.drawable.ic_media_play)
-        } else {
-            cycle.start()
-            view.setFABDrawable(android.R.drawable.ic_media_pause)
+    private fun startSubscriptions() {
+        subscriptions = CompositeSubscription()
+
+        subscriptions += cycleTimeText().subscribe { view.showTimeRemaining(it) }
+        subscriptions += cycleProgress().subscribe { view.showMajorProgress(it, 100) }
+        subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
+        subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
+        subscriptions += isCycleRunning().subscribe { running ->
+            Timber.v("Switching play/pause icon.")
+            view.setFABDrawable(if (running) android.R.drawable.ic_media_pause
+                                else android.R.drawable.ic_media_play)
         }
     }
 
