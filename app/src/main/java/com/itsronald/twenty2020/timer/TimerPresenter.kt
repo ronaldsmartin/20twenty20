@@ -40,7 +40,7 @@ class TimerPresenter
     private lateinit var subscriptions: CompositeSubscription
 
     /**
-     * Updates the view's time text on each second tick.
+     * Observe the most recent formatted time for the cycle.
      */
     private fun cycleTimeText(): Observable<String> = cycle.timer
             .map { it.remainingTimeText }
@@ -85,6 +85,9 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update major progress bar.") }
 
+    /**
+     * Watch changes to the user's display_keep_screen_on preference.
+     */
     private fun keepScreenOnPreference(): Observable<Boolean> = preferences
             .getBoolean(view.context.getString(R.string.pref_key_display_keep_screen_on))
             .asObservable()
@@ -92,6 +95,9 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
 
+    /**
+     * Watch changes to the user's display_allow_full_screen preference.
+     */
     private fun allowFullScreenPreference(): Observable<Boolean> = preferences
             .getBoolean(view.context.getString(R.string.pref_key_display_allow_full_screen))
             .asObservable()
