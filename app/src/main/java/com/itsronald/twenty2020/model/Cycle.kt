@@ -161,10 +161,7 @@ class Cycle
                 .serialize()
                 .subscribeOn(Schedulers.computation())
                 .doOnError { timerSubject.onError(it) }
-                .doOnCompleted {
-                    running = !running
-                    startNextPhase()
-                }
+                .doOnCompleted { startNextPhase() }
                 .subscribe {
                     elapsedTime += 1
                     if (timerSubject.hasObservers()) {
@@ -200,8 +197,6 @@ class Cycle
      * Restart the current phase.
      */
     override fun restartPhase() {
-        // Starting the elapsed time at -1 instead of 0 give us an extra second in which to display
-        // the full unelapsed time.
         elapsedTime = 0
         duration = phase.duration(context, preferences)
         if (timerSubject.hasObservers()) {
@@ -214,10 +209,14 @@ class Cycle
      */
     override fun startNextPhase(delay: Int) {
         countdown?.unsubscribe()
-        running = false
-        phase   = phase.nextPhase
+        phase = phase.nextPhase
         restartPhase()
-        start(delay)
+
+        // Only start the next phase if the timer was already running.
+        if (running) {
+            running = false
+            start(delay = delay)
+        }
     }
 
     //endregion
