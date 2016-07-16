@@ -6,9 +6,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
+import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.AttributeSet
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -86,6 +88,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
         mVisible = true
 
+        setTouchListeners()
+    }
+
+    private fun setTouchListeners() {
         // Set up the user interaction to manually show or hide the system UI.
         constraint_layout.setOnClickListener { toggle() }
 
@@ -239,8 +245,33 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     override fun showMessage(message: String) {
+        Timber.v("Showing message in view: \"$message\"")
         Snackbar.make(coordinator_layout, message, Snackbar.LENGTH_SHORT)
                 .show()
+    }
+
+    //endregion
+
+    //region CoordinatorLayout.Behavior
+
+    /**
+     * A custom CoordinatorLayout Behavior that pushes the layout child up when a Snackbar is
+     * shown in the layout.
+     */
+    class SnackbarPushesUpBehavior(context: Context, attributeSet: AttributeSet)
+            : CoordinatorLayout.Behavior<View>(context, attributeSet) {
+
+        override fun layoutDependsOn(parent: CoordinatorLayout?, child: View?,
+                                     dependency: View?): Boolean =
+                dependency is Snackbar.SnackbarLayout
+
+        override fun onDependentViewChanged(parent: CoordinatorLayout?, child: View?, dependency: View?): Boolean {
+            // Based off of http://stackoverflow.com/a/32805667/4499783
+            if (dependency == null) return false
+
+            child?.translationY = Math.min(0f, dependency.translationY - dependency.height)
+            return true
+        }
     }
 
     //endregion

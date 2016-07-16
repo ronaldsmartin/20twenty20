@@ -11,7 +11,8 @@
         android:id="@+id/constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true">
+        android:animateLayoutChanges="true"
+        app:layout_behavior="com.itsronald.twenty2020.timer.TimerActivity$SnackbarPushesUpBehavior">
 
         <ProgressBar
             android:id="@+id/progress_ring_background"
@@ -82,7 +83,6 @@
                 android:id="@+id/btn_restart_phase"
                 android:contentDescription="@string/timer_restart_current_cycle"
                 app:srcCompat="@drawable/ic_restore_black_24dp"
-                app:layout_anchor="@id/controls_layout"
                 style="@style/timer_button_secondary"
                 tools:layout_editor_absoluteX="78dp"
                 tools:layout_editor_absoluteY="30dp" />
@@ -94,7 +94,6 @@
                 android:layout_margin="@dimen/timer_layout_margin_fab"
                 android:layout_gravity="bottom|center_horizontal"
                 android:src="@android:drawable/ic_media_play"
-                app:layout_anchor="@id/controls_layout"
                 tools:layout_editor_absoluteX="164dp"
                 tools:layout_editor_absoluteY="30dp" />
 
@@ -102,7 +101,6 @@
                 android:id="@+id/btn_next_phase"
                 android:contentDescription="@string/timer_skip_to_next_cycle"
                 app:srcCompat="@drawable/ic_alarm_on_black_24dp"
-                app:layout_anchor="@id/controls_layout"
                 style="@style/timer_button_secondary"
                 tools:layout_editor_absoluteX="250dp"
                 tools:layout_editor_absoluteY="30dp" />
