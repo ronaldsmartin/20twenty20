@@ -177,5 +177,12 @@ class TimerPresenter
         view.showMessage(message = message)
     }
 
+    override fun startNextPhase(delay: Int) {
+        cycle.startNextPhase(delay = delay)
+        val message = context.getString(R.string.timer_message_skip_to_next_phase,
+                cycle.phase.localizedName(context).toLowerCase())
+        view.showMessage(message = message)
+    }
+
     //endregion
 }
