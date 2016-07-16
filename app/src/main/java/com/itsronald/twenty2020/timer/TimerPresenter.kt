@@ -167,4 +167,15 @@ class TimerPresenter
     }
 
     //endregion
+
+    //region TimerControl
+
+    override fun restartPhase() {
+        cycle.restartPhase()
+        val message = context.getString(R.string.timer_message_restarting_phase,
+                cycle.phase.localizedName(context).toLowerCase())
+        view.showMessage(message = message)
+    }
+
+    //endregion
 }

@@ -48,6 +48,12 @@ interface TimerContract {
          * @param drawableId The resource ID of the icon to display in the FAB.
          */
         fun setFABDrawable(@DrawableRes drawableId: Int)
+
+        /**
+         * Display a message in this view.
+         * @param message The message to display to the user.
+         */
+        fun showMessage(message: String)
     }
 
     interface UserActionsListener: Presenter<TimerView>, TimerControl {
