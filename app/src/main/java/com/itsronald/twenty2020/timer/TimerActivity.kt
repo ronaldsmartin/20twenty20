@@ -9,6 +9,7 @@ import android.support.annotation.DrawableRes
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
 import android.view.Menu
@@ -246,6 +247,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun showMessage(message: String) {
         Timber.v("Showing message in view: \"$message\"")
+        ViewCompat.setFitsSystemWindows(coordinator_layout, true)
         Snackbar.make(coordinator_layout, message, Snackbar.LENGTH_SHORT)
                 .show()
     }
