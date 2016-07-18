@@ -10,5 +10,5 @@ import android.support.annotation.StringRes
 class ContextResourceRepository(private val context: Context) : ResourceRepository {
 
     override fun getString(@StringRes resId: Int, vararg formatArgs: Any): String =
-            context.getString(resId, formatArgs)
+            context.getString(resId, *formatArgs)
 }
