@@ -11,6 +11,7 @@ import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
 import com.itsronald.twenty2020.notifications.CycleService
@@ -29,6 +30,7 @@ import javax.inject.Inject
 class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView,
                         val cycle: Cycle,
+                        val resources: ResourceRepository,
                         val preferences: RxSharedPreferences)
     : TimerContract.UserActionsListener, TimerControl by cycle {
 
@@ -89,7 +91,7 @@ class TimerPresenter
      * Watch changes to the user's display_keep_screen_on preference.
      */
     private fun keepScreenOnPreference(): Observable<Boolean> = preferences
-            .getBoolean(view.context.getString(R.string.pref_key_display_keep_screen_on))
+            .getBoolean(resources.getString(R.string.pref_key_display_keep_screen_on))
             .asObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -99,7 +101,7 @@ class TimerPresenter
      * Watch changes to the user's display_allow_full_screen preference.
      */
     private fun allowFullScreenPreference(): Observable<Boolean> = preferences
-            .getBoolean(view.context.getString(R.string.pref_key_display_allow_full_screen))
+            .getBoolean(resources.getString(R.string.pref_key_display_allow_full_screen))
             .asObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -162,7 +164,7 @@ class TimerPresenter
 
         // Open the custom tab.
         (context as? Activity)?.let {
-            customTabsIntent.launchUrl(it, Uri.parse(it.getString(R.string.help_feedback_url)))
+            customTabsIntent.launchUrl(it, Uri.parse(resources.getString(R.string.help_feedback_url)))
         }
     }
 
@@ -172,14 +174,14 @@ class TimerPresenter
 
     override fun restartPhase() {
         cycle.restartPhase()
-        val message = context.getString(R.string.timer_message_restarting_phase,
+        val message = resources.getString(R.string.timer_message_restarting_phase,
                 cycle.phase.localizedName(context).toLowerCase())
         view.showMessage(message = message)
     }
 
     override fun startNextPhase(delay: Int) {
         cycle.startNextPhase(delay = delay)
-        val message = context.getString(R.string.timer_message_skip_to_next_phase,
+        val message = resources.getString(R.string.timer_message_skip_to_next_phase,
                 cycle.phase.localizedName(context).toLowerCase())
         view.showMessage(message = message)
     }
