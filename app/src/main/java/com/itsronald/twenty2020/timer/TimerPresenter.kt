@@ -153,7 +153,7 @@ class TimerPresenter
 
         // Build the intent, customizing action bar color and animations.
         val customTabsIntent = CustomTabsIntent.Builder()
-            .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
+            .setToolbarColor(resources.getColor(R.color.colorPrimary))
             .build()
 
         // Add referrer.
