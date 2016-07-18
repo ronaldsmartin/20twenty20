@@ -2,7 +2,6 @@ package com.itsronald.twenty2020.settings
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.app.backup.BackupManager
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -16,6 +15,7 @@ import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.onError
+import rx.lang.kotlin.plusAssign
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
@@ -40,8 +40,8 @@ class SettingsPresenter
      *
      * @return A new Observable that reacts to changes to the display_night_mode setting.
      */
-    private fun watchNightModePreference(): Observable<Int> = preferences
-            .getString(view.context.getString(R.string.pref_key_display_night_mode))
+    private fun nightModePreference(): Observable<Int> = preferences
+            .getString(resources.getString(R.string.pref_key_display_night_mode))
             .asObservable()
             .map { it.toInt() }
             .filter {
@@ -63,8 +63,8 @@ class SettingsPresenter
      * setting.
      */
     @TargetApi(Build.VERSION_CODES.M)
-    private fun watchNightModeLocationPreference(): Observable<Boolean> = preferences
-            .getBoolean(view.context.getString(R.string.pref_key_display_location_based_night_mode))
+    private fun nightModeLocationPreference(): Observable<Boolean> = preferences
+            .getBoolean(resources.getString(R.string.pref_key_display_location_based_night_mode))
             .asObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -103,8 +103,7 @@ class SettingsPresenter
 
         // Notify the Android Backup API that preferences should be backed up.
         Timber.v("Notifying Android Backup API that data has changed.")
-        val backupManager = BackupManager(view.context)
-        backupManager.dataChanged()
+        resources.notifyBackupDataChanged()
     }
 
     //endregion
@@ -113,19 +112,19 @@ class SettingsPresenter
         Timber.i("Starting subscriptions.")
         subscriptions = CompositeSubscription()
 
-        subscriptions.add(watchNightModePreference().subscribe {
+        subscriptions += nightModePreference().subscribe {
             setNewNightMode(it)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 refreshNightModeLocationPreference(it)
             }
-        })
+        }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             // Below API 23, this option is hidden from the user.
-            subscriptions.add(watchNightModeLocationPreference().subscribe { enabled ->
+            subscriptions += nightModeLocationPreference().subscribe { enabled ->
                 if (enabled) ensureLocationPermission()
-            })
+            }
         }
     }
 

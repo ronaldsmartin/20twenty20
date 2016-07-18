@@ -31,4 +31,9 @@ interface ResourceRepository {
      *
      */
     fun getColor(@ColorRes resId: Int): Int
+
+    /**
+     * Notify the resource repository that resources are available to be backed up.
+     */
+    fun notifyBackupDataChanged()
 }

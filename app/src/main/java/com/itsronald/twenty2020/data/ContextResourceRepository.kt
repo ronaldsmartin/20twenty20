@@ -1,5 +1,6 @@
 package com.itsronald.twenty2020.data
 
+import android.app.backup.BackupManager
 import android.content.Context
 import android.support.annotation.ColorRes
 import android.support.annotation.StringRes
@@ -15,4 +16,6 @@ class ContextResourceRepository(private val context: Context) : ResourceReposito
             context.getString(resId, *formatArgs)
 
     override fun getColor(@ColorRes resId: Int): Int = ContextCompat.getColor(context, resId)
+
+    override fun notifyBackupDataChanged() = BackupManager(context).dataChanged()
 }
