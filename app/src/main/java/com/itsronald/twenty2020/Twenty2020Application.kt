@@ -4,6 +4,8 @@ import android.app.Application
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
+import com.itsronald.twenty2020.data.DaggerResourceComponent
+import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.model.CycleComponent
 import com.itsronald.twenty2020.model.CycleModule
 import com.itsronald.twenty2020.model.DaggerCycleComponent
@@ -20,7 +22,10 @@ class Twenty2020Application : Application() {
             .preferencesComponent(DaggerPreferencesComponent.builder()
                     .preferencesModule(PreferencesModule(this))
                     .build())
-            .cycleModule(CycleModule(this)).build()
+            .resourceComponent(DaggerResourceComponent.builder()
+                    .resourceModule(ResourceModule(this))
+                    .build())
+            .cycleModule(CycleModule()).build()
 
     override fun onCreate() {
         super.onCreate()
@@ -30,6 +35,7 @@ class Twenty2020Application : Application() {
         }
         LeakCanary.install(this)
         Dexter.initialize(this)
+        PreferenceManager.setDefaultValues(applicationContext, R.xml.preferences, false)
         useDefaultNightMode()
     }
 

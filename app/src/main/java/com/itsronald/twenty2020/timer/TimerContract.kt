@@ -1,5 +1,6 @@
 package com.itsronald.twenty2020.timer
 
+import android.content.Context
 import android.support.annotation.DrawableRes
 import com.itsronald.twenty2020.base.Presenter
 import com.itsronald.twenty2020.base.View
@@ -16,6 +17,8 @@ interface TimerContract {
     }
 
     interface TimerView: View<UserActionsListener> {
+
+        val context: Context
 
         /** Whether or not the screen with this view should stay awake. */
         var keepScreenOn: Boolean

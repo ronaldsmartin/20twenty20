@@ -12,6 +12,8 @@ import android.text.TextUtils
 import android.view.MenuItem
 import android.view.ViewGroup
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.data.DaggerResourceComponent
+import com.itsronald.twenty2020.data.ResourceModule
 import javax.inject.Inject
 
 /**
@@ -115,8 +117,12 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
         val preferencesComponent = DaggerPreferencesComponent.builder()
                 .preferencesModule(PreferencesModule(this))
                 .build()
+        val resourceComponent = DaggerResourceComponent.builder()
+                .resourceModule(ResourceModule(this))
+                .build()
         DaggerSettingsComponent.builder()
                 .preferencesComponent(preferencesComponent)
+                .resourceComponent(resourceComponent)
                 .settingsModule(SettingsModule(this))
                 .build()
                 .inject(this)
@@ -152,9 +158,6 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
     //endregion
 
     //region SettingsContract.SettingsView
-
-    override val context: Context
-        get() = this
 
     override val contentView: ViewGroup
         get() = findViewById(android.R.id.content) as ViewGroup

@@ -17,6 +17,8 @@ import android.view.MenuItem
 import android.view.View
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.Twenty2020Application
+import com.itsronald.twenty2020.data.DaggerResourceComponent
+import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
 import kotlinx.android.synthetic.main.activity_timer.*
@@ -80,8 +82,12 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         val settingsComponent = DaggerPreferencesComponent.builder()
                 .preferencesModule(PreferencesModule(this))
                 .build()
+        val resourceComponent = DaggerResourceComponent.builder()
+                .resourceModule(ResourceModule(this))
+                .build()
         DaggerTimerComponent.builder()
                 .cycleComponent(cycleComponent)
+                .resourceComponent(resourceComponent)
                 .preferencesComponent(settingsComponent)
                 .timerModule(TimerModule(this))
                 .build().inject(this)

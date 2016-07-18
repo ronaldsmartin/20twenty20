@@ -1,8 +1,8 @@
 package com.itsronald.twenty2020.model
 
-import android.content.Context
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.data.ResourceRepository
 import rx.Observable
 import rx.Subscription
 import rx.schedulers.Schedulers
@@ -15,7 +15,7 @@ import javax.inject.Inject
  * Encapsulates the state of the repeating work and break cycle.
  */
 class Cycle
-    @Inject constructor(val context: Context,
+    @Inject constructor(val resources: ResourceRepository,
                         val preferences: RxSharedPreferences)
     : TimerControl {
 
@@ -34,15 +34,18 @@ class Cycle
 
         /**
          * The total duration of this phase, in seconds.
-         * @param context The context used to retrieve the preferred duration value from
-         *                SharedPreferences.
+         *
+         * @param resources The repository used to retrieve the key for the preferred duration
+         * @param preferences The repository from which to retrieve the preferred duration value
+         *
+         * @return The total duration of this phase, in seconds.
          */
-        fun duration(context: Context, preferences: RxSharedPreferences): Int {
+        fun duration(resources: ResourceRepository, preferences: RxSharedPreferences): Int {
             val preferredDurationID = when(this) {
                 WORK  -> R.string.pref_key_general_work_phase_length
                 BREAK -> R.string.pref_key_general_break_phase_length
             }
-            val preferredDurationKey = context.getString(preferredDurationID)
+            val preferredDurationKey = resources.getString(preferredDurationID)
             return preferences.getString(preferredDurationKey).get()?.toInt() ?: defaultDuration
         }
 
@@ -63,10 +66,10 @@ class Cycle
         /**
          * Retrieve the user-visible name for this phase.
          *
-         * @param context The [Context] used to retrieve the localized name string.
+         * @param resources The [ResourceRepository] used to retrieve the localized name string.
          * @return The localized string name of this phase.
          */
-        fun localizedName(context: Context): String = context.getString(when(this) {
+        fun localizedName(resources: ResourceRepository): String = resources.getString(when(this) {
             WORK  -> R.string.phase_name_work
             BREAK -> R.string.phase_name_break
         })
@@ -75,6 +78,10 @@ class Cycle
     /** The current phase of the cycle. **/
     var phase = Phase.WORK
         private set
+
+    /** Convenience accessor for this.phase.localizedName */
+    val phaseName: String
+        get() = phase.localizedName(resources = resources)
 
     /** Whether or not the cycle timer is currently running. */
     override var running = false
@@ -85,7 +92,7 @@ class Cycle
         private set
 
     /** The total duration of the current phase, in seconds. **/
-    var duration: Int = phase.duration(context, preferences)
+    var duration: Int = phase.duration(resources = resources, preferences = preferences)
         private set
 
     /** The time remaining in the current phase, in seconds. **/
@@ -198,7 +205,7 @@ class Cycle
      */
     override fun restartPhase() {
         elapsedTime = 0
-        duration = phase.duration(context, preferences)
+        duration = phase.duration(resources = resources, preferences = preferences)
         if (timerSubject.hasObservers()) {
             timerSubject.onNext(this)
         }

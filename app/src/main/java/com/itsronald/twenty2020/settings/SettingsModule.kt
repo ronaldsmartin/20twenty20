@@ -2,6 +2,7 @@ package com.itsronald.twenty2020.settings
 
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.base.Activity
+import com.itsronald.twenty2020.data.ResourceRepository
 import dagger.Module
 import dagger.Provides
 
@@ -15,6 +16,7 @@ class SettingsModule(private val view: SettingsContract.SettingsView) {
 
     @Provides
     @Activity
-    fun providePresenter(preferences: RxSharedPreferences): SettingsContract.Presenter =
-            SettingsPresenter(view, preferences)
+    fun providePresenter(resources: ResourceRepository,
+                         preferences: RxSharedPreferences): SettingsContract.Presenter =
+            SettingsPresenter(view, resources, preferences)
 }
