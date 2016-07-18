@@ -9,6 +9,9 @@
     <string name="timer_restart_current_cycle">Restart current cycle</string>
     <string name="timer_skip_to_next_cycle">Skip to next cycle</string>
 
+    <string name="timer_message_restarting_phase">Restarted <xliff:g id="phase_name">%s</xliff:g> phase.</string>
+    <string name="timer_message_skip_to_next_phase">Skipped to <xliff:g id="phase_name">%s</xliff:g> phase.</string>
+
     <!--Menu-->
     <string name="settings">Settings</string>
     <string name="help_feedback">Help &amp; Feedback</string>
@@ -55,10 +58,6 @@
 
     <string name="notification_title_foreground_progress">20&#8211;20&#8211;20 cycle</string>
     <!--The argument for this string is the time until the next notification.-->
-    <string name="notification_message_foreground_progress">
-        <xliff:g id="phase_name" example="Work">%s</xliff:g> phase in progress.
-    </string>
-    <string name="notification_message_foreground_progress_paused">
-        <xliff:g id="phase_name" example="Break">%s</xliff:g> phase is paused.
-    </string>
+    <string name="notification_message_foreground_progress"><xliff:g id="phase_name" example="Work">%s</xliff:g> phase in progress.</string>
+    <string name="notification_message_foreground_progress_paused"><xliff:g id="phase_name" example="Break">%s</xliff:g> phase is paused.</string>
 </resources>
