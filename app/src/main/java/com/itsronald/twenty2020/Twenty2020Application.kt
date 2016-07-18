@@ -30,6 +30,7 @@ class Twenty2020Application : Application() {
         }
         LeakCanary.install(this)
         Dexter.initialize(this)
+        PreferenceManager.setDefaultValues(applicationContext, R.xml.preferences, false)
         useDefaultNightMode()
     }
 
