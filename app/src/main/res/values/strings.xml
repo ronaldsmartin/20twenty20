@@ -26,9 +26,7 @@
 
     <string name="notification_message_work_cycle_complete">A short exercise or stretch might brighten your day!</string>
     <!--The argument for this string is the time until the next notification.-->
-    <string name="notification_message_break_cycle_complete">
-        Next break <xliff:g id="time" example="at 10:31">%s</xliff:g>
-    </string>
+    <string name="notification_message_break_cycle_complete">Next break <xliff:g id="time" example="at 10:31">%s</xliff:g></string>
     <!-- A list of possible messages for display when the work phase is complete. -->
     <string-array name="notification_messages_work_cycle_complete">
         <item>Do as many push-ups as you can!</item>
