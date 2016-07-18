@@ -1,6 +1,5 @@
 package com.itsronald.twenty2020.model
 
-import android.content.Context
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
@@ -67,10 +66,10 @@ class Cycle
         /**
          * Retrieve the user-visible name for this phase.
          *
-         * @param context The [Context] used to retrieve the localized name string.
+         * @param resources The [ResourceRepository] used to retrieve the localized name string.
          * @return The localized string name of this phase.
          */
-        fun localizedName(context: Context): String = context.getString(when(this) {
+        fun localizedName(resources: ResourceRepository): String = resources.getString(when(this) {
             WORK  -> R.string.phase_name_work
             BREAK -> R.string.phase_name_break
         })
@@ -79,6 +78,10 @@ class Cycle
     /** The current phase of the cycle. **/
     var phase = Phase.WORK
         private set
+
+    /** Convenience accessor for this.phase.localizedName */
+    val phaseName: String
+        get() = phase.localizedName(resources = resources)
 
     /** Whether or not the cycle timer is currently running. */
     override var running = false

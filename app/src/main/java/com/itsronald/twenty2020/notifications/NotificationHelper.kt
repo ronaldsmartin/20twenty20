@@ -213,10 +213,10 @@ class NotificationHelper(private val context: Context) {
     private fun progressNotificationMessage(cycle: Cycle): String =
         if (cycle.running) context.getString(
                 R.string.notification_message_foreground_progress,
-                cycle.phase.localizedName(context)
+                cycle.phaseName
         ) else context.getString(
                 R.string.notification_message_foreground_progress_paused,
-                cycle.phase.localizedName(context)
+                cycle.phaseName
         )
 
     /**

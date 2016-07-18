@@ -173,14 +173,14 @@ class TimerPresenter
     override fun restartPhase() {
         cycle.restartPhase()
         val message = resources.getString(R.string.timer_message_restarting_phase,
-                cycle.phase.localizedName(context).toLowerCase())
+                cycle.phaseName.toLowerCase())
         view.showMessage(message = message)
     }
 
     override fun startNextPhase(delay: Int) {
         cycle.startNextPhase(delay = delay)
         val message = resources.getString(R.string.timer_message_skip_to_next_phase,
-                cycle.phase.localizedName(context).toLowerCase())
+                cycle.phaseName.toLowerCase())
         view.showMessage(message = message)
     }
 
