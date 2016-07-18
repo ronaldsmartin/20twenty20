@@ -159,9 +159,6 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
 
     //region SettingsContract.SettingsView
 
-    override val context: Context
-        get() = this
-
     override val contentView: ViewGroup
         get() = findViewById(android.R.id.content) as ViewGroup
 
