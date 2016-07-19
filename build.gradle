@@ -28,7 +28,7 @@ ext {
     minSdkVersion = 15
     targetSdkVersion = 24
     compileSdkVersion = 24
-    buildToolsVersion = "24.0.0"
+    buildToolsVersion = "24.0.1"
     jUnitVersion = "4.12"
     leakCanaryVersion = "1.4-beta2"
 
