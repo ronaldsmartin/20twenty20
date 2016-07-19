@@ -52,8 +52,8 @@ class Cycle
         /** The default duration for this phase. */
         val defaultDuration: Int
             get() = when(this) {
-                WORK  -> 60 // 60 seconds
-                BREAK -> 30 // 30 seconds
+                WORK  -> 60 * 20    // 20 minutes
+                BREAK -> 20         // 20 seconds
             }
 
         /** The next sequential phase that follows this phase. */
