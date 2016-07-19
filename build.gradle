@@ -29,7 +29,6 @@ ext {
     targetSdkVersion = 24
     compileSdkVersion = 24
     buildToolsVersion = "24.0.1"
-    jUnitVersion = "4.12"
     leakCanaryVersion = "1.4-beta2"
 
     // App dependencies
@@ -51,6 +50,8 @@ ext {
     waveViewVersion = "3da6d4b"
 
     // Testing
+    jUnitVersion = "4.12"
+    mockitoVersion = "2.0.87-beta"
     androidTestRunnerVersion = "0.5"
     espressoVersion = "2.2.2"
 }
