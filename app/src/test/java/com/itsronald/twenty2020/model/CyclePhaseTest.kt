@@ -28,7 +28,8 @@ class CyclePhaseTest {
 
     @Test
     fun getDefaultDuration() {
-
+        assertThat(Cycle.Phase.WORK.defaultDuration, `is`(20 * 60)) // 20 minutes
+        assertThat(Cycle.Phase.BREAK.defaultDuration, `is`(20))     // 20 seconds
     }
 
     @Test
