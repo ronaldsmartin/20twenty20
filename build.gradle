@@ -49,4 +49,8 @@ ext {
     dexterVersion = "2.3.0"
 
     waveViewVersion = "3da6d4b"
+
+    // Testing
+    androidTestRunnerVersion = "0.5"
+    espressoVersion = "2.2.2"
 }
