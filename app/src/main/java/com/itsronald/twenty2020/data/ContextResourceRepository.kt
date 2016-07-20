@@ -2,6 +2,7 @@ package com.itsronald.twenty2020.data
 
 import android.app.backup.BackupManager
 import android.content.Context
+import android.preference.PreferenceManager
 import android.support.annotation.ColorRes
 import android.support.annotation.StringRes
 import android.support.v4.content.ContextCompat
@@ -18,4 +19,10 @@ class ContextResourceRepository(private val context: Context) : ResourceReposito
     override fun getColor(@ColorRes resId: Int): Int = ContextCompat.getColor(context, resId)
 
     override fun notifyBackupDataChanged() = BackupManager(context).dataChanged()
+
+    override fun getPreferenceString(@StringRes keyResId: Int): String? {
+        val key = getString(keyResId)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        return prefs.getString(key, null)
+    }
 }

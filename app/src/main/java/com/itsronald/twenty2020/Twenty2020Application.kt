@@ -19,9 +19,6 @@ import timber.log.Timber
 class Twenty2020Application : Application() {
 
     val cycleComponent: CycleComponent = DaggerCycleComponent.builder()
-            .preferencesComponent(DaggerPreferencesComponent.builder()
-                    .preferencesModule(PreferencesModule(this))
-                    .build())
             .resourceComponent(DaggerResourceComponent.builder()
                     .resourceModule(ResourceModule(this))
                     .build())

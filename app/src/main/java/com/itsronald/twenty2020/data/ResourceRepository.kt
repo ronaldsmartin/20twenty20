@@ -36,4 +36,12 @@ interface ResourceRepository {
      * Notify the resource repository that resources are available to be backed up.
      */
     fun notifyBackupDataChanged()
+
+    /**
+     * Retrieve a persisted preference String stored under a String key with ID [keyResId]
+     *
+     * @param keyResId The resource ID of the key used to store the preference.
+     * @return The persisted String value for [keyResId], or null if it does not exist.
+     */
+    fun getPreferenceString(@StringRes keyResId: Int): String?
 }

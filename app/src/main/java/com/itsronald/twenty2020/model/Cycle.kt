@@ -1,6 +1,5 @@
 package com.itsronald.twenty2020.model
 
-import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
 import rx.Observable
@@ -15,8 +14,7 @@ import javax.inject.Inject
  * Encapsulates the state of the repeating work and break cycle.
  */
 class Cycle
-    @Inject constructor(val resources: ResourceRepository,
-                        val preferences: RxSharedPreferences)
+    @Inject constructor(val resources: ResourceRepository)
     : TimerControl {
 
     /**
@@ -35,18 +33,16 @@ class Cycle
         /**
          * The total duration of this phase, in seconds.
          *
-         * @param resources The repository used to retrieve the key for the preferred duration
-         * @param preferences The repository from which to retrieve the preferred duration value
+         * @param resources The repository in which the preferred duration is stored.
          *
          * @return The total duration of this phase, in seconds.
          */
-        fun duration(resources: ResourceRepository, preferences: RxSharedPreferences): Int {
+        fun duration(resources: ResourceRepository): Int {
             val preferredDurationID = when(this) {
                 WORK  -> R.string.pref_key_general_work_phase_length
                 BREAK -> R.string.pref_key_general_break_phase_length
             }
-            val preferredDurationKey = resources.getString(preferredDurationID)
-            return preferences.getString(preferredDurationKey).get()?.toInt() ?: defaultDuration
+            return resources.getPreferenceString(preferredDurationID)?.toInt() ?: defaultDuration
         }
 
         /** The default duration for this phase. */
@@ -92,7 +88,7 @@ class Cycle
         private set
 
     /** The total duration of the current phase, in seconds. **/
-    var duration: Int = phase.duration(resources = resources, preferences = preferences)
+    var duration: Int = phase.duration(resources = resources)
         private set
 
     /** The time remaining in the current phase, in seconds. **/
@@ -205,7 +201,7 @@ class Cycle
      */
     override fun restartPhase() {
         elapsedTime = 0
-        duration = phase.duration(resources = resources, preferences = preferences)
+        duration = phase.duration(resources = resources)
         if (timerSubject.hasObservers()) {
             timerSubject.onNext(this)
         }
