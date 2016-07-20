@@ -113,6 +113,29 @@ class CycleTest {
     }
 
     @Test
+    fun startIgnoresRedundantCalls() {
+        assertThat(cycle.running, `is`(false))
+        val elapsedTimeStart = cycle.elapsedTime
+        val remainingTimeStart = cycle.remainingTime
+
+        cycle.start()
+        Thread.sleep(2000)
+
+        cycle.start()
+        val elapsedTime2 = cycle.elapsedTime
+        val remainingTime2 = cycle.remainingTime
+        assertThat(cycle.running, `is`(true))
+        assertThat(elapsedTime2, `is`(greaterThan(elapsedTimeStart)))
+        assertThat(remainingTime2, `is`(lessThan(remainingTimeStart)))
+        Thread.sleep(1000)
+
+        cycle.start()
+        assertThat(cycle.running, `is`(true))
+        assertThat(cycle.elapsedTime, `is`(greaterThan(elapsedTime2)))
+        assertThat(cycle.remainingTime, `is`(lessThan(remainingTime2)))
+    }
+
+    @Test
     fun pause() {
         assertThat(cycle.running, `is`(false))
         val elapsedTimeStart = cycle.elapsedTime
