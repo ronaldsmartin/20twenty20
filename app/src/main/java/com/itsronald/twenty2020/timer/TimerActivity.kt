@@ -15,6 +15,8 @@ import android.util.AttributeSet
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.github.amlcurran.showcaseview.ShowcaseView
+import com.github.amlcurran.showcaseview.targets.ViewTarget
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.Twenty2020Application
 import com.itsronald.twenty2020.data.DaggerResourceComponent
@@ -234,7 +236,12 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override lateinit var presenter: TimerContract.UserActionsListener
 
     override fun showFirstTimeTutorial() {
-        throw UnsupportedOperationException("not implemented")
+        ShowcaseView.Builder(this)
+                .setContentTitle(R.string.tutorial_content_title_start)
+                .setContentText(R.string.tutorial_content_message_start)
+                .setTarget(ViewTarget(timer_fab))
+                .withMaterialShowcase()
+                .build()
     }
 
     override fun showTimeRemaining(formattedTime: String) {

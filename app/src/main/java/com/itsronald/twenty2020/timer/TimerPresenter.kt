@@ -132,7 +132,7 @@ class TimerPresenter
                 .getPreferenceString(R.string.pref_nobackup_key_first_installed_version)
         if (firstInstalledVersion == null) {
             Timber.i("This is the first application launch. Showing tutorial.")
-            // TODO: view.showFirstTimeTutorial()
+             view.showFirstTimeTutorial()
             // TODO: persist version String
         } else {
             Timber.v("Application was first launched as version $firstInstalledVersion. " +
