@@ -26,11 +26,6 @@ class CycleTest {
 
     @Before
     fun setup() {
-        doReturn("1").`when`(resources)
-                .getPreferenceString(R.string.pref_key_general_work_phase_length)
-        doReturn("1").`when`(resources)
-                .getPreferenceString(R.string.pref_key_general_break_phase_length)
-
         this.cycle = Cycle(resources)
     }
 
@@ -38,6 +33,8 @@ class CycleTest {
 
     @Test
     fun initialState() {
+        doReturn("1").`when`(resources)
+                .getPreferenceString(R.string.pref_key_general_work_phase_length)
         assertThat(cycle.running, `is`(false))
         assertThat(cycle.phase, `is`(Cycle.Phase.WORK))
         assertThat(cycle.elapsedTime, `is`(0))
@@ -102,7 +99,24 @@ class CycleTest {
 
     @Test
     fun pause() {
+        assertThat(cycle.running, `is`(false))
+        val elapsedTimeStart = cycle.elapsedTime
 
+        cycle.pause()
+        assertThat(cycle.running, `is`(false))
+        assertThat(cycle.elapsedTime, `is`(elapsedTimeStart))
+
+        doReturn("10").`when`(resources)
+                .getPreferenceString(R.string.pref_key_general_work_phase_length)
+
+        cycle.start()
+        Thread.sleep(3000)
+        assertThat(cycle.running, `is`(true))
+        assertThat(cycle.elapsedTime, `is`(not(elapsedTimeStart)))
+
+        cycle.pause()
+        assertThat(cycle.running, `is`(false))
+        assertThat(cycle.elapsedTime, `is`(not(elapsedTimeStart)))
     }
 
     @Test
