@@ -117,7 +117,13 @@ class CycleTest {
 
     @Test
     fun startNextPhase() {
+        assertThat(cycle.phase, `is`(Cycle.Phase.WORK))
 
+        cycle.startNextPhase()
+        assertThat(cycle.phase, `is`(Cycle.Phase.BREAK))
+
+        cycle.startNextPhase()
+        assertThat(cycle.phase, `is`(Cycle.Phase.WORK))
     }
 
     //endregion
