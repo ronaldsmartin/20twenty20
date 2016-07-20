@@ -127,8 +127,13 @@ class CycleTest {
     }
 
     @Test
-    fun getRemainingTimeText() {
+    fun getRemainingTimeTextInitial() {
+        assertThat(cycle.remainingTime, `is`(20 * 60))  // 20 minutes
+        assertThat(cycle.remainingTimeText, `is`("20:00"))
 
+        cycle.startNextPhase()
+        assertThat(cycle.remainingTime, `is`(20))
+        assertThat(cycle.remainingTimeText, `is`("20"))
     }
 
     @Test
