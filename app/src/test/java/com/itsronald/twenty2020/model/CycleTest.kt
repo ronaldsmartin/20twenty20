@@ -47,7 +47,7 @@ class CycleTest {
 
     @Test
     fun getPhaseName() {
-
+        assertThat(cycle.phaseName, `is`(cycle.phase.localizedName(resources)))
     }
 
     @Test
