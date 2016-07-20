@@ -97,7 +97,10 @@ dependencies {
     compile "com.jakewharton.timber:timber:$rootProject.timberVersion"
     compile "com.karumi:dexter:$rootProject.dexterVersion"
 
+    // Custom Views
     compile "com.github.john990:WaveView:$rootProject.waveViewVersion"
+    compile "com.github.amlcurran.showcaseview:library:$rootProject.showcaseViewVersion"
+    
 
     // Testing
     testCompile "junit:junit:$rootProject.jUnitVersion"

@@ -48,6 +48,7 @@ ext {
     dexterVersion = "2.3.0"
 
     waveViewVersion = "3da6d4b"
+    showcaseViewVersion = "5.4.3"
 
     // Testing
     jUnitVersion = "4.12"
