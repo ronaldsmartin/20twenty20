@@ -80,12 +80,18 @@ class CycleTest {
 
     @Test
     fun getDuration() {
-
+        assertThat(cycle.duration, `is`(cycle.phase.duration(resources)))
     }
 
     @Test
     fun getRemainingTime() {
+        assertThat(cycle.remainingTime, `is`(cycle.duration))
 
+        cycle.start()
+        Thread.sleep(5000)
+        cycle.pause()
+
+        assertThat(cycle.remainingTime, `is`(cycle.duration - cycle.elapsedTime))
     }
 
     @Test
