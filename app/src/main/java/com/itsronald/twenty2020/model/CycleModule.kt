@@ -14,7 +14,5 @@ class CycleModule() {
 
     @Provides
     @Singleton
-    fun provideCycle(resourceRepository: ResourceRepository,
-                     preferences: RxSharedPreferences): Cycle =
-            Cycle(resourceRepository, preferences)
+    fun provideCycle(resourceRepository: ResourceRepository): Cycle = Cycle(resourceRepository)
 }

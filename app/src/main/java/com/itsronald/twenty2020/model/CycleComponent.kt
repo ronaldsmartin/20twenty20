@@ -8,7 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-        dependencies = arrayOf(PreferencesComponent::class, ResourceComponent::class),
+        dependencies = arrayOf(ResourceComponent::class),
         modules = arrayOf(CycleModule::class)
 )
 interface CycleComponent {

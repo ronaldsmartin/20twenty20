@@ -29,6 +29,8 @@ android {
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         debug {
@@ -97,7 +99,15 @@ dependencies {
 
     compile "com.github.john990:WaveView:$rootProject.waveViewVersion"
 
+    // Testing
     testCompile "junit:junit:$rootProject.jUnitVersion"
+    testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testCompile "org.hamcrest:hamcrest-library:$rootProject.hamcrestVersion"
+    // Prevent conflicts between the dependencies required by appcompat and com.android.support.test
+    androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
+    androidTestCompile "com.android.support.test:runner:$rootProject.androidTestRunnerVersion"
+    androidTestCompile "com.android.support.test:rules:$rootProject.androidTestRunnerVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
 }
 repositories {
     mavenCentral()
