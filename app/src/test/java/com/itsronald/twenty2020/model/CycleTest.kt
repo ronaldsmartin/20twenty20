@@ -33,8 +33,6 @@ class CycleTest {
 
     @Test
     fun initialState() {
-        doReturn("1").`when`(resources)
-                .getPreferenceString(R.string.pref_key_general_work_phase_length)
         assertThat(cycle.running, `is`(false))
         assertThat(cycle.phase, `is`(Cycle.Phase.WORK))
         assertThat(cycle.elapsedTime, `is`(0))
