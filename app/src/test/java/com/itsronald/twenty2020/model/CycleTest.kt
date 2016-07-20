@@ -42,7 +42,10 @@ class CycleTest {
 
     @Test
     fun getPhase() {
+        assertThat(cycle.phase, `is`(Cycle.Phase.WORK))
 
+        cycle.startNextPhase()
+        assertThat(cycle.phase, `is`(Cycle.Phase.BREAK))
     }
 
     @Test
@@ -183,7 +186,13 @@ class CycleTest {
 
     @Test
     fun toggleRunning() {
+        assertThat(cycle.running, `is`(false))
 
+        cycle.toggleRunning()
+        assertThat(cycle.running, `is`(true))
+
+        cycle.toggleRunning()
+        assertThat(cycle.running, `is`(false))
     }
 
     @Test
