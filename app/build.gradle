@@ -102,6 +102,7 @@ dependencies {
     // Testing
     testCompile "junit:junit:$rootProject.jUnitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testCompile "org.hamcrest:hamcrest-library:$rootProject.hamcrestVersion"
     // Prevent conflicts between the dependencies required by appcompat and com.android.support.test
     androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
     androidTestCompile "com.android.support.test:runner:$rootProject.androidTestRunnerVersion"
