@@ -233,6 +233,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     @Inject
     override lateinit var presenter: TimerContract.UserActionsListener
 
+    override fun showFirstTimeTutorial() {
+        throw UnsupportedOperationException("not implemented")
+    }
+
     override fun showTimeRemaining(formattedTime: String) {
         center_text.text = formattedTime
     }

@@ -119,11 +119,25 @@ class TimerPresenter
         context.startService(Intent(context, CycleService::class.java))
 
         startSubscriptions()
+        showTutorialOnFirstRun()
     }
 
     override fun onStop() {
         super.onStop()
         subscriptions.unsubscribe()
+    }
+
+    private fun showTutorialOnFirstRun() {
+        val firstInstalledVersion = resources
+                .getPreferenceString(R.string.pref_nobackup_key_first_installed_version)
+        if (firstInstalledVersion == null) {
+            Timber.i("This is the first application launch. Showing tutorial.")
+            // TODO: view.showFirstTimeTutorial()
+            // TODO: persist version String
+        } else {
+            Timber.v("Application was first launched as version $firstInstalledVersion. " +
+                     "Skipping tutorial.")
+        }
     }
 
     private fun startSubscriptions() {

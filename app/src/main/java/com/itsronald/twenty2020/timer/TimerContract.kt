@@ -27,6 +27,11 @@ interface TimerContract {
         var fullScreenAllowed: Boolean
 
         /**
+         * Display a short tutorial to first-time users.
+         */
+        fun showFirstTimeTutorial()
+
+        /**
          * Display time text in the view.
          * @param formattedTime The text to display.
          */
