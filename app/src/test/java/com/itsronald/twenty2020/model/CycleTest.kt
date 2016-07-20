@@ -77,12 +77,12 @@ class CycleTest {
 
     @Test
     fun getDurationMinutes() {
-
+        assertThat(cycle.durationMinutes, `is`(cycle.duration / 60))
     }
 
     @Test
     fun getElapsedTimeMinutes() {
-
+        assertThat(cycle.elapsedTimeMinutes, `is`(cycle.elapsedTime / 60))
     }
 
     @Test
