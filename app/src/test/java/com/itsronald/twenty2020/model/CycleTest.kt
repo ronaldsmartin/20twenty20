@@ -52,12 +52,30 @@ class CycleTest {
 
     @Test
     fun getRunning() {
+        assertThat(cycle.running, `is`(false))
 
+        cycle.start()
+        Thread.sleep(2000)
+        assertThat(cycle.running, `is`(true))
+
+        Thread.sleep(2000)
+        assertThat(cycle.running, `is`(true))
+
+        cycle.pause()
+        Thread.sleep(2000)
+        assertThat(cycle.running, `is`(false))
     }
+
 
     @Test
     fun getElapsedTime() {
+        assertThat(cycle.elapsedTime, `is`(0))
 
+        cycle.start()
+        Thread.sleep(5000)
+        cycle.pause()
+
+        assertThat(cycle.elapsedTime, both(greaterThan(3)).and(lessThanOrEqualTo(5)))
     }
 
     @Test
