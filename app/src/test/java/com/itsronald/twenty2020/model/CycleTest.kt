@@ -164,7 +164,27 @@ class CycleTest {
 
     @Test
     fun restartPhase() {
+        assertThat(cycle.phase, `is`(Cycle.Phase.WORK))
+        val duration = cycle.duration
+        assertThat(cycle.elapsedTime, `is`(0))
+        assertThat(cycle.remainingTime, `is`(duration))
 
+        cycle.restartPhase()
+        assertThat(cycle.phase, `is`(Cycle.Phase.WORK))
+        assertThat(cycle.elapsedTime, `is`(0))
+        assertThat(cycle.remainingTime, `is`(duration))
+
+        cycle.start()
+        Thread.sleep(5000)
+        cycle.pause()
+        assertThat(cycle.phase, `is`(Cycle.Phase.WORK))
+        assertThat(cycle.elapsedTime, `is`(greaterThan(0)))
+        assertThat(cycle.remainingTime, `is`(lessThan(duration)))
+
+        cycle.restartPhase()
+        assertThat(cycle.phase, `is`(Cycle.Phase.WORK))
+        assertThat(cycle.elapsedTime, `is`(0))
+        assertThat(cycle.remainingTime, `is`(duration))
     }
 
     @Test
