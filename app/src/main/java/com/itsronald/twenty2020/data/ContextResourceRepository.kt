@@ -20,9 +20,10 @@ class ContextResourceRepository(private val context: Context) : ResourceReposito
 
     override fun notifyBackupDataChanged() = BackupManager(context).dataChanged()
 
-    override fun getPreferenceString(@StringRes keyResId: Int): String? {
+    override fun getPreferenceString(@StringRes keyResId: Int, prefsFilename: String?): String? {
         val key = getString(keyResId)
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val prefs = if (prefsFilename == null) PreferenceManager.getDefaultSharedPreferences(context)
+            else context.getSharedPreferences(prefsFilename, Context.MODE_PRIVATE)
         return prefs.getString(key, null)
     }
 }
