@@ -15,15 +15,57 @@ import org.mockito.Mockito.*
 
 class CyclePhaseTest {
 
+    //region Mock objects
+
     @Mock
     lateinit var resources: ResourceRepository
 
     @Rule @JvmField
     val mockRule: MockitoRule = MockitoJUnit.rule()
 
-    @Test
-    fun duration() {
+    //endregion
 
+    @Test
+    fun durationKey() {
+        Cycle.Phase.WORK.duration(resources = resources)
+        verify(resources).getPreferenceString(R.string.pref_key_general_work_phase_length)
+
+        Cycle.Phase.BREAK.duration(resources = resources)
+        verify(resources).getPreferenceString(R.string.pref_key_general_break_phase_length)
+    }
+
+    @Test
+    fun durationFallsBackToDefault() {
+        `when`(resources.getPreferenceString(R.string.pref_key_general_work_phase_length))
+                .thenReturn(null)
+        `when`(resources.getPreferenceString(R.string.pref_key_general_break_phase_length))
+                .thenReturn(null)
+
+        val workPhase = Cycle.Phase.WORK
+        assertThat(workPhase.duration(resources = resources), `is`(workPhase.defaultDuration))
+
+        val breakPhase = Cycle.Phase.BREAK
+        assertThat(breakPhase.duration(resources = resources), `is`(breakPhase.defaultDuration))
+    }
+
+    @Test
+    fun durationFollowsPrefs() {
+        `when`(resources.getPreferenceString(R.string.pref_key_general_work_phase_length))
+                .thenReturn("100")
+                .thenReturn("3600")
+        `when`(resources.getPreferenceString(R.string.pref_key_general_break_phase_length))
+                .thenReturn("200")
+                .thenReturn("3700")
+
+        val workPhase = Cycle.Phase.WORK
+        val breakPhase = Cycle.Phase.BREAK
+
+        assertThat(workPhase.duration(resources = resources), `is`(100))
+        assertThat(breakPhase.duration(resources = resources), `is`(200))
+
+        // Now mock a preference change
+        assertThat(workPhase.duration(resources = resources), `is`(3600))
+        assertThat(breakPhase.duration(resources = resources), `is`(3700))
     }
 
     @Test
