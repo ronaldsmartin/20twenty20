@@ -5,7 +5,7 @@ import com.itsronald.twenty2020.data.ResourceRepository
 import org.junit.Test
 
 import org.junit.Assert.*
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.Matchers.*
 import org.junit.Before
 import org.junit.Rule
 import org.mockito.Mock
