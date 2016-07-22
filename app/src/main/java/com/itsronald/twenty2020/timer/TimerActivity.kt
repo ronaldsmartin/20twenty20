@@ -237,10 +237,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun showFirstTimeTutorial() {
         ShowcaseView.Builder(this)
+                .withMaterialShowcase()
                 .setContentTitle(R.string.tutorial_content_title_start)
                 .setContentText(R.string.tutorial_content_message_start)
                 .setTarget(ViewTarget(timer_fab))
-                .withMaterialShowcase()
+                .setStyle(R.style.TutorialTheme)
                 .build()
     }
 

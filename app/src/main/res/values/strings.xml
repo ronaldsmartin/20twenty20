@@ -22,5 +22,6 @@
     <!-- Tutorial -->
     <string name="tutorial_content_title_start">Start the cycle</string>
     <string name="tutorial_content_message_start">Use this button to start or stop the 20&#8211;20&#8211;20 cycle.</string>
-    
+    <string name="tutorial_button_title_next">Next</string>
+
 </resources>
