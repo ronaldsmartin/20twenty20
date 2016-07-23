@@ -24,10 +24,10 @@
     <string name="tutorial_content_message_start">Use this button to start or stop the 20&#8211;20&#8211;20 cycle.</string>
 
     <string name="tutorial_content_title_skip_phase">Skip to next phase</string>
-    <string name="tutorial_content_message_skip_phase">Use this button to skip whatever time is left whenever your ready to take your next break or get back to your computer.</string>
+    <string name="tutorial_content_message_skip_phase">Use this button to skip directly to the next phase whenever you\'re ready to take your next break or get back to your computer.</string>
 
     <string name="tutorial_content_title_restart_phase">Restart current phase</string>
-    <string name="tutorial_content_message_restart_phase">Use this button to restart the current phase if you get distracted.</string>
+    <string name="tutorial_content_message_restart_phase">Use this button to restart the current timer if you get distracted.</string>
 
     <string name="tutorial_button_title_next">Next</string>
     <string name="tutorial_button_title_done">Got it</string>
