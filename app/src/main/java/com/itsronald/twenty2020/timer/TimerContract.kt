@@ -2,6 +2,7 @@ package com.itsronald.twenty2020.timer
 
 import android.content.Context
 import android.support.annotation.DrawableRes
+import android.support.annotation.IntDef
 import com.itsronald.twenty2020.base.Presenter
 import com.itsronald.twenty2020.base.View
 import com.itsronald.twenty2020.model.TimerControl
@@ -18,6 +19,28 @@ interface TimerContract {
 
     interface TimerView: View<UserActionsListener> {
 
+        companion object {
+            //region Tutorial state
+
+            @IntDef(TUTORIAL_NOT_SHOWN,
+                    TUTORIAL_TARGET_TIMER_START,
+                    TUTORIAL_TARGET_TIMER_SKIP,
+                    TUTORIAL_TARGET_TIMER_RESTART)
+            @Retention(AnnotationRetention.SOURCE)
+            annotation class TutorialState
+
+            /** Tutorial is not being shown */
+            const val TUTORIAL_NOT_SHOWN = 0L
+            /** Tutorial is targeting the start/stop button.*/
+            const val TUTORIAL_TARGET_TIMER_START = 1L
+            /** Tutorial is targeting the skip button. */
+            const val TUTORIAL_TARGET_TIMER_SKIP = 2L
+            /** Tutorial is targeting the restart button. */
+            const val TUTORIAL_TARGET_TIMER_RESTART = 3L
+
+            //endregion
+        }
+
         val context: Context
 
         /** Whether or not the screen with this view should stay awake. */
@@ -25,6 +48,17 @@ interface TimerContract {
 
         /** Whether or not this view may go full screen. This is controlled by user preference. */
         var fullScreenAllowed: Boolean
+
+        /** The current state of the tutorial for first-time users. */
+        @TutorialState
+        var tutorialState: Long
+
+        /**
+         * Display a short tutorial to first-time users.
+         *
+         * @param state The state in which to show the tutorial.
+         */
+        fun showTutorial(@TutorialState state: Long)
 
         /**
          * Display time text in the view.
@@ -61,7 +95,7 @@ interface TimerContract {
 
     interface UserActionsListener: Presenter<TimerView>, TimerControl {
 
-        /// Menu options
+        //region Menu options
 
         /**
          * Open the app settings.
@@ -72,6 +106,15 @@ interface TimerContract {
          * Open the Help/Feedback page.
          */
         fun openHelpFeedback()
+
+        //endregion
+
+        /**
+         * Notify the listener that the tutorial button was clicked.
+         *
+         * @param currentState The state of the tutorial that was clicked.
+         */
+        fun onTutorialNextClicked(@TimerView.Companion.TutorialState currentState: Long)
     }
 
 }

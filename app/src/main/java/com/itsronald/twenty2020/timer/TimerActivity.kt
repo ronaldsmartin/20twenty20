@@ -15,12 +15,15 @@ import android.util.AttributeSet
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.github.amlcurran.showcaseview.ShowcaseView
+import com.github.amlcurran.showcaseview.targets.ViewTarget
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.Twenty2020Application
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
+import com.itsronald.twenty2020.timer.TimerContract.TimerView.Companion.TutorialState
 import kotlinx.android.synthetic.main.activity_timer.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -232,6 +235,59 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     @Inject
     override lateinit var presenter: TimerContract.UserActionsListener
+
+    //region Tutorial display
+
+    @TutorialState
+    override var tutorialState = TimerContract.TimerView.TUTORIAL_NOT_SHOWN
+
+    private var showcaseView: ShowcaseView? = null
+
+    override fun showTutorial(@TutorialState state: Long) = when (state) {
+        TimerContract.TimerView.TUTORIAL_TARGET_TIMER_START -> {
+            tutorialState = state
+
+            showcaseView = ShowcaseView.Builder(this)
+                    .withMaterialShowcase()
+                    .setContentTitle(R.string.tutorial_content_title_start)
+                    .setContentText(R.string.tutorial_content_message_start)
+                    .setTarget(ViewTarget(timer_fab))
+                    .setStyle(R.style.TutorialTheme)
+                    .setOnClickListener { presenter.onTutorialNextClicked(tutorialState) }
+                    .build()
+
+            Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_START.")
+        }
+        TimerContract.TimerView.TUTORIAL_TARGET_TIMER_SKIP -> {
+            tutorialState = state
+
+            showcaseView?.setContentTitle(getString(R.string.tutorial_content_title_skip_phase))
+            showcaseView?.setContentText(getString(R.string.tutorial_content_message_skip_phase))
+            showcaseView?.setShowcase(ViewTarget(btn_next_phase), true)
+
+            Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_SKIP.")
+        }
+        TimerContract.TimerView.TUTORIAL_TARGET_TIMER_RESTART -> {
+            tutorialState = state
+
+            showcaseView?.setContentTitle(getString(R.string.tutorial_content_title_restart_phase))
+            showcaseView?.setContentText(getString(R.string.tutorial_content_message_restart_phase))
+            showcaseView?.setButtonText(getString(R.string.tutorial_button_title_done))
+            showcaseView?.setShowcase(ViewTarget(btn_restart_phase), true)
+
+            Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_RESTART.")
+        }
+        TimerContract.TimerView.TUTORIAL_NOT_SHOWN -> {
+            tutorialState = state
+            showcaseView?.setOnClickListener(null)
+            showcaseView?.hide()
+            showcaseView = null
+            Timber.v("Tutorial hidden.")
+        }
+        else -> throw IllegalArgumentException("$state is not a valid @TutorialState value.")
+    }
+
+    //endregion
 
     override fun showTimeRemaining(formattedTime: String) {
         center_text.text = formattedTime

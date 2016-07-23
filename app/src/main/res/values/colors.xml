@@ -9,6 +9,11 @@
 
     <color name="windowBackground">@color/solarized_base3</color>
 
+    <!-- tutorial -->
+    <color name="tutorial_background_color">#d5268bd2</color>
+    <color name="tutorial_button_color">@color/colorPrimary</color>
+    <color name="tutorial_title_color">@android:color/white</color>
+
     <!--Solarized color scheme by Ethan Schoonover-->
     <!--http://ethanschoonover.com/solarized-->
     <color name="solarized_base03">#002b36</color>

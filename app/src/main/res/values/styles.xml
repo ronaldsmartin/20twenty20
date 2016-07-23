@@ -19,6 +19,17 @@
     </style>
 
     <!--activity_timer-->
+    <style name="TutorialTheme" parent="ShowcaseView">
+        <item name="sv_backgroundColor">@color/tutorial_background_color</item>
+        <item name="sv_showcaseColor">@color/tutorial_button_color</item>
+        <item name="sv_titleTextAppearance">@style/TutorialTitle</item>
+        <item name="sv_buttonText">@string/tutorial_button_title_next</item>
+    </style>
+
+    <style name="TutorialTitle" parent="TextAppearance.ShowcaseView.Title.Light">
+        <item name="android:textColor">@color/tutorial_title_color</item>
+    </style>
+
     <style name="timer_button_secondary">
         <item name="android:layout_width">@dimen/timer_button_layout_width</item>
         <item name="android:layout_height">@dimen/timer_button_layout_height</item>

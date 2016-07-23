@@ -144,4 +144,12 @@
     <string name="pref_title_notifications_led_enabled">LED enabled</string>
     <string name="pref_key_notifications_led_enabled"
         translatable="false">com.itsronald.settings.key.notification_led_enabled</string>
+
+    
+    <!-- Non-user-visible preferences -->
+    <string name="pref_filename_no_backup"
+        translatable="false">com.itsronald.settings.nobackup</string>
+
+    <string name="pref_nobackup_key_first_installed_version"
+        translatable="false">com.itsronald.settings.nobackup.first_installed_version</string>
 </resources>
