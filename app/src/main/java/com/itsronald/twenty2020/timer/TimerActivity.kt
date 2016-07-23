@@ -241,7 +241,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     @TutorialState
     override var tutorialState = TimerContract.TimerView.TUTORIAL_NOT_SHOWN
 
-    private lateinit var showcaseView: ShowcaseView
+    private var showcaseView: ShowcaseView? = null
 
     override fun showTutorial(@TutorialState state: Long) = when (state) {
         TimerContract.TimerView.TUTORIAL_TARGET_TIMER_START -> {
@@ -261,25 +261,28 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         TimerContract.TimerView.TUTORIAL_TARGET_TIMER_SKIP -> {
             tutorialState = state
 
-            showcaseView.setContentTitle(getString(R.string.tutorial_content_title_skip_phase))
-            showcaseView.setContentText(getString(R.string.tutorial_content_message_skip_phase))
-            showcaseView.setShowcase(ViewTarget(btn_next_phase), true)
+            showcaseView?.setContentTitle(getString(R.string.tutorial_content_title_skip_phase))
+            showcaseView?.setContentText(getString(R.string.tutorial_content_message_skip_phase))
+            showcaseView?.setShowcase(ViewTarget(btn_next_phase), true)
 
             Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_SKIP.")
         }
         TimerContract.TimerView.TUTORIAL_TARGET_TIMER_RESTART -> {
             tutorialState = state
 
-            showcaseView.setContentTitle(getString(R.string.tutorial_content_title_restart_phase))
-            showcaseView.setContentText(getString(R.string.tutorial_content_message_restart_phase))
-            showcaseView.setButtonText(getString(R.string.tutorial_button_title_done))
-            showcaseView.setShowcase(ViewTarget(btn_restart_phase), true)
+            showcaseView?.setContentTitle(getString(R.string.tutorial_content_title_restart_phase))
+            showcaseView?.setContentText(getString(R.string.tutorial_content_message_restart_phase))
+            showcaseView?.setButtonText(getString(R.string.tutorial_button_title_done))
+            showcaseView?.setShowcase(ViewTarget(btn_restart_phase), true)
 
             Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_RESTART.")
         }
         TimerContract.TimerView.TUTORIAL_NOT_SHOWN -> {
             tutorialState = state
-            showcaseView.hide()
+            showcaseView?.setOnClickListener(null)
+            showcaseView?.hide()
+            showcaseView = null
+            Timber.v("Tutorial hidden.")
         }
         else -> throw IllegalArgumentException("$state is not a valid @TutorialState value.")
     }
