@@ -14,6 +14,7 @@ import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
 import com.itsronald.twenty2020.notifications.CycleService
 import com.itsronald.twenty2020.settings.SettingsActivity
+import com.itsronald.twenty2020.timer.TimerContract.TimerView
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.onError
@@ -127,19 +128,6 @@ class TimerPresenter
         subscriptions.unsubscribe()
     }
 
-    private fun showTutorialOnFirstRun() {
-        val firstInstalledVersion = resources
-                .getPreferenceString(R.string.pref_nobackup_key_first_installed_version)
-        if (firstInstalledVersion == null) {
-            Timber.i("This is the first application launch. Showing tutorial.")
-             view.showFirstTimeTutorial()
-            // TODO: persist version String
-        } else {
-            Timber.v("Application was first launched as version $firstInstalledVersion. " +
-                     "Skipping tutorial.")
-        }
-    }
-
     private fun startSubscriptions() {
         subscriptions = CompositeSubscription()
 
@@ -153,6 +141,31 @@ class TimerPresenter
                                 else android.R.drawable.ic_media_play)
         }
     }
+
+    //region Tutorial display
+
+    private fun showTutorialOnFirstRun() {
+        val firstInstalledVersion = resources
+                .getPreferenceString(R.string.pref_nobackup_key_first_installed_version)
+        if (firstInstalledVersion == null) {
+            Timber.i("This is the first application launch. Showing tutorial.")
+            view.showTutorial(TimerContract.TimerView.TUTORIAL_TARGET_TIMER_START)
+            // TODO: persist version String
+        } else {
+            Timber.v("Application was first launched as version $firstInstalledVersion. " +
+                    "Skipping tutorial.")
+        }
+    }
+
+    override fun onTutorialNextClicked(currentState: Long) = view.showTutorial(when (currentState) {
+        TimerView.TUTORIAL_TARGET_TIMER_START   -> TimerView.TUTORIAL_TARGET_TIMER_SKIP
+        TimerView.TUTORIAL_TARGET_TIMER_SKIP    -> TimerView.TUTORIAL_TARGET_TIMER_RESTART
+        TimerView.TUTORIAL_TARGET_TIMER_RESTART -> TimerView.TUTORIAL_NOT_SHOWN
+        else -> throw IllegalArgumentException("$currentState is not a valid @TutorialState value.")
+    })
+
+
+    //endregion
 
     //region Menu interaction
 
