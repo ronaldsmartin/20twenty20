@@ -47,4 +47,14 @@ interface ResourceRepository {
      * @return The persisted String value for [keyResId], or null if it does not exist.
      */
     fun getPreferenceString(@StringRes keyResId: Int, prefsFilename: String? = null): String?
+
+    /**
+     * Save a String under a key with ID [keyResId]
+     *
+     * @param keyResId The resource ID of the key used to store the preference.
+     * @param stringToSave The String to save under the key with ID [keyResId].
+     * @param prefsFilename If provided, a filename for the preferences where the preference should
+     * be stored. Otherwise, the default preferences are used.
+     */
+    fun savePreferenceString(@StringRes keyResId: Int, stringToSave: String, prefsFilename: String? = null)
 }

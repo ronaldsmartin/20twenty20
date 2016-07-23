@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.support.customtabs.CustomTabsIntent
 import com.f2prateek.rx.preferences.RxSharedPreferences
+import com.itsronald.twenty2020.BuildConfig
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
@@ -145,12 +146,20 @@ class TimerPresenter
     //region Tutorial display
 
     private fun showTutorialOnFirstRun() {
-        val firstInstalledVersion = resources
-                .getPreferenceString(R.string.pref_nobackup_key_first_installed_version)
+        val firstInstalledVersion = resources.getPreferenceString(
+                keyResId = R.string.pref_nobackup_key_first_installed_version,
+                prefsFilename = resources.getString(R.string.pref_filename_no_backup)
+        )
         if (firstInstalledVersion == null) {
             Timber.i("This is the first application launch. Showing tutorial.")
             view.showTutorial(TimerContract.TimerView.TUTORIAL_TARGET_TIMER_START)
-            // TODO: persist version String
+
+            Timber.i("Recording that the tutorial has been shown.")
+            resources.savePreferenceString(
+                    keyResId = R.string.pref_nobackup_key_first_installed_version,
+                    stringToSave = BuildConfig.VERSION_NAME,
+                    prefsFilename = resources.getString(R.string.pref_filename_no_backup)
+            )
         } else {
             Timber.v("Application was first launched as version $firstInstalledVersion. " +
                     "Skipping tutorial.")
