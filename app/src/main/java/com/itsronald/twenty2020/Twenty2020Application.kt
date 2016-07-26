@@ -6,9 +6,7 @@ import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
-import com.itsronald.twenty2020.model.CycleComponent
-import com.itsronald.twenty2020.model.CycleModule
-import com.itsronald.twenty2020.model.DaggerCycleComponent
+import com.itsronald.twenty2020.notifications.NotificationModule
 import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
 import com.karumi.dexter.Dexter
@@ -18,11 +16,21 @@ import timber.log.Timber
 
 class Twenty2020Application : Application() {
 
-    val cycleComponent: CycleComponent = DaggerCycleComponent.builder()
-            .resourceComponent(DaggerResourceComponent.builder()
-                    .resourceModule(ResourceModule(this))
-                    .build())
-            .cycleModule(CycleModule()).build()
+    /** Dagger component that vends singleton dependencies. */
+    val appComponent: ApplicationComponent = {
+        val resourceComponent = DaggerResourceComponent.builder()
+                .resourceModule(ResourceModule(this))
+                .build()
+        val preferencesComponent = DaggerPreferencesComponent.builder()
+                .preferencesModule(PreferencesModule(this))
+                .build()
+
+        DaggerApplicationComponent.builder()
+                .resourceComponent(resourceComponent)
+                .preferencesComponent(preferencesComponent)
+                .notificationModule(NotificationModule(this))
+                .build()
+    }()
 
     override fun onCreate() {
         super.onCreate()

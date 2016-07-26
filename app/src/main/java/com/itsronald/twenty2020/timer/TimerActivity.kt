@@ -81,7 +81,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timer)
 
-        val cycleComponent = (application as? Twenty2020Application)?.cycleComponent
+        val appComponent = (application as? Twenty2020Application)?.appComponent
         val settingsComponent = DaggerPreferencesComponent.builder()
                 .preferencesModule(PreferencesModule(this))
                 .build()
@@ -89,7 +89,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
                 .resourceModule(ResourceModule(this))
                 .build()
         DaggerTimerComponent.builder()
-                .cycleComponent(cycleComponent)
+                .applicationComponent(appComponent)
                 .resourceComponent(resourceComponent)
                 .preferencesComponent(settingsComponent)
                 .timerModule(TimerModule(this))

@@ -26,7 +26,8 @@ class CycleService : Service() {
     lateinit var cycle: Cycle
 
     /** Object responsible for building and display notifications of Cycle events. */
-    private val notifier = NotificationHelper(this)
+    @Inject
+    lateinit var notifier: Notifier
 
     /** Subscriptions  */
     private val subscriptions = CompositeSubscription()
@@ -35,11 +36,7 @@ class CycleService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        (application as? Twenty2020Application)?.cycleComponent?.inject(this)
-        DaggerPreferencesComponent.builder()
-                .preferencesModule(PreferencesModule(this))
-                .build()
-                .inject(notifier)
+        (application as? Twenty2020Application)?.appComponent?.inject(this)
 
         Timber.v("Service created.")
         startSubscriptions()
@@ -48,6 +45,7 @@ class CycleService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         subscriptions.unsubscribe()
+        Timber.d("Service destroyed.")
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -69,7 +67,7 @@ class CycleService : Service() {
 
         subscriptions.add(watchForegroundNotificationPref().subscribe { foregroundEnabled ->
             if (foregroundEnabled)
-                startForeground(NotificationHelper.ID_FOREGROUND_PROGRESS,
+                startForeground(Notifier.ID_FOREGROUND_PROGRESS,
                         notifier.buildProgressNotification(cycle))
             else stopForeground(true)
         })

@@ -21,15 +21,15 @@ import timber.log.Timber
 import java.util.Random
 import javax.inject.Inject
 
-
-class NotificationHelper(private val context: Context) {
+/**
+ * Used to build and post notifications to the system.
+ */
+class Notifier(val context: Context, val preferences: RxSharedPreferences) {
 
     companion object {
         private val ID_PHASE_COMPLETE = 20
         val ID_FOREGROUND_PROGRESS = 30
     }
-
-    @Inject lateinit var preferences: RxSharedPreferences
 
     /***
      * Build a new notification indicating that the current phase is complete.
