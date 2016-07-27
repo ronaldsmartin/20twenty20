@@ -10,14 +10,15 @@ import com.itsronald.twenty2020.settings.PreferencesModule
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.filterNotNull
+import rx.lang.kotlin.plusAssign
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
 import javax.inject.Inject
 
 /**
- * A CycleService performs the application's main task of notifying the user of the running cycle's
- * progress and phase completion.
+ * A service that provides the user with a progress notification in the notification shade.
+ * This is enabled in the user settings.
  */
 class CycleService : Service() {
 
@@ -29,7 +30,7 @@ class CycleService : Service() {
     @Inject
     lateinit var notifier: Notifier
 
-    /** Subscriptions  */
+    /** Subscriptions */
     private val subscriptions = CompositeSubscription()
 
     //region Service lifecycle
@@ -54,40 +55,25 @@ class CycleService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Timber.i("Starting service.")
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     //endregion
 
     private fun startSubscriptions() {
         Timber.v("Starting subscriptions.")
-        subscriptions.add(watchPhaseCompletion().subscribe {
-            notifier.notifyPhaseComplete(it.phase)
-        })
 
-        subscriptions.add(watchForegroundNotificationPref().subscribe { foregroundEnabled ->
+        subscriptions += watchForegroundNotificationPref().subscribe { foregroundEnabled ->
             if (foregroundEnabled)
                 startForeground(Notifier.ID_FOREGROUND_PROGRESS,
                         notifier.buildProgressNotification(cycle))
             else stopForeground(true)
-        })
+        }
 
-        subscriptions.add(updateForegroundProgress().subscribe {
+        subscriptions += updateForegroundProgress().subscribe {
             notifier.notifyUpdatedProgress(it)
-        })
+        }
     }
-
-    /**
-     * Observe events when the current Cycle phase completes.
-     */
-    private fun watchPhaseCompletion(): Observable<Cycle> = cycle.timer
-                .filter { it.isFinishingPhase }
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError { Timber.e(it, "Unable to notify user of phase completion!") }
-                .doOnNext {
-                    Timber.v("Dispatching phase complete notification for phase ${it.phase}.")
-                }
 
     /**
      * Watch the user preference for notifications_persistent_enabled, signaling when it changes.
