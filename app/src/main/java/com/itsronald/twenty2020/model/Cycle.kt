@@ -118,6 +118,10 @@ class Cycle
     val elapsedTimeMinutes: Int
         get() = elapsedTime / 60
 
+    /** The total number of milliseconds remaining in the current phase. **/
+    val remainingTimeMillis: Long
+        get() = (remainingTime * 1000).toLong()
+
     /** The time left in the current phase, formatted as HH:mm:ss */
     val remainingTimeText: String
         get() {
