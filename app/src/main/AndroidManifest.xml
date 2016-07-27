@@ -45,6 +45,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.itsronald.twenty2020.timer.TimerActivity" />
         </activity>
+        <!-- Receivers -->
+        <receiver android:name=".alarms.AlarmReceiver" />
         <!-- meta-data -->
         <meta-data
             android:name="com.google.android.backup.api_key"
