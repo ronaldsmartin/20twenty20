@@ -10,6 +10,7 @@ import android.support.customtabs.CustomTabsIntent
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.BuildConfig
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.alarms.AlarmScheduler
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
@@ -29,9 +30,10 @@ import javax.inject.Inject
 
 class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView,
-                        val cycle: Cycle,
                         val resources: ResourceRepository,
-                        val preferences: RxSharedPreferences)
+                        val preferences: RxSharedPreferences,
+                        val cycle: Cycle,
+                        val alarmScheduler: AlarmScheduler)
     : TimerContract.UserActionsListener, TimerControl by cycle {
 
     private val context: Context
@@ -206,8 +208,14 @@ class TimerPresenter
 
     //region TimerControl
 
+    override fun toggleRunning() {
+        cycle.toggleRunning()
+        alarmScheduler.updateAlarms()
+    }
+
     override fun restartPhase() {
         cycle.restartPhase()
+        alarmScheduler.updateAlarms()
         val message = resources.getString(R.string.timer_message_restarting_phase,
                 cycle.phaseName.toLowerCase())
         view.showMessage(message = message)
@@ -215,6 +223,7 @@ class TimerPresenter
 
     override fun startNextPhase(delay: Int) {
         cycle.startNextPhase(delay = delay)
+        alarmScheduler.updateAlarms()
         val message = resources.getString(R.string.timer_message_skip_to_next_phase,
                 cycle.phaseName.toLowerCase())
         view.showMessage(message = message)
