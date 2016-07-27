@@ -4,6 +4,7 @@ import android.app.Application
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
+import com.itsronald.twenty2020.alarms.AlarmModule
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.notifications.NotificationModule
@@ -29,19 +30,24 @@ class Twenty2020Application : Application() {
                 .resourceComponent(resourceComponent)
                 .preferencesComponent(preferencesComponent)
                 .notificationModule(NotificationModule(this))
+                .alarmModule(AlarmModule(this))
                 .build()
     }()
 
     override fun onCreate() {
         super.onCreate()
+
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
             Timber.i("Timber logger planted.")
         }
         LeakCanary.install(this)
         Dexter.initialize(this)
+
         PreferenceManager.setDefaultValues(applicationContext, R.xml.preferences, false)
         useDefaultNightMode()
+
+        appComponent.alarmScheduler().onCreate()
     }
 
     private fun useDefaultNightMode() {
