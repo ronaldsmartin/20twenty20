@@ -3,7 +3,6 @@ package com.itsronald.twenty2020
 import android.app.Application
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatDelegate
-import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.alarms.AlarmModule
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
@@ -52,10 +51,8 @@ class Twenty2020Application : Application() {
 
     private fun useDefaultNightMode() {
         val sharedPrefs  = PreferenceManager.getDefaultSharedPreferences(this)
-        val preferences  = RxSharedPreferences.create(sharedPrefs)
         val nightModeKey = getString(R.string.pref_key_display_night_mode)
-        preferences.getString(nightModeKey)
-                .get()?.toInt()?.let {
+        sharedPrefs.getString(nightModeKey, null)?.toInt()?.let {
             if (it == AppCompatDelegate.MODE_NIGHT_YES
                 || it == AppCompatDelegate.MODE_NIGHT_NO
                 || it == AppCompatDelegate.MODE_NIGHT_AUTO) {
