@@ -12,7 +12,13 @@ import timber.log.Timber
 import javax.inject.Inject
 
 /**
- * A class responsible for scheduling user notifications in conjunction with system alarms.
+ * An [AlarmScheduler] schedules system alarm broadcasts based on the current state of the app
+ * [Cycle]. Broadcasts are consumed by an [AlarmReceiver], which then posts system notifications
+ * based on the scheduled alarm broadcast.
+ *
+ * There should only be one instance of [AlarmScheduler] active at any given time; since there is
+ * only one type of broadcast, any additional [AlarmScheduler]s will override any alarms scheduled
+ * by other instances.
  */
 class AlarmScheduler
     @Inject constructor(val context: Context,
@@ -22,7 +28,7 @@ class AlarmScheduler
 
     companion object {
         /** Request code for broadcast receivers to post a "cycle phase complete" notification. */
-        const val REQUEST_CODE_NOTIFY_PHASE_COMPLETE = 10
+        private const val REQUEST_CODE_NOTIFY_PHASE_COMPLETE = 10
 
         /** Key used to pass the cycle phase for a "cycle phase complete" notification. */
         const val EXTRA_PHASE = "com.itsronald.alarms.extra.cycle_phase"
@@ -54,6 +60,12 @@ class AlarmScheduler
 
     //endregion
 
+    /**
+     * Update scheduled alarms based on the current state of the Cycle.
+     *
+     * If the Cycle is running, updates the scheduled alarm broadcast to the time of the cycle
+     * phase's expiration; otherwise, cancels the scheduled alarm broadcast.
+     */
     fun updateAlarms() =
         if (cycle.running) scheduleNextNotification(cycle) else cancelNextNotification(cycle)
 
@@ -66,6 +78,11 @@ class AlarmScheduler
     private fun phaseExpirationTime(cycle: Cycle): Long =
             SystemClock.elapsedRealtime() + cycle.remainingTimeMillis
 
+    /**
+     * Schedule an alarm to notify the user of an upcoming cycle phase completion.
+     *
+     * @param cycle The cycle for which to schedule the alarm broadcast.
+     */
     private fun scheduleNextNotification(cycle: Cycle) {
         val nextNotificationTime = phaseExpirationTime(cycle)
         Timber.i("Scheduling notification phase ${cycle.phaseName} at time $nextNotificationTime")
@@ -80,6 +97,11 @@ class AlarmScheduler
         }
     }
 
+    /**
+     * Cancel any upcoming alarms for phase notifications.
+     *
+     * @param cycle The cycle whose phase completion will be used in the upcoming alarm.
+     */
     private fun cancelNextNotification(cycle: Cycle) {
         Timber.i("Cancelling notification for phase ${cycle.phaseName}.")
         alarmManager.cancel(alarmIntent)

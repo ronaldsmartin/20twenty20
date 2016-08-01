@@ -8,7 +8,9 @@ import com.itsronald.twenty2020.model.Cycle
 import timber.log.Timber
 
 /**
- * Receives scheduled alarm intents from AlarmScheduler.
+ * Receives and processes scheduled alarms from [AlarmScheduler].
+ * 
+ * @see AlarmScheduler
  */
 class AlarmReceiver : BroadcastReceiver() {
 
