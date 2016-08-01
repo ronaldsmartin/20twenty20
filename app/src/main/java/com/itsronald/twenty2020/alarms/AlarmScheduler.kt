@@ -21,22 +21,16 @@ class AlarmScheduler
                         val cycle: Cycle) {
 
     companion object {
+        /** Request code for broadcast receivers to post a "cycle phase complete" notification. */
         const val REQUEST_CODE_NOTIFY_PHASE_COMPLETE = 10
 
+        /** Key used to pass the cycle phase for a "cycle phase complete" notification. */
         const val EXTRA_PHASE = "com.itsronald.alarms.extra.cycle_phase"
     }
 
-    //region lifecycle
-
-    fun onCreate() {
+    init {
         Timber.i("Scheduler created.")
     }
-
-    fun onDestroy() {
-        Timber.i("Scheduler destroyed.")
-    }
-
-    //endregion
 
     fun updateAlarms() =
         if (cycle.running) scheduleNextNotification(cycle) else cancelNextNotification(cycle)

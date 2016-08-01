@@ -52,8 +52,6 @@ class Twenty2020Application : Application() {
 
         PreferenceManager.setDefaultValues(applicationContext, R.xml.preferences, false)
         useDefaultNightMode()
-
-        appComponent.alarmScheduler().onCreate()
     }
 
     private fun useDefaultNightMode() {
