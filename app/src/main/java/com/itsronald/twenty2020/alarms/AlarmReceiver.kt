@@ -15,19 +15,19 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Timber.i("Received broadcast: $intent")
 
-        val appComponent = (context.applicationContext as? Twenty2020Application)?.appComponent
+        val appComponent = Twenty2020Application.INSTANCE.appComponent
 
         val completedPhase = intent.getSerializableExtra(AlarmScheduler.EXTRA_PHASE) as Cycle.Phase
-        appComponent?.notifier()?.notifyPhaseComplete(completedPhase)
+        appComponent.notifier().notifyPhaseComplete(completedPhase)
 
-        val cycle = appComponent?.cycle()
-        if (cycle?.phase == completedPhase) {
+        val cycle = appComponent.cycle()
+        if (cycle.phase == completedPhase) {
             Timber.i("Cycle is out of sync. Starting next phase.")
-            cycle?.startNextPhase()
+            cycle.startNextPhase()
         }
 
         Timber.i("Updating alarms.")
-        appComponent?.alarmScheduler()?.updateAlarms()
+        appComponent.alarmScheduler().updateAlarms()
     }
 
 }

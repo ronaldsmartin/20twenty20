@@ -16,6 +16,12 @@ import timber.log.Timber
 
 class Twenty2020Application : Application() {
 
+    companion object {
+        /** Accessor for the singleton Application object. */
+        lateinit var INSTANCE: Twenty2020Application
+            private set
+    }
+
     /** Dagger component that vends singleton dependencies. */
     val appComponent: ApplicationComponent = {
         val resourceComponent = DaggerResourceComponent.builder()
@@ -35,6 +41,7 @@ class Twenty2020Application : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        INSTANCE = this
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
