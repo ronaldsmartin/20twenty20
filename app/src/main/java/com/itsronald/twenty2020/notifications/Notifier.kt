@@ -167,8 +167,9 @@ class Notifier(val context: Context, val preferences: RxSharedPreferences) {
      * @param phase The phase that was completed.
      */
     fun notifyPhaseComplete(phase: Cycle.Phase) {
-        Timber.v("Building cycle complete notification")
+        Timber.v("Building cycle complete notification.")
         val notification = buildPhaseCompleteNotification(phase)
+        Timber.i("Posting cycle complete notification.")
         val notifyManager = NotificationManagerCompat.from(context)
         notifyManager.notify(ID_PHASE_COMPLETE, notification)
     }

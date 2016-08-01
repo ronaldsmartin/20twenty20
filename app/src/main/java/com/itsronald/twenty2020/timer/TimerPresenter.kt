@@ -208,14 +208,9 @@ class TimerPresenter
 
     //region TimerControl
 
-    override fun toggleRunning() {
-        cycle.toggleRunning()
-        alarmScheduler.updateAlarms()
-    }
-
     override fun restartPhase() {
         cycle.restartPhase()
-        alarmScheduler.updateAlarms()
+
         val message = resources.getString(R.string.timer_message_restarting_phase,
                 cycle.phaseName.toLowerCase())
         view.showMessage(message = message)
@@ -223,7 +218,7 @@ class TimerPresenter
 
     override fun startNextPhase(delay: Int) {
         cycle.startNextPhase(delay = delay)
-        alarmScheduler.updateAlarms()
+
         val message = resources.getString(R.string.timer_message_skip_to_next_phase,
                 cycle.phaseName.toLowerCase())
         view.showMessage(message = message)

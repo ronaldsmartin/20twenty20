@@ -7,6 +7,9 @@ import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
 import com.itsronald.twenty2020.model.Cycle
+import com.itsronald.twenty2020.model.TimerControl
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,6 +38,21 @@ class AlarmScheduler
     init {
         Timber.i("Scheduler created.")
     }
+
+    /**
+     * Observe changes to the cycle's timer state.
+     */
+    private val timerEventSubscription = cycle.timerEvents()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onErrorResumeNext {
+                Timber.e(it, "Encountered an error while observing TimerControl events.")
+                cycle.timerEvents()
+            }
+            .subscribe {
+                Timber.i("Received timer event: ${TimerControl.eventName(it)}")
+                updateAlarms()
+            }
 
     //region Intents
 
@@ -83,7 +101,7 @@ class AlarmScheduler
      */
     private fun scheduleNextNotification(cycle: Cycle) {
         val nextNotificationTime = phaseExpirationTime(cycle)
-        Timber.i("Scheduling notification phase ${cycle.phaseName} at time $nextNotificationTime")
+        Timber.i("Scheduling notification for phase ${cycle.phaseName} at time $nextNotificationTime")
 
         val alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
