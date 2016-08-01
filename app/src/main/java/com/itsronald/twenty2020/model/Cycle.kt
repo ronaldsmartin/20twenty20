@@ -204,11 +204,7 @@ class Cycle
      * Restart the current phase.
      */
     override fun restartPhase() {
-        elapsedTime = 0
-        duration = phase.duration(resources = resources)
-        if (timerSubject.hasObservers()) {
-            timerSubject.onNext(this)
-        }
+        resetTime()
     }
 
     /**
@@ -217,12 +213,20 @@ class Cycle
     override fun startNextPhase(delay: Int) {
         countdown?.unsubscribe()
         phase = phase.nextPhase
-        restartPhase()
+        resetTime()
 
         // Only start the next phase if the timer was already running.
         if (running) {
             running = false
             start(delay = delay)
+        }
+    }
+
+    private fun resetTime() {
+        elapsedTime = 0
+        duration = phase.duration(resources = resources)
+        if (timerSubject.hasObservers()) {
+            timerSubject.onNext(this)
         }
     }
 
