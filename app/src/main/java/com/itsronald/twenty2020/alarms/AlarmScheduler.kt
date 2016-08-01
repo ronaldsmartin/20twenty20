@@ -32,6 +32,28 @@ class AlarmScheduler
         Timber.i("Scheduler created.")
     }
 
+    //region Intents
+
+    /**
+     * The pending intent to schedule alarm broadcasts.
+     */
+    private val alarmIntent: PendingIntent
+        get() = PendingIntent.getBroadcast(
+                context,
+                REQUEST_CODE_NOTIFY_PHASE_COMPLETE,
+                broadcastIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+    /**
+     * The intent that will be broadcast during system alarms.
+     */
+    private val broadcastIntent: Intent
+        get() = Intent(context, AlarmReceiver::class.java)
+                .putExtra(EXTRA_PHASE, cycle.phase)
+
+    //endregion
+
     fun updateAlarms() =
         if (cycle.running) scheduleNextNotification(cycle) else cancelNextNotification(cycle)
 
@@ -48,27 +70,18 @@ class AlarmScheduler
         val nextNotificationTime = phaseExpirationTime(cycle)
         Timber.i("Scheduling notification phase ${cycle.phaseName} at time $nextNotificationTime")
 
+        val alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextNotificationTime, alarmIntent(cycle))
+            alarmManager.setExactAndAllowWhileIdle(alarmType, nextNotificationTime, alarmIntent)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextNotificationTime, alarmIntent(cycle))
+            alarmManager.setExact(alarmType, nextNotificationTime, alarmIntent)
         } else {
-            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextNotificationTime, alarmIntent(cycle))
+            alarmManager.set(alarmType, nextNotificationTime, alarmIntent)
         }
     }
 
     private fun cancelNextNotification(cycle: Cycle) {
         Timber.i("Cancelling notification for phase ${cycle.phaseName}.")
-        alarmManager.cancel(alarmIntent(cycle = cycle))
+        alarmManager.cancel(alarmIntent)
     }
-
-    private fun alarmIntent(cycle: Cycle): PendingIntent = PendingIntent.getBroadcast(
-            context,
-            REQUEST_CODE_NOTIFY_PHASE_COMPLETE,
-            broadcastIntent(cycle = cycle),
-            PendingIntent.FLAG_UPDATE_CURRENT
-    )
-
-    private fun broadcastIntent(cycle: Cycle): Intent = Intent(context, AlarmReceiver::class.java)
-            .putExtra(EXTRA_PHASE, cycle.phase)
 }
