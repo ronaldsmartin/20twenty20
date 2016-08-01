@@ -9,7 +9,7 @@ import timber.log.Timber
 
 /**
  * Receives and processes scheduled alarms from [AlarmScheduler].
- * 
+ *
  * @see AlarmScheduler
  */
 class AlarmReceiver : BroadcastReceiver() {

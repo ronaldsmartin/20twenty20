@@ -3,7 +3,6 @@ package com.itsronald.twenty2020.alarms
 import android.app.AlarmManager
 import android.content.Context
 import com.itsronald.twenty2020.model.Cycle
-import com.itsronald.twenty2020.notifications.Notifier
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -16,11 +15,6 @@ class AlarmModule(private val context: Context) {
         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     @Provides @Singleton
-    fun provideAlarmScheduler(alarmManager: AlarmManager,
-                              notifier: Notifier,
-                              cycle: Cycle): AlarmScheduler =
-            AlarmScheduler(context = context,
-                    alarmManager = alarmManager,
-                    notifier = notifier,
-                    cycle = cycle)
+    fun provideAlarmScheduler(alarmManager: AlarmManager, cycle: Cycle): AlarmScheduler =
+            AlarmScheduler(context = context, alarmManager = alarmManager, cycle = cycle)
 }

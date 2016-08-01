@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
 import com.itsronald.twenty2020.model.Cycle
-import com.itsronald.twenty2020.notifications.Notifier
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,7 +22,6 @@ import javax.inject.Inject
 class AlarmScheduler
     @Inject constructor(val context: Context,
                         val alarmManager: AlarmManager,
-                        val notifier: Notifier,
                         val cycle: Cycle) {
 
     companion object {
