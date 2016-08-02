@@ -50,6 +50,9 @@ class Twenty2020Application : Application() {
         LeakCanary.install(this)
         Dexter.initialize(this)
 
+        // Ensures that the alarm scheduler is initialized.
+        appComponent.alarmScheduler().updateAlarms()
+
         PreferenceManager.setDefaultValues(applicationContext, R.xml.preferences, false)
         useDefaultNightMode()
     }

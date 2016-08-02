@@ -10,7 +10,6 @@ import android.support.customtabs.CustomTabsIntent
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.BuildConfig
 import com.itsronald.twenty2020.R
-import com.itsronald.twenty2020.alarms.AlarmScheduler
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
@@ -32,8 +31,7 @@ class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView,
                         val resources: ResourceRepository,
                         val preferences: RxSharedPreferences,
-                        val cycle: Cycle,
-                        val alarmScheduler: AlarmScheduler)
+                        val cycle: Cycle)
     : TimerContract.UserActionsListener, TimerControl by cycle {
 
     private val context: Context

@@ -18,12 +18,7 @@ class TimerModule(private val view: TimerContract.TimerView) {
     @Provides
     @Activity
     fun providePresenter(cycle: Cycle,
-                         alarmScheduler: AlarmScheduler,
                          resources: ResourceRepository,
                          preferences: RxSharedPreferences): TimerContract.UserActionsListener =
-            TimerPresenter(view = view,
-                    resources = resources,
-                    preferences = preferences,
-                    cycle = cycle,
-                    alarmScheduler = alarmScheduler)
+            TimerPresenter(view = view, resources = resources, preferences = preferences, cycle = cycle)
 }
