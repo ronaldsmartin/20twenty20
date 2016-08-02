@@ -1,13 +1,16 @@
 package com.itsronald.twenty2020.alarms
 
+import android.annotation.TargetApi
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
+import com.itsronald.twenty2020.timer.TimerActivity
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import timber.log.Timber
@@ -30,6 +33,9 @@ class AlarmScheduler
     companion object {
         /** Request code for broadcast receivers to post a "cycle phase complete" notification. */
         private const val REQUEST_CODE_NOTIFY_PHASE_COMPLETE = 10
+
+        /** Request code for receivers to show alarm controls. */
+        private const val REQUEST_CODE_EDIT_ALARMS = 20
 
         /** Key used to pass the cycle phase for a "cycle phase complete" notification. */
         const val EXTRA_PHASE = "com.itsronald.alarms.extra.cycle_phase"
@@ -74,6 +80,28 @@ class AlarmScheduler
         get() = Intent(context, AlarmReceiver::class.java)
                 .putExtra(EXTRA_PHASE, cycle.phase)
 
+    /**
+     * An intent that will allow the user to edit alarms scheduled by this object.
+     * In this case, the alarm control is the Cycle TimerControl exposed in TimerActivity.
+     *
+     * This intent is triggered when the user taps the next alarm time in the notification shade on
+     * Android Marshmallow and above.
+     *
+     * @see scheduleNextNotification
+     */
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun buildShowAlarmIntent(): PendingIntent {
+        val intent = Intent(context, TimerActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .setComponent(ComponentName(context, TimerActivity::class.java))
+        return PendingIntent.getActivity(
+                context,
+                REQUEST_CODE_EDIT_ALARMS,
+                intent,
+                0
+        )
+    }
+
     //endregion
 
     /**
@@ -91,8 +119,9 @@ class AlarmScheduler
      * @param cycle The cycle for which to calculate the expiration time.
      * @return the system elapsed real time at which [cycle]'s phase will expire, in milliseconds.
      */
-    private fun phaseExpirationTime(cycle: Cycle): Long =
-            SystemClock.elapsedRealtime() + cycle.remainingTimeMillis
+    private fun phaseExpirationTime(cycle: Cycle): Long = cycle.remainingTimeMillis +
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) System.currentTimeMillis()
+            else SystemClock.elapsedRealtime()
 
     /**
      * Schedule an alarm to notify the user of an upcoming cycle phase completion.
@@ -105,7 +134,13 @@ class AlarmScheduler
 
         val alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(alarmType, nextNotificationTime, alarmIntent)
+            // Using AlarmManager.setAlarmClock() here instead of setExactAndAllowWhileIdle()
+            // to prevent interference from Doze mode, which can defer alarms up to 15 minutes
+            // when active and prevents alarms that are two frequent.
+            alarmManager.setAlarmClock(
+                    AlarmManager.AlarmClockInfo(nextNotificationTime, buildShowAlarmIntent()),
+                    alarmIntent
+            )
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             alarmManager.setExact(alarmType, nextNotificationTime, alarmIntent)
         } else {
