@@ -5,7 +5,7 @@ import com.itsronald.twenty2020.alarms.AlarmScheduler
 import com.itsronald.twenty2020.data.ResourceComponent
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.CycleModule
-import com.itsronald.twenty2020.notifications.CycleService
+import com.itsronald.twenty2020.notifications.ForegroundProgressService
 import com.itsronald.twenty2020.notifications.NotificationModule
 import com.itsronald.twenty2020.notifications.Notifier
 import com.itsronald.twenty2020.settings.PreferencesComponent
@@ -21,5 +21,5 @@ interface ApplicationComponent {
     fun cycle(): Cycle
     fun notifier(): Notifier
     fun alarmScheduler(): AlarmScheduler
-    fun inject(cycleService: CycleService)
+    fun inject(foregroundProgressService: ForegroundProgressService)
 }

@@ -19,7 +19,7 @@
         android:theme="@style/AppTheme">
         <!-- Services -->
         <service
-            android:name=".notifications.CycleService"
+            android:name=".notifications.ForegroundProgressService"
             android:enabled="true"
             android:exported="false">
         </service>

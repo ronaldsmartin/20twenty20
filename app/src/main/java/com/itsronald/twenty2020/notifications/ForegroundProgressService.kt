@@ -17,7 +17,7 @@ import javax.inject.Inject
  * A service that provides the user with a progress notification in the notification shade.
  * This is enabled in the user settings.
  */
-class CycleService : Service() {
+class ForegroundProgressService : Service() {
 
     /** The state of the repeating timer. */
     @Inject

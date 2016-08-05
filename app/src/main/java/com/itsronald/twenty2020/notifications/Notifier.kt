@@ -31,16 +31,16 @@ class Notifier(val context: Context, val preferences: RxSharedPreferences) {
         /** ID for the notification for cycle phase completion */
         private val ID_PHASE_COMPLETE = 20
 
-        /** ID for the persistent notification updated by CycleService. */
+        /** ID for the persistent notification updated by ForegroundProgressService. */
         val ID_FOREGROUND_PROGRESS = 30
     }
 
     @Suppress("unused")
     private val foregroundNotificationSubscription = foregroundNotificationPref()
             .subscribe { enabled ->
-                Timber.i(if (enabled) "Starting CycleService" else "Ending CycleService")
+                Timber.i(if (enabled) "Starting ForegroundProgressService" else "Ending ForegroundProgressService")
 
-                val intent = Intent(context, CycleService::class.java)
+                val intent = Intent(context, ForegroundProgressService::class.java)
                 if (enabled) context.startService(intent) else context.stopService(intent)
             }
 
