@@ -17,9 +17,10 @@ import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
 import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Random
-import javax.inject.Inject
 
 /**
  * Used to build and post notifications to the system.
@@ -27,9 +28,21 @@ import javax.inject.Inject
 class Notifier(val context: Context, val preferences: RxSharedPreferences) {
 
     companion object {
+        /** ID for the notification for cycle phase completion */
         private val ID_PHASE_COMPLETE = 20
+
+        /** ID for the persistent notification updated by CycleService. */
         val ID_FOREGROUND_PROGRESS = 30
     }
+
+    @Suppress("unused")
+    private val foregroundNotificationSubscription = foregroundNotificationPref()
+            .subscribe { enabled ->
+                Timber.i(if (enabled) "Starting CycleService" else "Ending CycleService")
+
+                val intent = Intent(context, CycleService::class.java)
+                if (enabled) context.startService(intent) else context.stopService(intent)
+            }
 
     /***
      * Build a new notification indicating that the current phase is complete.
@@ -176,12 +189,15 @@ class Notifier(val context: Context, val preferences: RxSharedPreferences) {
 
     //region Foreground progress notification
 
-    /**
-     * Observe the current value of the notifications_persistent_enabled SharedPreference.
-     */
-    fun foregroundNotificationPref(): Observable<Boolean> = preferences
-                .getBoolean(context.getString(R.string.pref_key_notifications_persistent_enabled))
-                .asObservable()
+    private fun foregroundNotificationPref(): Observable<Boolean> = preferences
+            .getBoolean(context.getString(R.string.pref_key_notifications_persistent_enabled))
+            .asObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onErrorResumeNext {
+                Timber.e(it, "Encountered an error while watching foreground notification preference.")
+                foregroundNotificationPref()
+            }
 
     /**
      * Create a notification displaying a cycle's current progress.
@@ -228,7 +244,7 @@ class Notifier(val context: Context, val preferences: RxSharedPreferences) {
      * @param cycle The cycle whose progress should be displayed in the notification.
      */
     fun notifyUpdatedProgress(cycle: Cycle) {
-        Timber.v("Updating foreground cycle progress notification")
+        Timber.v("Posting foreground progress notification for cycle: $cycle")
         val notification = buildProgressNotification(cycle)
         val notifyManager = NotificationManagerCompat.from(context)
         notifyManager.notify(ID_FOREGROUND_PROGRESS, notification)

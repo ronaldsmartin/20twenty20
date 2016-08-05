@@ -41,6 +41,13 @@ class Twenty2020Application : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        init()
+
+        PreferenceManager.setDefaultValues(applicationContext, R.xml.preferences, false)
+        useDefaultNightMode()
+    }
+
+    private fun init() {
         INSTANCE = this
 
         if (BuildConfig.DEBUG) {
@@ -50,11 +57,9 @@ class Twenty2020Application : Application() {
         LeakCanary.install(this)
         Dexter.initialize(this)
 
-        // Ensures that the alarm scheduler is initialized.
-        appComponent.alarmScheduler().updateAlarms()
-
-        PreferenceManager.setDefaultValues(applicationContext, R.xml.preferences, false)
-        useDefaultNightMode()
+        // Just referencing these ensure they are instantiated by Dagger.
+        appComponent.alarmScheduler()
+        appComponent.notifier()
     }
 
     private fun useDefaultNightMode() {
