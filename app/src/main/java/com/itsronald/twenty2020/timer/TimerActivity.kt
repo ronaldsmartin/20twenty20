@@ -296,7 +296,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {
         val progressPercent = (progress.toDouble() / maxProgress.toDouble()) * 100
-        wave_view.setProgress(progressPercent.toInt())
+        // TODO: Reimplement with new indicator.
     }
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {

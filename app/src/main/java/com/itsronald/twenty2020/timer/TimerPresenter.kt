@@ -68,21 +68,8 @@ class TimerPresenter
      * out its animation.
      */
     private fun cycleProgress(): Observable<Int> = cycle.timer
-            .concatMap { cycleState ->
-                val isWorkPhase = cycleState.phase == Cycle.Phase.WORK
-                val progress = if (isWorkPhase)
-                    cycleState.duration - cycleState.elapsedTime else cycleState.elapsedTime
-                val secondsPercent = progress.toDouble() / cycleState.duration
-
-                val updateRateMilliseconds = 55
-                val numChunks = 1000 / updateRateMilliseconds
-                Observable.interval(updateRateMilliseconds.toLong(), TimeUnit.MILLISECONDS)
-                        .take(numChunks)
-                        .map {
-                            val interpolation = it.toDouble() / numChunks / 50
-                            secondsPercent + if (isWorkPhase) -interpolation else interpolation
-                        }
-                        .map { (it * 100).toInt() }
+            .map { cycle ->
+                (cycle.elapsedTime.toDouble() / cycle.duration.toDouble()).toInt() * 100
             }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())

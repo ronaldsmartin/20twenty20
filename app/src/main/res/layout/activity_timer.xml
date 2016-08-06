@@ -28,21 +28,6 @@
             app:layout_constraintRight_toRightOf="@+id/constraint_layout"
             app:layout_constraintBottom_toTopOf="@+id/controls_layout" />
 
-        <com.john.waveview.WaveView
-            xmlns:wave="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/wave_view"
-            android:layout_width="@dimen/timer_wave_view_width"
-            android:layout_height="@dimen/timer_wave_view_height"
-            android:background="@color/windowBackground"
-            wave:above_wave_color="@android:color/white"
-            wave:blow_wave_color="@color/colorPrimaryDark"
-            wave:progress="100"
-            wave:wave_height="little"
-            wave:wave_hz="normal"
-            wave:wave_length="middle"
-            app:layout_constraintCenterX_toCenterX="@id/progress_ring_background"
-            app:layout_constraintCenterY_toCenterY="@id/progress_ring_background"/>
-
         <ProgressBar
             android:id="@+id/progress_ring_inner"
             android:layout_width="0dp"
