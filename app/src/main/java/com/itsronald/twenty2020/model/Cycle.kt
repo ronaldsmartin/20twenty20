@@ -5,6 +5,7 @@ import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.TimerControl.Companion.TimerEvent
 import rx.Observable
 import rx.Subscription
+import rx.lang.kotlin.onError
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
@@ -169,27 +170,29 @@ class Cycle
             return
         }
         Timber.v("Starting ${phase.name} phase. Time elapsed: $elapsedTime; Time left: $remainingTime")
+        startTimerCountdown(delay = delay)
 
+        if (timerEventSubject.hasObservers()) {
+            timerEventSubject.onNext(TimerControl.TIMER_STARTED)
+        }
+    }
+
+    private fun startTimerCountdown(delay: Int) {
         countdown = Observable.interval(1, TimeUnit.SECONDS)
                 .take(remainingTime)
                 .delay(delay.toLong(), TimeUnit.SECONDS)
                 .map { it.toInt() }
                 .serialize()
                 .subscribeOn(Schedulers.computation())
-                .doOnError { timerSubject.onError(it) }
+                .onError { timerSubject.onError(it) }
                 .doOnCompleted { startNextPhase() }
+                .doOnSubscribe { running = true }
                 .subscribe {
                     elapsedTime += 1
                     if (timerSubject.hasObservers()) {
                         timerSubject.onNext(this)
                     }
                 }
-
-        running = true
-
-        if (timerEventSubject.hasObservers()) {
-            timerEventSubject.onNext(TimerControl.TIMER_STARTED)
-        }
     }
 
     /**
@@ -240,10 +243,6 @@ class Cycle
         if (running) {
             running = false
             start(delay = delay)
-        }
-
-        if (timerEventSubject.hasObservers()) {
-            timerEventSubject.onNext(TimerControl.TIMER_SKIPPED_PHASE)
         }
     }
 

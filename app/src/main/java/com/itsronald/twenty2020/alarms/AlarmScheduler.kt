@@ -14,6 +14,7 @@ import com.itsronald.twenty2020.timer.TimerActivity
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import timber.log.Timber
+import java.util.Date
 import javax.inject.Inject
 
 /**
@@ -48,6 +49,7 @@ class AlarmScheduler
     /**
      * Observe changes to the cycle's timer state.
      */
+    @Suppress("unused")
     private val timerEventSubscription = cycle.timerEvents()
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
@@ -130,7 +132,8 @@ class AlarmScheduler
      */
     private fun scheduleNextNotification(cycle: Cycle) {
         val nextNotificationTime = phaseExpirationTime(cycle)
-        Timber.i("Scheduling notification for phase ${cycle.phaseName} at time $nextNotificationTime")
+        val nextNotificationDate = Date(nextNotificationTime)
+        Timber.i("Scheduling notification for phase ${cycle.phaseName} at time $nextNotificationDate")
 
         val alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

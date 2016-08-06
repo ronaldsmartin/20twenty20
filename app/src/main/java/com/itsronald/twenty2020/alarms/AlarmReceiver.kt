@@ -26,6 +26,7 @@ class AlarmReceiver : BroadcastReceiver() {
         if (cycle.phase == completedPhase) {
             Timber.i("Cycle is out of sync. Starting next phase.")
             cycle.startNextPhase()
+            cycle.start()
         }
 
         Timber.i("Updating alarms.")
