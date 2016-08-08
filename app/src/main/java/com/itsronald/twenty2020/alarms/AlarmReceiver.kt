@@ -19,7 +19,12 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val appComponent = Twenty2020Application.INSTANCE.appComponent
 
-        val completedPhase = intent.getSerializableExtra(AlarmScheduler.EXTRA_PHASE) as Cycle.Phase
+        // While enums are Serializable and can be passed directly through an intent, it is
+        // possible for a ClassNotFoundException to occur while de-serializing the extra.
+        // Passing the name of the phase instead is a suitable workaround.
+        // See http://stackoverflow.com/q/2307476/4499783 for more details.
+        val completedPhaseName = intent.getStringExtra(AlarmScheduler.EXTRA_PHASE)
+        val completedPhase = Cycle.Phase.valueOf(completedPhaseName)
         appComponent.notifier().notifyPhaseComplete(completedPhase)
 
         val cycle = appComponent.cycle()

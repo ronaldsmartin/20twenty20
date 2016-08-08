@@ -79,8 +79,12 @@ class AlarmScheduler
      * The intent that will be broadcast during system alarms.
      */
     private val broadcastIntent: Intent
+        // While enums are Serializable and can be passed directly through an intent, it is
+        // possible for a ClassNotFoundException to occur while de-serializing the extra.
+        // Passing the name of the phase instead is a suitable workaround.
+        // See http://stackoverflow.com/q/2307476/4499783 for more details.
         get() = Intent(context, AlarmReceiver::class.java)
-                .putExtra(EXTRA_PHASE, cycle.phase)
+                .putExtra(EXTRA_PHASE, cycle.phase.name)
 
     /**
      * An intent that will allow the user to edit alarms scheduled by this object.
