@@ -13,6 +13,7 @@ import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
@@ -25,7 +26,9 @@ import java.util.Random
 /**
  * Used to build and post notifications to the system.
  */
-class Notifier(val context: Context, val preferences: RxSharedPreferences) {
+class Notifier(val context: Context,
+               val preferences: RxSharedPreferences,
+               val resources: ResourceRepository) {
 
     companion object {
         /** ID for the notification for cycle phase completion */
@@ -135,7 +138,7 @@ class Notifier(val context: Context, val preferences: RxSharedPreferences) {
         }
         Cycle.Phase.BREAK -> {
             // Notify the user what time the next break will occur.
-            val breakCycleMilliseconds = Cycle.Phase.WORK.defaultDuration * 1000
+            val breakCycleMilliseconds = Cycle.Phase.WORK.duration(resources) * 1000
             val nextCycleTime = System.currentTimeMillis() + breakCycleMilliseconds
             val nextTime = DateUtils.getRelativeTimeSpanString(context, nextCycleTime, true)
             context.getString(R.string.notification_message_break_cycle_complete, nextTime)
