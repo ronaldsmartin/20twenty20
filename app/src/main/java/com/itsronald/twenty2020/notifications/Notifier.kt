@@ -13,23 +13,39 @@ import android.support.v7.app.NotificationCompat
 import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.timer.TimerActivity
 import com.itsronald.twenty2020.timer.TimerContract
 import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Random
-import javax.inject.Inject
 
-
-class NotificationHelper(private val context: Context) {
+/**
+ * Used to build and post notifications to the system.
+ */
+class Notifier(val context: Context,
+               val preferences: RxSharedPreferences,
+               val resources: ResourceRepository) {
 
     companion object {
+        /** ID for the notification for cycle phase completion */
         private val ID_PHASE_COMPLETE = 20
+
+        /** ID for the persistent notification updated by ForegroundProgressService. */
         val ID_FOREGROUND_PROGRESS = 30
     }
 
-    @Inject lateinit var preferences: RxSharedPreferences
+    @Suppress("unused")
+    private val foregroundNotificationSubscription = foregroundNotificationPref()
+            .subscribe { enabled ->
+                Timber.i(if (enabled) "Starting ForegroundProgressService" else "Ending ForegroundProgressService")
+
+                val intent = Intent(context, ForegroundProgressService::class.java)
+                if (enabled) context.startService(intent) else context.stopService(intent)
+            }
 
     /***
      * Build a new notification indicating that the current phase is complete.
@@ -122,7 +138,7 @@ class NotificationHelper(private val context: Context) {
         }
         Cycle.Phase.BREAK -> {
             // Notify the user what time the next break will occur.
-            val breakCycleMilliseconds = Cycle.Phase.WORK.defaultDuration * 1000
+            val breakCycleMilliseconds = Cycle.Phase.WORK.duration(resources) * 1000
             val nextCycleTime = System.currentTimeMillis() + breakCycleMilliseconds
             val nextTime = DateUtils.getRelativeTimeSpanString(context, nextCycleTime, true)
             context.getString(R.string.notification_message_break_cycle_complete, nextTime)
@@ -167,20 +183,24 @@ class NotificationHelper(private val context: Context) {
      * @param phase The phase that was completed.
      */
     fun notifyPhaseComplete(phase: Cycle.Phase) {
-        Timber.v("Building cycle complete notification")
+        Timber.v("Building cycle complete notification.")
         val notification = buildPhaseCompleteNotification(phase)
+        Timber.i("Posting cycle complete notification.")
         val notifyManager = NotificationManagerCompat.from(context)
         notifyManager.notify(ID_PHASE_COMPLETE, notification)
     }
 
     //region Foreground progress notification
 
-    /**
-     * Observe the current value of the notifications_persistent_enabled SharedPreference.
-     */
-    fun foregroundNotificationPref(): Observable<Boolean> = preferences
-                .getBoolean(context.getString(R.string.pref_key_notifications_persistent_enabled))
-                .asObservable()
+    private fun foregroundNotificationPref(): Observable<Boolean> = preferences
+            .getBoolean(context.getString(R.string.pref_key_notifications_persistent_enabled))
+            .asObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onErrorResumeNext {
+                Timber.e(it, "Encountered an error while watching foreground notification preference.")
+                foregroundNotificationPref()
+            }
 
     /**
      * Create a notification displaying a cycle's current progress.
@@ -227,7 +247,7 @@ class NotificationHelper(private val context: Context) {
      * @param cycle The cycle whose progress should be displayed in the notification.
      */
     fun notifyUpdatedProgress(cycle: Cycle) {
-        Timber.v("Updating foreground cycle progress notification")
+        Timber.v("Posting foreground progress notification for cycle: $cycle")
         val notification = buildProgressNotification(cycle)
         val notifyManager = NotificationManagerCompat.from(context)
         notifyManager.notify(ID_FOREGROUND_PROGRESS, notification)

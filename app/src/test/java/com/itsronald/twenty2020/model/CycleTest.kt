@@ -98,6 +98,11 @@ class CycleTest {
     }
 
     @Test
+    fun getRemainingTimeMillis() {
+        assertThat(cycle.remainingTimeMillis, `is`(cycle.remainingTime * 1000L))
+    }
+
+    @Test
     fun isFinishingPhase() {
         val newDuration = 3
         doReturn("$newDuration").`when`(resources)

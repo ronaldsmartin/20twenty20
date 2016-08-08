@@ -19,7 +19,7 @@
         android:theme="@style/AppTheme">
         <!-- Services -->
         <service
-            android:name=".notifications.CycleService"
+            android:name=".notifications.ForegroundProgressService"
             android:enabled="true"
             android:exported="false">
         </service>
@@ -45,6 +45,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.itsronald.twenty2020.timer.TimerActivity" />
         </activity>
+        <!-- Receivers -->
+        <receiver
+            android:name=".alarms.AlarmReceiver"
+            android:exported="false" />
         <!-- meta-data -->
         <meta-data
             android:name="com.google.android.backup.api_key"

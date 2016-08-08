@@ -2,8 +2,10 @@ package com.itsronald.twenty2020.model
 
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
+import com.itsronald.twenty2020.model.TimerControl.Companion.TimerEvent
 import rx.Observable
 import rx.Subscription
+import rx.lang.kotlin.onError
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
@@ -99,6 +101,8 @@ class Cycle
     val isFinishingPhase: Boolean
         get() = elapsedTime == duration - 1
 
+    //region Observables
+
     /** PublishSubject where we update the timer state. **/
     private val timerSubject = PublishSubject.create<Cycle>().toSerialized()
 
@@ -107,6 +111,11 @@ class Cycle
 
     /** Observable state of the cycle. */
     val timer: Observable<Cycle> = timerSubject.asObservable().onBackpressureLatest()
+
+    /** Subject where TimerControl events should be published. */
+    private val timerEventSubject = PublishSubject.create<@TimerEvent Long>().toSerialized()
+
+    //endregion
 
     //region Convenience properties
 
@@ -117,6 +126,10 @@ class Cycle
     /** The number of minutes that have elapsed in the current phase. **/
     val elapsedTimeMinutes: Int
         get() = elapsedTime / 60
+
+    /** The total number of milliseconds remaining in the current phase. **/
+    val remainingTimeMillis: Long
+        get() = (remainingTime * 1000).toLong()
 
     /** The time left in the current phase, formatted as HH:mm:ss */
     val remainingTimeText: String
@@ -142,6 +155,7 @@ class Cycle
     //endregion
 
     //region TimerControl
+
     /**
      * Start the countdown for the current phase. If the phase countdown is already running, then
      * this command will be ignored.
@@ -156,23 +170,29 @@ class Cycle
             return
         }
         Timber.v("Starting ${phase.name} phase. Time elapsed: $elapsedTime; Time left: $remainingTime")
+        startTimerCountdown(delay = delay)
 
+        if (timerEventSubject.hasObservers()) {
+            timerEventSubject.onNext(TimerControl.TIMER_STARTED)
+        }
+    }
+
+    private fun startTimerCountdown(delay: Int) {
         countdown = Observable.interval(1, TimeUnit.SECONDS)
                 .take(remainingTime)
                 .delay(delay.toLong(), TimeUnit.SECONDS)
                 .map { it.toInt() }
                 .serialize()
                 .subscribeOn(Schedulers.computation())
-                .doOnError { timerSubject.onError(it) }
+                .onError { timerSubject.onError(it) }
                 .doOnCompleted { startNextPhase() }
+                .doOnSubscribe { running = true }
                 .subscribe {
                     elapsedTime += 1
                     if (timerSubject.hasObservers()) {
                         timerSubject.onNext(this)
                     }
                 }
-
-        running = true
     }
 
     /**
@@ -192,6 +212,10 @@ class Cycle
         if (timerSubject.hasObservers()) {
             timerSubject.onNext(this)
         }
+
+        if (timerEventSubject.hasObservers()) {
+            timerEventSubject.onNext(TimerControl.TIMER_PAUSED)
+        }
     }
 
     override fun toggleRunning() = if (running) pause() else start()
@@ -200,10 +224,10 @@ class Cycle
      * Restart the current phase.
      */
     override fun restartPhase() {
-        elapsedTime = 0
-        duration = phase.duration(resources = resources)
-        if (timerSubject.hasObservers()) {
-            timerSubject.onNext(this)
+        resetTime()
+
+        if (timerEventSubject.hasObservers()) {
+            timerEventSubject.onNext(TimerControl.TIMER_RESTARTED)
         }
     }
 
@@ -213,7 +237,7 @@ class Cycle
     override fun startNextPhase(delay: Int) {
         countdown?.unsubscribe()
         phase = phase.nextPhase
-        restartPhase()
+        resetTime()
 
         // Only start the next phase if the timer was already running.
         if (running) {
@@ -221,6 +245,21 @@ class Cycle
             start(delay = delay)
         }
     }
+
+    private fun resetTime() {
+        elapsedTime = 0
+        duration = phase.duration(resources = resources)
+
+        if (timerSubject.hasObservers()) {
+            timerSubject.onNext(this)
+        }
+    }
+
+    /**
+     * Observe TimerControl events.
+     */
+    fun timerEvents(): Observable<Long> =
+            timerEventSubject.asObservable().onBackpressureLatest()
 
     //endregion
 }
