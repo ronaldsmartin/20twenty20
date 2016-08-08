@@ -2,96 +2,106 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:seekarc="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.itsronald.twenty2020.timer.TimerActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:id="@+id/constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:animateLayoutChanges="true"
         app:layout_behavior="com.itsronald.twenty2020.timer.TimerActivity$SnackbarPushesUpBehavior">
 
-        <ProgressBar
-            android:id="@+id/progress_ring_background"
-            android:layout_width="0dp"
+        <!-- Break display -->
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:indeterminate="false"
-            android:progressDrawable="@drawable/progress_ring_background"
-            android:max="20"
-            android:progress="20"
-            style="?android:attr/progressBarStyleHorizontal"
-            app:layout_constraintLeft_toLeftOf="@+id/constraint_layout"
-            app:layout_constraintTop_toTopOf="@+id/constraint_layout"
-            app:layout_constraintRight_toRightOf="@+id/constraint_layout"
-            app:layout_constraintBottom_toTopOf="@+id/controls_layout" />
+            android:layout_weight="2"
+            android:gravity="center">
 
-        <ProgressBar
-            android:id="@+id/progress_ring_inner"
-            android:layout_width="0dp"
+            <com.triggertrap.seekarc.SeekArc
+                android:id="@+id/seek_arc_minor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                seekarc:clockwise="true"
+                seekarc:touchInside="true"
+                seekarc:rotation="180"
+                seekarc:progressColor="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/minor_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+                android:textColor="?android:attr/textColorPrimary"
+                tools:text="20" />
+
+        </RelativeLayout>
+
+        <!-- Work display -->
+        <RelativeLayout
+            android:id="@+id/work_container"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:indeterminate="false"
-            android:progressDrawable="@drawable/progress_ring_inner"
-            android:max="20"
-            android:progress="20"
-            app:layout_constraintCenterX_toCenterX="@id/progress_ring_background"
-            app:layout_constraintCenterY_toCenterY="@id/progress_ring_background"
-            style="?android:attr/progressBarStyleHorizontal" />
+            android:layout_weight="3"
+            android:baselineAligned="false"
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/center_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-            android:textColor="?android:attr/textColorPrimary"
-            app:layout_constraintCenterX_toCenterX="@id/progress_ring_background"
-            app:layout_constraintCenterY_toCenterY="@id/progress_ring_background"
-            tools:text="20:00" />
+            <com.triggertrap.seekarc.SeekArc
+                android:id="@+id/seek_arc_major"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="48dp"
+                android:layout_marginRight="48dp"
+                android:layout_centerInParent="true"
+                seekarc:clockwise="true"
+                seekarc:touchInside="true"
+                seekarc:progressColor="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/center_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+                android:textColor="?android:attr/textColorPrimary"
+                tools:text="20:00" />
+
+        </RelativeLayout>
 
         <!--Controls-->
         <LinearLayout
             android:id="@+id/controls_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.75"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:fitsSystemWindows="true"
-            style="?metaButtonBarStyle"
-            app:layout_constraintLeft_toLeftOf="@+id/constraint_layout"
-            app:layout_constraintTop_toBottomOf="@+id/progress_ring_background"
-            app:layout_constraintRight_toRightOf="@+id/constraint_layout"
-            app:layout_constraintBottom_toBottomOf="@+id/constraint_layout">
+            style="?metaButtonBarStyle">
 
             <ImageButton
                 android:id="@+id/btn_restart_phase"
+                android:layout_weight="1"
                 android:contentDescription="@string/timer_restart_current_cycle"
                 app:srcCompat="@drawable/ic_restore_black_24dp"
-                style="@style/timer_button_secondary"
-                tools:layout_editor_absoluteX="78dp"
-                tools:layout_editor_absoluteY="30dp" />
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/timer_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/timer_layout_margin_fab"
-                android:layout_gravity="bottom|center_horizontal"
-                android:src="@android:drawable/ic_media_play"
-                tools:layout_editor_absoluteX="164dp"
-                tools:layout_editor_absoluteY="30dp" />
+                style="@style/timer_button_secondary" />
 
             <ImageButton
                 android:id="@+id/btn_next_phase"
+                android:layout_weight="1"
                 android:contentDescription="@string/timer_skip_to_next_cycle"
                 app:srcCompat="@drawable/ic_alarm_on_black_24dp"
-                style="@style/timer_button_secondary"
-                tools:layout_editor_absoluteX="250dp"
-                tools:layout_editor_absoluteY="30dp" />
+                style="@style/timer_button_secondary" />
 
         </LinearLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

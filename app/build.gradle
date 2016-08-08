@@ -126,6 +126,7 @@ dependencies {
         transitive = true
     }
     compile "com.heinrichreimersoftware:android-issue-reporter:$rootProject.issueReporterVersion"
+    compile "com.github.Triggertrap:SeekArc:$rootProject.seekArcVersion"
     
 
     // Testing

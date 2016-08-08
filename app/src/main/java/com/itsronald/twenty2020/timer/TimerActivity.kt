@@ -108,10 +108,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        timer_fab.setOnTouchListener(mDelayHideTouchListener)
+        center_text.setOnTouchListener(mDelayHideTouchListener)
 
         btn_restart_phase.setOnClickListener { presenter.restartPhase() }
-        timer_fab.setOnClickListener { fab -> presenter.toggleRunning() }
+        center_text.setOnClickListener { presenter.toggleRunning() }
         btn_next_phase.setOnClickListener { presenter.startNextPhase() }
     }
 
@@ -252,7 +252,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
                     .withMaterialShowcase()
                     .setContentTitle(R.string.tutorial_content_title_start)
                     .setContentText(R.string.tutorial_content_message_start)
-                    .setTarget(ViewTarget(timer_fab))
+                    .setTarget(ViewTarget(center_text))
                     .setStyle(R.style.TutorialTheme)
                     .setOnClickListener { presenter.onTutorialNextClicked(tutorialState) }
                     .build()
@@ -295,8 +295,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {
-        val progressPercent = (progress.toDouble() / maxProgress.toDouble()) * 100
-        // TODO: Reimplement with new indicator.
+        seek_arc_major.progress = progress
     }
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {
@@ -305,7 +304,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {
         val drawable = ContextCompat.getDrawable(this, drawableId)
-        timer_fab.setImageDrawable(drawable)
+        // TODO: Use play/pause image in the large circle
     }
 
     override fun showMessage(message: String) {

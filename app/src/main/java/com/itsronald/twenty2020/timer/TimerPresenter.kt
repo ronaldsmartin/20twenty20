@@ -69,7 +69,8 @@ class TimerPresenter
      */
     private fun cycleProgress(): Observable<Int> = cycle.timer
             .map { cycle ->
-                (cycle.elapsedTime.toDouble() / cycle.duration.toDouble()).toInt() * 100
+                val progress = (cycle.elapsedTime.toDouble() / cycle.duration.toDouble()) * 100
+                progress.toInt()
             }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
