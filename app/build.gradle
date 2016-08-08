@@ -67,9 +67,13 @@ kapt {
 dependencies {
     // Tools
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
     debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
+    // Silences warnings from LeakCanary v1.4-beta2; see http://stackoverflow.com/a/38255810/4499783
+    debugCompile "com.squareup.haha:haha:$rootProject.hahaVersion"
+
     compile "com.android.support.constraint:constraint-layout:$rootProject.constraintLibVersion"
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
