@@ -1,6 +1,5 @@
 package com.itsronald.twenty2020.model
 
-import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.data.ResourceRepository
 import dagger.Module
 import dagger.Provides
@@ -12,7 +11,6 @@ import javax.inject.Singleton
 @Module
 class CycleModule() {
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     fun provideCycle(resourceRepository: ResourceRepository): Cycle = Cycle(resourceRepository)
 }

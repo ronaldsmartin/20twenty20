@@ -1,6 +1,7 @@
 package com.itsronald.twenty2020.timer
 
 import com.f2prateek.rx.preferences.RxSharedPreferences
+import com.itsronald.twenty2020.alarms.AlarmScheduler
 import com.itsronald.twenty2020.base.Activity
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
@@ -19,5 +20,5 @@ class TimerModule(private val view: TimerContract.TimerView) {
     fun providePresenter(cycle: Cycle,
                          resources: ResourceRepository,
                          preferences: RxSharedPreferences): TimerContract.UserActionsListener =
-            TimerPresenter(view, cycle, resources, preferences)
+            TimerPresenter(view = view, resources = resources, preferences = preferences, cycle = cycle)
 }

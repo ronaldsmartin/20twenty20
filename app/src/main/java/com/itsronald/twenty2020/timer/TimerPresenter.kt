@@ -13,7 +13,6 @@ import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
-import com.itsronald.twenty2020.notifications.CycleService
 import com.itsronald.twenty2020.settings.SettingsActivity
 import com.itsronald.twenty2020.timer.TimerContract.TimerView
 import rx.Observable
@@ -29,9 +28,9 @@ import javax.inject.Inject
 
 class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView,
-                        val cycle: Cycle,
                         val resources: ResourceRepository,
-                        val preferences: RxSharedPreferences)
+                        val preferences: RxSharedPreferences,
+                        val cycle: Cycle)
     : TimerContract.UserActionsListener, TimerControl by cycle {
 
     private val context: Context
@@ -118,8 +117,6 @@ class TimerPresenter
         super.onStart()
         view.showTimeRemaining(cycle.remainingTimeText)
 
-        context.startService(Intent(context, CycleService::class.java))
-
         startSubscriptions()
         showTutorialOnFirstRun()
     }
@@ -134,8 +131,10 @@ class TimerPresenter
 
         subscriptions += cycleTimeText().subscribe { view.showTimeRemaining(it) }
         subscriptions += cycleProgress().subscribe { view.showMajorProgress(it, 100) }
+
         subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
         subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
+
         subscriptions += isCycleRunning().subscribe { running ->
             Timber.v("Switching play/pause icon.")
             view.setFABDrawable(if (running) android.R.drawable.ic_media_pause
@@ -208,6 +207,7 @@ class TimerPresenter
 
     override fun restartPhase() {
         cycle.restartPhase()
+
         val message = resources.getString(R.string.timer_message_restarting_phase,
                 cycle.phaseName.toLowerCase())
         view.showMessage(message = message)
@@ -215,6 +215,7 @@ class TimerPresenter
 
     override fun startNextPhase(delay: Int) {
         cycle.startNextPhase(delay = delay)
+
         val message = resources.getString(R.string.timer_message_skip_to_next_phase,
                 cycle.phaseName.toLowerCase())
         view.showMessage(message = message)
