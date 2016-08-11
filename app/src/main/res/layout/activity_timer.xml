@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:clipChildren="false"
         android:animateLayoutChanges="true"
         app:layout_behavior="com.itsronald.twenty2020.timer.TimerActivity$SnackbarPushesUpBehavior">
 
@@ -21,12 +22,13 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
+            android:clipChildren="false"
             android:gravity="center">
 
             <com.triggertrap.seekarc.SeekArc
                 android:id="@+id/seek_arc_minor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 seekarc:clockwise="true"
                 seekarc:touchInside="true"
@@ -51,14 +53,13 @@
             android:layout_height="0dp"
             android:layout_weight="3"
             android:baselineAligned="false"
+            android:clipChildren="false"
             android:gravity="center">
 
             <com.triggertrap.seekarc.SeekArc
                 android:id="@+id/seek_arc_major"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="48dp"
-                android:layout_marginRight="48dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 seekarc:clockwise="true"
                 seekarc:touchInside="true"
