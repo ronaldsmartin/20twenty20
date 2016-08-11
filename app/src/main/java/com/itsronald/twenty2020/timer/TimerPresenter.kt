@@ -23,7 +23,6 @@ import rx.lang.kotlin.plusAssign
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -46,7 +45,7 @@ class TimerPresenter
      * Observe the most recent formatted time for the cycle.
      */
     private fun cycleTimeText(): Observable<String> = cycle.timer
-            .map { it.remainingTimeText }
+            .map { it.remainingTime.toTimeString() }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update time string.") }
@@ -61,12 +60,6 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update time string.") }
 
-
-    /**
-     * For each timer tick (one second apart), emits a series of new events mapping to an integer
-     * percentage of progress. This increases the update rate of the progress indicator to smooth
-     * out its animation.
-     */
     private fun cycleProgress(): Observable<Int> = cycle.timer
             .map { cycle ->
                 val progress = (cycle.elapsedTime.toDouble() / cycle.duration.toDouble()) * 100
@@ -75,6 +68,12 @@ class TimerPresenter
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update major progress bar.") }
+
+    private fun workProgress(): Observable<Int> = cycleProgress()
+            .filter { cycle.phase == Cycle.Phase.WORK }
+
+    private fun breakProgress(): Observable<Int> = cycleProgress()
+            .filter { cycle.phase == Cycle.Phase.BREAK }
 
     /**
      * Watch changes to the user's display_keep_screen_on preference.
@@ -105,7 +104,8 @@ class TimerPresenter
 
     override fun onStart() {
         super.onStart()
-        view.showTimeRemaining(cycle.remainingTimeText)
+        view.showWorkTimeRemaining(Cycle.Phase.WORK.duration(resources).toTimeString())
+        view.showBreakTimeRemaining(Cycle.Phase.BREAK.duration(resources).toTimeString())
 
         startSubscriptions()
         showTutorialOnFirstRun()
@@ -119,8 +119,20 @@ class TimerPresenter
     private fun startSubscriptions() {
         subscriptions = CompositeSubscription()
 
-        subscriptions += cycleTimeText().subscribe { view.showTimeRemaining(it) }
-        subscriptions += cycleProgress().subscribe { view.showMajorProgress(it, 100) }
+        subscriptions += cycleTimeText().subscribe {
+            when (cycle.phase) {
+                Cycle.Phase.WORK -> {
+                    view.showBreakTimeRemaining(Cycle.Phase.BREAK.duration(resources).toTimeString())
+                    view.showWorkTimeRemaining(it)
+                }
+                Cycle.Phase.BREAK -> {
+                    view.showWorkTimeRemaining(Cycle.Phase.WORK.duration(resources).toTimeString())
+                    view.showBreakTimeRemaining(it)
+                }
+            }
+        }
+        subscriptions += workProgress().subscribe { view.showMajorProgress(it, 100) }
+        subscriptions += breakProgress().subscribe { view.showMinorProgress(it, 100) }
 
         subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
         subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
@@ -233,4 +245,23 @@ class TimerPresenter
     }
 
     //endregion
+
+    /** Format a time in seconds as HH:mm:ss */
+    private fun Int.toTimeString(): String {
+        val secondsLeft = this % 60
+        val minutesLeft = (this / 60).toInt() % 60
+        val hoursLeft   = (this / (60 * 60)).toInt()
+        return when {
+            hoursLeft > 0   -> {
+                val minutes = "$minutesLeft".padStart(2, padChar = '0')
+                val seconds = "$secondsLeft".padStart(2, padChar = '0')
+                "$hoursLeft:$minutes:$seconds"
+            }
+            minutesLeft > 0 -> {
+                val seconds = "$secondsLeft".padStart(2, padChar = '0')
+                "$minutesLeft:$seconds"
+            }
+            else            -> "$secondsLeft"
+        }
+    }
 }

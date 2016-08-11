@@ -61,10 +61,16 @@ interface TimerContract {
         fun showTutorial(@TutorialState state: Long)
 
         /**
-         * Display time text in the view.
+         * Display work phase time text in the view.
          * @param formattedTime The text to display.
          */
-        fun showTimeRemaining(formattedTime: String)
+        fun showWorkTimeRemaining(formattedTime: String)
+
+        /**
+         * Display break phase time text in the view.
+         * @param formattedTime The text to display.
+         */
+        fun showBreakTimeRemaining(formattedTime: String)
 
         /**
          * Display major progress in the view.

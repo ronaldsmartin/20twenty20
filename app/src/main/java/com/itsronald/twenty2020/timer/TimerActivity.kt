@@ -108,10 +108,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        center_text.setOnTouchListener(mDelayHideTouchListener)
+        work_text.setOnTouchListener(mDelayHideTouchListener)
 
         btn_restart_phase.setOnClickListener { presenter.restartPhase() }
-        center_text.setOnClickListener { presenter.toggleRunning() }
+        work_text.setOnClickListener { presenter.toggleRunning() }
         btn_next_phase.setOnClickListener { presenter.startNextPhase() }
     }
 
@@ -252,7 +252,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
                     .withMaterialShowcase()
                     .setContentTitle(R.string.tutorial_content_title_start)
                     .setContentText(R.string.tutorial_content_message_start)
-                    .setTarget(ViewTarget(center_text))
+                    .setTarget(ViewTarget(work_text))
                     .setStyle(R.style.TutorialTheme)
                     .setOnClickListener { presenter.onTutorialNextClicked(tutorialState) }
                     .build()
@@ -290,16 +290,26 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     //endregion
 
-    override fun showTimeRemaining(formattedTime: String) {
-        center_text.text = formattedTime
+    override fun showWorkTimeRemaining(formattedTime: String) {
+        work_text.text = formattedTime
+    }
+
+    override fun showBreakTimeRemaining(formattedTime: String) {
+        break_text.text = formattedTime
     }
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {
+        if (seek_arc_minor.progress != 0) {
+            seek_arc_minor.progress = 0
+        }
         seek_arc_major.progress = progress
     }
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {
-        throw UnsupportedOperationException()
+        if (seek_arc_major.progress != 0) {
+            seek_arc_major.progress = 0
+        }
+        seek_arc_minor.progress = progress
     }
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {
