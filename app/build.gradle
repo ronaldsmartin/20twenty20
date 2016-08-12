@@ -127,9 +127,9 @@ dependencies {
     }
     compile "com.heinrichreimersoftware:android-issue-reporter:$rootProject.issueReporterVersion"
     compile "com.github.Triggertrap:SeekArc:$rootProject.seekArcVersion"
-    
+    compile "com.github.ronaldsmartin:android-number-morphing:$rootProject.numberMorphingVersion"
 
-    // Testing
+    // Test
     testCompile "junit:junit:$rootProject.jUnitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testCompile "org.hamcrest:hamcrest-library:$rootProject.hamcrestVersion"

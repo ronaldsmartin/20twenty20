@@ -55,6 +55,7 @@ ext {
     aboutLibsVersion = "5.7.1@aar"
     issueReporterVersion = "1.2.6"
     seekArcVersion = "v1.1"
+    numberMorphingVersion = "v1.0.0"
 
     // Testing
     jUnitVersion = "4.12"
