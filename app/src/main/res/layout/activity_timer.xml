@@ -6,6 +6,7 @@
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="@dimen/action_bar_offset"
     android:background="@drawable/timer_background"
     tools:context="com.itsronald.twenty2020.timer.TimerActivity">
 

@@ -13,19 +13,19 @@
     </style>
 
     <style name="FullscreenTheme" parent="AppTheme">
-        <item name="android:windowActionBarOverlay">true</item>
         <item name="android:actionBarStyle">@style/TransparentActionBar</item>
+        <item name="android:windowActionBarOverlay">true</item>
+
         <item name="actionBarStyle">@style/TransparentActionBar</item>
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
         <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+        <item name="windowActionBarOverlay">true</item>
     </style>
     
     <style name="TransparentActionBar" parent="@style/Widget.AppCompat.ActionBar">
-        <!--<item name="android:windowActionBarOverlay">true</item>-->
         <item name="android:background">@null</item>
 
         <!-- support v7 -->
-        <!--<item name="windowActionBarOverlay">true</item>-->
         <item name="background">@null</item>
     </style>
 
@@ -46,7 +46,7 @@
         <item name="android:layout_height">@dimen/timer_button_layout_height</item>
         <item name="android:padding">@dimen/timer_padding_button</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:tint">@color/colorPrimaryDark</item>
+        <item name="android:tint">#bbffffff</item>
     </style>
 
     <!-- Feedback Activity -->
