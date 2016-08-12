@@ -37,14 +37,11 @@
                 seekarc:rotation="180"
                 seekarc:progressColor="@color/colorAccent" />
 
-            <TextView
+            <com.bydavy.morpher.DigitalClockView
                 android:id="@+id/break_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display2"
-                android:textColor="?android:attr/textColorPrimary"
-                tools:text="20" />
+                android:layout_centerInParent="true" />
 
         </RelativeLayout>
 
@@ -67,14 +64,12 @@
                 seekarc:touchInside="true"
                 seekarc:progressColor="@color/colorAccent" />
 
-            <TextView
+            <com.bydavy.morpher.DigitalClockView
                 android:id="@+id/work_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-                android:textColor="?android:attr/textColorPrimary"
-                tools:text="20:00" />
+                android:layout_centerInParent="true" />
+
 
         </RelativeLayout>
 

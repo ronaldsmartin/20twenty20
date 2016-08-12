@@ -291,11 +291,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     //endregion
 
     override fun showWorkTimeRemaining(formattedTime: String) {
-        work_text.text = formattedTime
+        work_text.setTime(formattedTime)
     }
 
     override fun showBreakTimeRemaining(formattedTime: String) {
-        break_text.text = formattedTime
+        break_text.setTime(formattedTime)
     }
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {
