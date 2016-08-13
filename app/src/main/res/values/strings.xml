@@ -13,6 +13,7 @@
     <string name="timer_message_skip_to_next_phase">Skipped to <xliff:g id="phase_name">%s</xliff:g> phase.</string>
 
     <!--Menu-->
+    <string name="about">About</string>
     <string name="settings">Settings</string>
     <string name="help_feedback">Help &amp; Feedback</string>
     <string name="title_activity_settings">Settings</string>

@@ -15,6 +15,8 @@ import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
 import com.itsronald.twenty2020.settings.SettingsActivity
 import com.itsronald.twenty2020.timer.TimerContract.TimerView
+import com.mikepenz.aboutlibraries.Libs
+import com.mikepenz.aboutlibraries.LibsBuilder
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.onError
@@ -176,6 +178,17 @@ class TimerPresenter
     //endregion
 
     //region Menu interaction
+
+    override fun openAboutApp() {
+        val appName = resources.getString(context.applicationInfo.labelRes)
+        LibsBuilder()
+                .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                .withAboutAppName(appName)
+                .withLicenseShown(true)
+                .withAboutIconShown(true)
+                .withAboutVersionShown(true)
+                .start(context)
+    }
 
     override fun openSettings() {
         context.startActivity(Intent(context, SettingsActivity::class.java))

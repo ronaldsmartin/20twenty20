@@ -150,19 +150,20 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     //region Menu interaction
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId) {
-            R.id.menu_settings -> {
-                presenter.openSettings()
-                return true
-            }
-            R.id.menu_help_feedback -> {
-                presenter.openHelpFeedback()
-                return true
-            }
-            else ->
-                return super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when(item?.itemId) {
+        R.id.menu_about -> {
+            presenter.openAboutApp()
+            true
         }
+        R.id.menu_settings -> {
+            presenter.openSettings()
+            true
+        }
+        R.id.menu_help_feedback -> {
+            presenter.openHelpFeedback()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     //endregion
