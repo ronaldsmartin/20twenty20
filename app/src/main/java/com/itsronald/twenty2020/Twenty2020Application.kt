@@ -8,6 +8,7 @@ import com.itsronald.twenty2020.alarms.AlarmModule
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.notifications.NotificationModule
+import com.itsronald.twenty2020.reporting.CrashLogTree
 import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
 import com.karumi.dexter.Dexter
@@ -59,6 +60,7 @@ class Twenty2020Application : Application() {
         LeakCanary.install(this)
         Dexter.initialize(this)
         Fabric.with(this, Crashlytics())
+        Timber.plant(CrashLogTree())
 
         // Just referencing these ensures that they are instantiated by Dagger.
         appComponent.alarmScheduler()
