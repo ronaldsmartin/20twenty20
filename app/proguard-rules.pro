@@ -15,3 +15,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# Crashlytics Support
+# For more details, see
+#   https://docs.fabric.io/android/crashlytics/dex-and-proguard.html
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
