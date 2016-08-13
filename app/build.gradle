@@ -123,6 +123,9 @@ dependencies {
     // Custom Views
     compile "com.github.john990:WaveView:$rootProject.waveViewVersion"
     compile "com.github.amlcurran.showcaseview:library:$rootProject.showcaseViewVersion"
+    compile ("com.mikepenz:aboutlibraries:$rootProject.aboutLibsVersion") {
+        transitive = true
+    }
     
 
     // Testing
