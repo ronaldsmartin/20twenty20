@@ -3,14 +3,17 @@ package com.itsronald.twenty2020
 import android.app.Application
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatDelegate
+import com.crashlytics.android.Crashlytics
 import com.itsronald.twenty2020.alarms.AlarmModule
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.notifications.NotificationModule
+import com.itsronald.twenty2020.reporting.CrashLogTree
 import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
 import com.karumi.dexter.Dexter
 import com.squareup.leakcanary.LeakCanary
+import io.fabric.sdk.android.Fabric
 
 import timber.log.Timber
 
@@ -56,8 +59,10 @@ class Twenty2020Application : Application() {
         }
         LeakCanary.install(this)
         Dexter.initialize(this)
+        Fabric.with(this, Crashlytics())
+        Timber.plant(CrashLogTree())
 
-        // Just referencing these ensure they are instantiated by Dagger.
+        // Just referencing these ensures that they are instantiated by Dagger.
         appComponent.alarmScheduler()
         appComponent.notifier()
     }
