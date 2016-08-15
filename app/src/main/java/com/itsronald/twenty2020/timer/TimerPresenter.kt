@@ -3,6 +3,7 @@ package com.itsronald.twenty2020.timer
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -180,14 +181,30 @@ class TimerPresenter
     //region Menu interaction
 
     override fun openAboutApp() {
-        val appName = resources.getString(context.applicationInfo.labelRes)
         LibsBuilder()
-                .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
-                .withAboutAppName(appName)
-                .withLicenseShown(true)
+                .withAppStyle()
+                .withAboutOptions()
+                .start(context)
+    }
+
+    private fun LibsBuilder.withAppStyle(): LibsBuilder {
+        val nightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val isNightMode = nightMode == Configuration.UI_MODE_NIGHT_YES
+
+        val activityStyle = if (isNightMode) Libs.ActivityStyle.DARK
+                            else Libs.ActivityStyle.LIGHT_DARK_TOOLBAR
+        val activityTitle = resources.getString(R.string.about)
+
+        return this.withActivityStyle(activityStyle)
+                .withActivityTitle(activityTitle)
+    }
+
+    private fun LibsBuilder.withAboutOptions(): LibsBuilder {
+        val appName = resources.getString(context.applicationInfo.labelRes)
+        return this.withAboutAppName(appName)
                 .withAboutIconShown(true)
                 .withAboutVersionShown(true)
-                .start(context)
+                .withLicenseShown(true)
     }
 
     override fun openSettings() {
