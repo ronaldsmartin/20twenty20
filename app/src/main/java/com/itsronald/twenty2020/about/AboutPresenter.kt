@@ -1,16 +1,19 @@
 package com.itsronald.twenty2020.about
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.view.View
+import com.itsronald.twenty2020.BuildConfig.APPLICATION_ID
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.LibsBuilder
 import com.mikepenz.aboutlibraries.LibsConfiguration
 import com.mikepenz.aboutlibraries.entity.Library
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -28,6 +31,7 @@ class AboutPresenter
      * @return An intent for the About activity that will be created.
      */
     fun buildIntent(context: Context): Intent = buildActivity(context = context).intent(context)
+
 
     //region AboutLibraries building
 
@@ -72,6 +76,7 @@ class AboutPresenter
 
     //endregion
 
+
     //region LibsConfiguration.LibsListener
 
     override fun onIconClicked(v: View?) {
@@ -87,12 +92,31 @@ class AboutPresenter
                 Libs.SpecialButton.SPECIAL1 -> onSourceCodeButtonClick(view = v)
                 Libs.SpecialButton.SPECIAL2 -> onRateAppButtonClick(view = v)
                 Libs.SpecialButton.SPECIAL3 -> false
-                null -> throw NullPointerException()
+                null -> throw NullPointerException("Undefined specialButton '$specialButton' clicked!")
             }
 
-    private fun onSourceCodeButtonClick(view: View?): Boolean = false
+    private fun onSourceCodeButtonClick(view: View?): Boolean {
+        Timber.i("Opening source code website in browser.")
+        val sourceURL = resources.getString(R.string.url_github)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(sourceURL))
+        view?.context?.startActivity(intent)
+        return true
+    }
 
-    private fun onRateAppButtonClick(view: View?): Boolean = false
+    private fun onRateAppButtonClick(view: View?): Boolean {
+        val packageName = APPLICATION_ID
+        val storeURI = try {
+            Timber.i("Opening app market page with store app.")
+            Uri.parse("market://details?id=$packageName")
+        } catch (exception: ActivityNotFoundException) {
+            Timber.i("Opening app market page in browser.")
+            Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW, storeURI)
+        view?.context?.startActivity(intent)
+        return true
+    }
 
     override fun onLibraryAuthorClicked(v: View?, library: Library?): Boolean = false
 
