@@ -11,11 +11,13 @@ import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.LibsBuilder
 import com.mikepenz.aboutlibraries.LibsConfiguration
 import com.mikepenz.aboutlibraries.entity.Library
+import javax.inject.Inject
 
 /**
  * Generates an "About App" page and responds to the page's user interactions.
  */
-class AboutPresenter(val resources: ResourceRepository)
+class AboutPresenter
+    @Inject constructor(val resources: ResourceRepository)
     : LibsConfiguration.LibsListener {
 
     /**

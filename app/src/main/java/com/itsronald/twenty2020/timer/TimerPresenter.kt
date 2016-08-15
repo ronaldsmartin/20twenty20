@@ -10,7 +10,9 @@ import android.support.customtabs.CustomTabsIntent
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.BuildConfig
 import com.itsronald.twenty2020.R
-import com.itsronald.twenty2020.about.AboutPresenter
+import com.itsronald.twenty2020.about.DaggerAboutComponent
+import com.itsronald.twenty2020.data.DaggerResourceComponent
+import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
@@ -179,7 +181,16 @@ class TimerPresenter
     //region Menu interaction
 
     override fun openAboutApp() {
-        val intent = AboutPresenter(resources = resources).buildIntent(context)
+        Timber.v("Building AboutPresenter")
+        val resourceComponent = DaggerResourceComponent.builder()
+                .resourceModule(ResourceModule(context))
+                .build()
+        val aboutComponent = DaggerAboutComponent.builder()
+                .resourceComponent(resourceComponent)
+                .build()
+        val aboutPresenter = aboutComponent.aboutPresenter()
+
+        val intent = aboutPresenter.buildIntent(context)
         context.startActivity(intent)
     }
 
