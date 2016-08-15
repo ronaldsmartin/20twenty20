@@ -16,6 +16,7 @@ import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Date
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * An [AlarmScheduler] schedules system alarm broadcasts based on the current state of the app
@@ -26,6 +27,7 @@ import javax.inject.Inject
  * only one type of broadcast, any additional [AlarmScheduler]s will override any alarms scheduled
  * by other instances.
  */
+@Singleton
 class AlarmScheduler
     @Inject constructor(val context: Context,
                         val alarmManager: AlarmManager,

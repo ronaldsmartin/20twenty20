@@ -16,6 +16,7 @@ import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
+import com.itsronald.twenty2020.reporting.EventTracker
 import com.itsronald.twenty2020.settings.SettingsActivity
 import com.itsronald.twenty2020.timer.TimerContract.TimerView
 import rx.Observable
@@ -33,7 +34,8 @@ class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView,
                         val resources: ResourceRepository,
                         val preferences: RxSharedPreferences,
-                        val cycle: Cycle)
+                        val cycle: Cycle,
+                        val eventTracker: EventTracker)
     : TimerContract.UserActionsListener, TimerControl by cycle {
 
     private val context: Context
@@ -224,7 +226,18 @@ class TimerPresenter
 
     //region TimerControl
 
+    override fun toggleRunning() {
+        eventTracker.reportEvent(
+                if (cycle.running) EventTracker.Event.TimerPaused(cycle)
+                else EventTracker.Event.TimerStarted(cycle)
+        )
+
+        cycle.toggleRunning()
+    }
+
     override fun restartPhase() {
+        eventTracker.reportEvent(EventTracker.Event.TimerRestarted(cycle))
+
         cycle.restartPhase()
 
         val message = resources.getString(R.string.timer_message_restarting_phase,
@@ -233,6 +246,8 @@ class TimerPresenter
     }
 
     override fun startNextPhase(delay: Int) {
+        eventTracker.reportEvent(EventTracker.Event.TimerPhaseSkipped(cycle))
+
         cycle.startNextPhase(delay = delay)
 
         val message = resources.getString(R.string.timer_message_skip_to_next_phase,

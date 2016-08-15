@@ -48,7 +48,8 @@ ext {
     timberVersion = "4.1.2"
     dexterVersion = "2.3.0"
 
-    crashlyticsVersion = "2.6.2"
+    crashlyticsVersion = "2.6.2@aar"
+    answersVersion = "1.3.9@aar"
 
     waveViewVersion = "3da6d4b"
     showcaseViewVersion = "5.4.3"

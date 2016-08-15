@@ -22,13 +22,17 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Random
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Used to build and post notifications to the system.
  */
-class Notifier(val context: Context,
-               val preferences: RxSharedPreferences,
-               val resources: ResourceRepository) {
+@Singleton
+class Notifier
+    @Inject constructor(val context: Context,
+                        val preferences: RxSharedPreferences,
+                        val resources: ResourceRepository) {
 
     companion object {
         /** ID for the notification for cycle phase completion */

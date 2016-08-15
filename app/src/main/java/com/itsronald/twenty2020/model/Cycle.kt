@@ -11,10 +11,12 @@ import rx.subjects.PublishSubject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Encapsulates the state of the repeating work and break cycle.
  */
+@Singleton
 class Cycle
     @Inject constructor(val resources: ResourceRepository)
     : TimerControl {
@@ -151,6 +153,13 @@ class Cycle
             }
         }
 
+    /**
+     * Retrieve the persisted full duration for a given phase.
+     *
+     * @param phase The phase whose duration to get.
+     * @return The full duraton of [phase] in seconds.
+     */
+    fun durationOfPhase(phase: Phase): Int = phase.duration(resources = resources)
 
     //endregion
 
