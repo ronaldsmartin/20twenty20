@@ -5,10 +5,9 @@ import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatDelegate
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
-import com.itsronald.twenty2020.alarms.AlarmModule
+import com.itsronald.twenty2020.base.ContextModule
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
-import com.itsronald.twenty2020.notifications.NotificationModule
 import com.itsronald.twenty2020.reporting.CrashLogTree
 import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
@@ -38,8 +37,7 @@ class Twenty2020Application : Application() {
         DaggerApplicationComponent.builder()
                 .resourceComponent(resourceComponent)
                 .preferencesComponent(preferencesComponent)
-                .notificationModule(NotificationModule(this))
-                .alarmModule(AlarmModule(this))
+                .contextModule(ContextModule(this))
                 .build()
     }()
 

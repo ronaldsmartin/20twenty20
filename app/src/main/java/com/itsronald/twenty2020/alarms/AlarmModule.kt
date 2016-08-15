@@ -8,13 +8,9 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class AlarmModule(private val context: Context) {
+class AlarmModule() {
 
     @Provides
-    fun provideAlarmManager(): AlarmManager =
+    fun provideAlarmManager(context: Context): AlarmManager =
         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-    @Provides @Singleton
-    fun provideAlarmScheduler(alarmManager: AlarmManager, cycle: Cycle): AlarmScheduler =
-            AlarmScheduler(context = context, alarmManager = alarmManager, cycle = cycle)
 }
