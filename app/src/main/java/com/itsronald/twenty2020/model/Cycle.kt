@@ -11,10 +11,12 @@ import rx.subjects.PublishSubject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Encapsulates the state of the repeating work and break cycle.
  */
+@Singleton
 class Cycle
     @Inject constructor(val resources: ResourceRepository)
     : TimerControl {
