@@ -54,9 +54,11 @@ class AboutPresenter
 
     private fun LibsBuilder.withAboutOptions(context: Context): LibsBuilder {
         val appName = resources.getString(context.applicationInfo.labelRes)
+        val appDescription = resources.getString(R.string.about_app_description)
         return this.withAboutAppName(appName)
                 .withAboutIconShown(true)
                 .withAboutVersionShown(true)
+                .withAboutDescription(appDescription)
                 .withLicenseShown(true)
     }
 

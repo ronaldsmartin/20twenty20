@@ -42,4 +42,10 @@
     <string name="about_button_source_description">View open source code for this 20 twenty 20</string>
     <string name="about_button_rate_description">Rate this app</string>
 
+    <string name="about_app_description"><![CDATA[<p><b>20 twenty 20</b> is an open source tool for fighting couch potato syndrome.</p>
+    <p>It was built by <a href="http://itsronald.com">Ronald Martin</a> in the hopes that it will help you live healthy and happy.</p>
+    <p>For more information, visit <a href="http://itsronald.com/20twenty20/">http://itsronald.com/20twenty20/</a>.
+    <p>The following libraries were used to build this application:</p>
+    ]]></string>
+
 </resources>
