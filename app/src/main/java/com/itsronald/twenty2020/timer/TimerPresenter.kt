@@ -3,7 +3,6 @@ package com.itsronald.twenty2020.timer
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,13 +10,12 @@ import android.support.customtabs.CustomTabsIntent
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.BuildConfig
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.about.AboutPresenter
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
 import com.itsronald.twenty2020.settings.SettingsActivity
 import com.itsronald.twenty2020.timer.TimerContract.TimerView
-import com.mikepenz.aboutlibraries.Libs
-import com.mikepenz.aboutlibraries.LibsBuilder
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.onError
@@ -181,31 +179,11 @@ class TimerPresenter
     //region Menu interaction
 
     override fun openAboutApp() {
-        LibsBuilder()
-                .withAppStyle()
-                .withAboutOptions()
-                .start(context)
+        val intent = AboutPresenter(resources = resources).buildIntent(context)
+        context.startActivity(intent)
     }
 
-    private fun LibsBuilder.withAppStyle(): LibsBuilder {
-        val nightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        val isNightMode = nightMode == Configuration.UI_MODE_NIGHT_YES
 
-        val activityStyle = if (isNightMode) Libs.ActivityStyle.DARK
-                            else Libs.ActivityStyle.LIGHT_DARK_TOOLBAR
-        val activityTitle = resources.getString(R.string.about)
-
-        return this.withActivityStyle(activityStyle)
-                .withActivityTitle(activityTitle)
-    }
-
-    private fun LibsBuilder.withAboutOptions(): LibsBuilder {
-        val appName = resources.getString(context.applicationInfo.labelRes)
-        return this.withAboutAppName(appName)
-                .withAboutIconShown(true)
-                .withAboutVersionShown(true)
-                .withLicenseShown(true)
-    }
 
     override fun openSettings() {
         context.startActivity(Intent(context, SettingsActivity::class.java))
@@ -227,7 +205,7 @@ class TimerPresenter
 
         // Open the custom tab.
         (context as? Activity)?.let {
-            customTabsIntent.launchUrl(it, Uri.parse(resources.getString(R.string.help_feedback_url)))
+            customTabsIntent.launchUrl(it, Uri.parse(resources.getString(R.string.url_help_feedback)))
         }
     }
 
