@@ -227,14 +227,17 @@ class TimerPresenter
     //region TimerControl
 
     override fun toggleRunning() {
-        cycle.toggleRunning()
         eventTracker.reportEvent(
-                if (cycle.running) EventTracker.Event.TimerStarted(cycle)
-                else EventTracker.Event.TimerPaused(cycle)
+                if (cycle.running) EventTracker.Event.TimerPaused(cycle)
+                else EventTracker.Event.TimerStarted(cycle)
         )
+
+        cycle.toggleRunning()
     }
 
     override fun restartPhase() {
+        eventTracker.reportEvent(EventTracker.Event.TimerRestarted(cycle))
+
         cycle.restartPhase()
 
         val message = resources.getString(R.string.timer_message_restarting_phase,
@@ -243,6 +246,8 @@ class TimerPresenter
     }
 
     override fun startNextPhase(delay: Int) {
+        eventTracker.reportEvent(EventTracker.Event.TimerPhaseSkipped(cycle))
+
         cycle.startNextPhase(delay = delay)
 
         val message = resources.getString(R.string.timer_message_skip_to_next_phase,
