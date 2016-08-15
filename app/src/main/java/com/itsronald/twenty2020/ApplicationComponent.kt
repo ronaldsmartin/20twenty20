@@ -8,6 +8,8 @@ import com.itsronald.twenty2020.model.CycleModule
 import com.itsronald.twenty2020.notifications.ForegroundProgressService
 import com.itsronald.twenty2020.notifications.NotificationModule
 import com.itsronald.twenty2020.notifications.Notifier
+import com.itsronald.twenty2020.reporting.AnalyticsModule
+import com.itsronald.twenty2020.reporting.EventTracker
 import com.itsronald.twenty2020.settings.PreferencesComponent
 import dagger.Component
 import javax.inject.Singleton
@@ -15,11 +17,18 @@ import javax.inject.Singleton
 @Singleton
 @Component(
         dependencies = arrayOf(ResourceComponent::class, PreferencesComponent::class),
-        modules = arrayOf(AlarmModule::class, CycleModule::class, NotificationModule::class)
+        modules = arrayOf(
+                AlarmModule::class,
+                CycleModule::class,
+                NotificationModule::class,
+                AnalyticsModule::class
+        )
 )
 interface ApplicationComponent {
     fun cycle(): Cycle
     fun notifier(): Notifier
     fun alarmScheduler(): AlarmScheduler
+    fun eventTracker(): EventTracker
+
     fun inject(foregroundProgressService: ForegroundProgressService)
 }
