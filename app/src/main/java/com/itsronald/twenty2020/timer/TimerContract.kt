@@ -98,6 +98,11 @@ interface TimerContract {
         //region Menu options
 
         /**
+         * Open the About page.
+         */
+        fun openAboutApp()
+
+        /**
          * Open the app settings.
          */
         fun openSettings()
