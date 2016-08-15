@@ -44,6 +44,14 @@ interface EventTracker {
 
         //region Timer Events
 
+        class PhaseCompleted(val cycle: Cycle, val phase: Cycle.Phase) : Event() {
+            override val category: String = CATEGORY_TIMER
+            override val name: String = "Timer Phase Complete"
+            override val attributes: Map<String, AttributeValue> = mapOf(
+                    "Phase" to AttributeValue.String(phase.name),
+                    "Duration" to AttributeValue.Number(cycle.durationOfPhase(phase))
+            )
+        }
         class TimerStarted(val cycle: Cycle) : Event() {
             override val category: String = CATEGORY_TIMER
             override val name: String = "Timer Started"

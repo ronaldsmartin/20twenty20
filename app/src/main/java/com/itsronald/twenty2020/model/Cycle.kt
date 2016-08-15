@@ -153,6 +153,13 @@ class Cycle
             }
         }
 
+    /**
+     * Retrieve the persisted full duration for a given phase.
+     *
+     * @param phase The phase whose duration to get.
+     * @return The full duraton of [phase] in seconds.
+     */
+    fun durationOfPhase(phase: Phase): Int = phase.duration(resources = resources)
 
     //endregion
 

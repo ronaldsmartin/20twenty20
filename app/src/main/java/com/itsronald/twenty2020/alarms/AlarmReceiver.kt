@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.itsronald.twenty2020.Twenty2020Application
 import com.itsronald.twenty2020.model.Cycle
+import com.itsronald.twenty2020.reporting.EventTracker
 import timber.log.Timber
 
 /**
@@ -36,6 +37,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
         Timber.i("Updating alarms.")
         appComponent.alarmScheduler().updateAlarms()
+
+        val newEvent = EventTracker.Event.PhaseCompleted(cycle = cycle, phase = completedPhase)
+        appComponent.eventTracker().reportEvent(newEvent)
     }
 
 }
