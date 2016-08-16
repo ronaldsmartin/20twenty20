@@ -42,7 +42,7 @@ ext {
     rxKotlinVersion = "0.55.0"
     rxPreferencesVersion = "1.0.2"
 
-    daggerVersion = "2.5"
+    daggerVersion = "2.6"
     javaAnnotationsVersion = "1.0"
 
     timberVersion = "4.1.2"
