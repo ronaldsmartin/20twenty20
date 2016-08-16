@@ -126,6 +126,7 @@ dependencies {
     compile ("com.mikepenz:aboutlibraries:$rootProject.aboutLibsVersion") {
         transitive = true
     }
+    compile "com.heinrichreimersoftware:android-issue-reporter:$rootProject.issueReporterVersion"
     
 
     // Testing
