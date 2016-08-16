@@ -1,19 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'io.fabric'
 
 buildscript {
     ext.kotlin_version = '1.0.3'
-    ext.dokka_version = '0.9.8'
     repositories {
         jcenter()
         maven { url "https://maven.fabric.io/public" }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
         classpath 'io.fabric.tools:gradle:1.+'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -27,7 +24,7 @@ android {
 
     defaultConfig {
         applicationId "com.itsronald.twenty2020"
-        minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion    rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "0.2.0"
