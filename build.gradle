@@ -36,7 +36,7 @@ ext {
     supportLibraryVersion = "24.1.1"
     constraintLibVersion = "1.0.0-alpha4"
 
-    rxJavaVersion = "1.1.8"
+    rxJavaVersion = "1.1.9"
     rxJavaProguardRulesVersion = "$rxJavaVersion.0"
     rxAndroidVersion = "1.2.0"
     rxKotlinVersion = "0.55.0"
