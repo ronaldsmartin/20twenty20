@@ -35,6 +35,7 @@ android {
             android_backup_api_key: "",
             fabric_api_key: ""
         ]
+        buildConfigField "String", "GITHUB_ISSUE_BOT_API_KEY", "\"$GITHUB_ISSUE_BOT_API_KEY\""
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -93,7 +94,6 @@ dependencies {
     compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     compile "com.android.support:design:$rootProject.supportLibraryVersion"
     compile "com.android.support:support-vector-drawable:$rootProject.supportLibraryVersion"
-    compile "com.android.support:customtabs:$rootProject.supportLibraryVersion"
     compile "com.android.support.constraint:constraint-layout:$rootProject.constraintLibVersion"
 
     // Dagger2
@@ -126,6 +126,7 @@ dependencies {
     compile ("com.mikepenz:aboutlibraries:$rootProject.aboutLibsVersion") {
         transitive = true
     }
+    compile "com.heinrichreimersoftware:android-issue-reporter:$rootProject.issueReporterVersion"
     
 
     // Testing

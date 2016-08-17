@@ -1,12 +1,8 @@
 package com.itsronald.twenty2020.timer
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.support.customtabs.CustomTabsIntent
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.BuildConfig
 import com.itsronald.twenty2020.R
@@ -14,6 +10,7 @@ import com.itsronald.twenty2020.about.DaggerAboutComponent
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.data.ResourceRepository
+import com.itsronald.twenty2020.feedback.FeedbackActivity
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
 import com.itsronald.twenty2020.reporting.EventTracker
@@ -184,6 +181,8 @@ class TimerPresenter
 
     override fun openAboutApp() {
         Timber.v("Building AboutPresenter")
+        eventTracker.reportEvent(EventTracker.Event.AboutAppClicked())
+
         val resourceComponent = DaggerResourceComponent.builder()
                 .resourceModule(ResourceModule(context))
                 .build()
@@ -199,27 +198,17 @@ class TimerPresenter
 
 
     override fun openSettings() {
+        Timber.i("Starting SettingsActivity.")
+        eventTracker.reportEvent(EventTracker.Event.SettingsClicked())
+
         context.startActivity(Intent(context, SettingsActivity::class.java))
     }
 
     override fun openHelpFeedback() {
-        Timber.v("Opening Help/Feedback Chrome Custom Tab.")
+        Timber.i("Starting Help/Feedback activity.")
+        eventTracker.reportEvent(EventTracker.Event.HelpFeedbackClicked())
 
-        // Build the intent, customizing action bar color and animations.
-        val customTabsIntent = CustomTabsIntent.Builder()
-            .setToolbarColor(resources.getColor(R.color.colorPrimary))
-            .build()
-
-        // Add referrer.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            customTabsIntent.intent.putExtra(Intent.EXTRA_REFERRER,
-                    Uri.parse("${Intent.URI_ANDROID_APP_SCHEME}//${context.packageName}"))
-        }
-
-        // Open the custom tab.
-        (context as? Activity)?.let {
-            customTabsIntent.launchUrl(it, Uri.parse(resources.getString(R.string.url_help_feedback)))
-        }
+        context.startActivity(Intent(context, FeedbackActivity::class.java))
     }
 
     //endregion

@@ -54,6 +54,7 @@ ext {
     waveViewVersion = "3da6d4b"
     showcaseViewVersion = "5.4.3"
     aboutLibsVersion = "5.7.1@aar"
+    issueReporterVersion = "1.2.6"
 
     // Testing
     jUnitVersion = "4.12"

@@ -47,6 +47,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.itsronald.twenty2020.timer.TimerActivity" />
         </activity>
+        <activity
+            android:name=".feedback.FeedbackActivity"
+            android:label="Feedback"
+            android:theme="@style/IssueReporterTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.itsronald.twenty2020.timer.TimerActivity" />
+        </activity>
+
         <!-- Receivers -->
         <receiver
             android:name=".alarms.AlarmReceiver"
