@@ -25,6 +25,7 @@ interface EventTracker {
 
         companion object {
             const val CATEGORY_TIMER = "Timer"
+            const val CATEGORY_MENU  = "Menu"
         }
 
         abstract val category: String
@@ -81,6 +82,25 @@ interface EventTracker {
                 "Duration" to AttributeValue.Number(cycle.duration),
                 "Elapsed Time" to AttributeValue.Number(cycle.elapsedTime)
         )
+
+        //endregion
+
+        //region Menu events
+        class AboutAppClicked : Event() {
+            override val category: String = CATEGORY_MENU
+            override val name: String = "About App Clicked"
+            override val attributes: Map<String, AttributeValue> = mapOf()
+        }
+        class SettingsClicked : Event() {
+            override val category: String = CATEGORY_MENU
+            override val name: String = "Settings Clicked"
+            override val attributes: Map<String, AttributeValue> = mapOf()
+        }
+        class HelpFeedbackClicked : Event() {
+            override val category: String = CATEGORY_MENU
+            override val name: String = "Help/Feedback Clicked"
+            override val attributes: Map<String, AttributeValue> = mapOf()
+        }
 
         //endregion
     }

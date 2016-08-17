@@ -181,6 +181,8 @@ class TimerPresenter
 
     override fun openAboutApp() {
         Timber.v("Building AboutPresenter")
+        eventTracker.reportEvent(EventTracker.Event.AboutAppClicked())
+
         val resourceComponent = DaggerResourceComponent.builder()
                 .resourceModule(ResourceModule(context))
                 .build()
@@ -196,11 +198,16 @@ class TimerPresenter
 
 
     override fun openSettings() {
+        Timber.i("Starting SettingsActivity.")
+        eventTracker.reportEvent(EventTracker.Event.SettingsClicked())
+
         context.startActivity(Intent(context, SettingsActivity::class.java))
     }
 
     override fun openHelpFeedback() {
         Timber.i("Starting Help/Feedback activity.")
+        eventTracker.reportEvent(EventTracker.Event.HelpFeedbackClicked())
+
         context.startActivity(Intent(context, FeedbackActivity::class.java))
     }
 
