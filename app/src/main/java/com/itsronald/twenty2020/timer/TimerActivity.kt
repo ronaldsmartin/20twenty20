@@ -330,14 +330,14 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         if (break_seek_bar.progress != 0f) {
             break_seek_bar.progress = 0f
         }
-        work_seek_bar.progress = progress.toFloat()
+        work_seek_bar.progress = -progress.toFloat()
     }
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {
         if (work_seek_bar.progress != 0f) {
             work_seek_bar.progress = 0f
         }
-        break_seek_bar.progress = -progress.toFloat()
+        break_seek_bar.progress = progress.toFloat()
     }
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {
