@@ -27,15 +27,17 @@
             android:clipChildren="false"
             android:gravity="center">
 
-            <com.triggertrap.seekarc.SeekArc
-                android:id="@+id/seek_arc_minor"
+            <me.tankery.lib.circularseekbar.CircularSeekBar
+                android:id="@+id/break_seek_bar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                seekarc:clockwise="false"
-                seekarc:touchInside="true"
-                seekarc:rotation="180"
-                seekarc:progressColor="@color/colorAccent" />
+                app:cs_negative_enabled="true"
+                app:cs_start_angle="90"
+                app:cs_end_angle="90"
+                app:cs_circle_progress_color="@color/colorAccent"
+                app:cs_pointer_color="@color/colorAccent"
+                app:cs_pointer_halo_color="@color/colorAccent"/>
 
             <com.bydavy.morpher.DigitalClockView
                 android:id="@+id/break_text"
@@ -55,14 +57,14 @@
             android:clipChildren="false"
             android:gravity="center">
 
-            <com.triggertrap.seekarc.SeekArc
-                android:id="@+id/seek_arc_major"
+            <me.tankery.lib.circularseekbar.CircularSeekBar
+                android:id="@+id/work_seek_bar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                seekarc:clockwise="true"
-                seekarc:touchInside="true"
-                seekarc:progressColor="@color/colorAccent" />
+                app:cs_circle_progress_color="@color/colorAccent"
+                app:cs_pointer_color="@color/colorAccent"
+                app:cs_pointer_halo_color="@color/colorAccent"/>
 
             <com.bydavy.morpher.DigitalClockView
                 android:id="@+id/work_text"

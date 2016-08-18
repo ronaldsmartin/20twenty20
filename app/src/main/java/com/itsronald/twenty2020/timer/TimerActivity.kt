@@ -299,17 +299,17 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     override fun showMajorProgress(progress: Int, maxProgress: Int) {
-        if (seek_arc_minor.progress != 0) {
-            seek_arc_minor.progress = 0
+        if (break_seek_bar.progress != 0f) {
+            break_seek_bar.progress = 0f
         }
-        seek_arc_major.progress = progress
+        work_seek_bar.progress = progress.toFloat()
     }
 
     override fun showMinorProgress(progress: Int, maxProgress: Int) {
-        if (seek_arc_major.progress != 0) {
-            seek_arc_major.progress = 0
+        if (work_seek_bar.progress != 0f) {
+            work_seek_bar.progress = 0f
         }
-        seek_arc_minor.progress = progress
+        break_seek_bar.progress = -progress.toFloat()
     }
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {
