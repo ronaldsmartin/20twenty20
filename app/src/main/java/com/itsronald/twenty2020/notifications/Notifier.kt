@@ -2,7 +2,6 @@ package com.itsronald.twenty2020.notifications
 
 import android.app.Notification
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,7 +15,6 @@ import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.timer.TimerActivity
-import com.itsronald.twenty2020.timer.TimerContract
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -35,11 +33,37 @@ class Notifier
                         val resources: ResourceRepository) {
 
     companion object {
+        //region Notification IDs
+
         /** ID for the notification for cycle phase completion */
         private val ID_PHASE_COMPLETE = 20
 
         /** ID for the persistent notification updated by ForegroundProgressService. */
-        val ID_FOREGROUND_PROGRESS = 30
+        const val ID_FOREGROUND_PROGRESS = 30
+
+        //endregion
+
+        //region Notification actions
+
+        /** Action presented with [buildPhaseCompleteNotification] to pause the cycle. */
+        const val ACTION_PAUSE_TIMER = "com.itsronald.twenty2020.action.timer.pause"
+
+        //endregion
+
+        //region Notification extras
+
+        /**
+         * Int extra. Used in conjunction with [EXTRA_FLAG_CANCEL_NOTIFICATION] to describe
+         * which notification to cancel after an action is clicked.
+         */
+        const val EXTRA_NOTIFICATION_ID = "com.itsronald.twenty2020.extra.notification_id"
+        /**
+         * Boolean extra. If true, [NotificationActionReceiver] will cancel the notification after
+         * handling the notification action.
+         */
+        const val EXTRA_FLAG_CANCEL_NOTIFICATION = "com.itsronald.twenty2020.extra.notification_flag_cancel"
+
+        //endregion
     }
 
     @Suppress("unused")
@@ -69,9 +93,9 @@ class Notifier
                     Cycle.Phase.BREAK -> R.string.notification_title_break_cycle_complete
                 }))
                 .setContentText(makePhaseCompleteMessage(phaseCompleted))
-                .setContentIntent(buildOpenTimerIntent())
+                .setContentIntent(timerContentIntent())
                 .addAction(
-                        android.R.drawable.ic_media_pause,
+                        R.drawable.ic_alarm_off_black_24dp,
                         context.getString(R.string.notification_action_timer_pause),
                         pauseTimerIntent()
                 )
@@ -150,36 +174,33 @@ class Notifier
     }
 
     /**
-     * Create an intent that returns the user to TimerActivity.
+     * Create an [PendingIntent] that returns the user to [TimerActivity].
+     *
      * @return An intent to TimerActivity.
      */
-    private fun buildOpenTimerIntent(): PendingIntent {
-        val timerIntent = Intent(context, TimerActivity::class.java)
-        timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        timerIntent.component = ComponentName(context, TimerActivity::class.java)
-        return PendingIntent.getActivity(
-                context,
-                0,
-                timerIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT
-        )
-    }
+    private fun timerContentIntent(): PendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            TimerActivity.intent(context = context),
+            PendingIntent.FLAG_CANCEL_CURRENT
+    )
 
     /**
      * Build an intent that pauses the cycle timer.
      */
-    private fun pauseTimerIntent(): PendingIntent {
-        val timerIntent = Intent(context, TimerActivity::class.java)
-        timerIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        timerIntent.component = ComponentName(context, TimerActivity::class.java)
-        timerIntent.action = TimerContract.ACTION_PAUSE
-        return PendingIntent.getActivity(
-                context,
-                0,
-                timerIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT
-        )
-    }
+    private fun pauseTimerIntent(): PendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            actionBroadcastIntent(action = ACTION_PAUSE_TIMER, notificationID = ID_PHASE_COMPLETE),
+            PendingIntent.FLAG_CANCEL_CURRENT
+    )
+
+    private fun actionBroadcastIntent(action: String,
+                                      notificationID: Int,
+                                      cancelNotification: Boolean = true): Intent =  Intent(action)
+                    .putExtra(EXTRA_NOTIFICATION_ID, notificationID)
+                    .putExtra(EXTRA_FLAG_CANCEL_NOTIFICATION, cancelNotification)
+
 
     /**
      * Build and post a notification that a phase was completed.
@@ -219,7 +240,7 @@ class Notifier
             .setContentTitle(context.getString(R.string.notification_title_foreground_progress))
             .setContentText(progressNotificationMessage(cycle))
             .setColor(ContextCompat.getColor(context, R.color.colorAccent))
-            .setContentIntent(buildOpenTimerIntent())
+            .setContentIntent(timerContentIntent())
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(cycle.running)
