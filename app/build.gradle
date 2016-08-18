@@ -127,6 +127,7 @@ dependencies {
     }
     compile "com.heinrichreimersoftware:android-issue-reporter:$rootProject.issueReporterVersion"
     compile "com.github.Triggertrap:SeekArc:$rootProject.seekArcVersion"
+    compile "me.tankery.lib:circularSeekBar:$rootProject.circularSeekbarVersion"
     compile "com.github.ronaldsmartin:android-number-morphing:$rootProject.numberMorphingVersion"
 
     // Test
