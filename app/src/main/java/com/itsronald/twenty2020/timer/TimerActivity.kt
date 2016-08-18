@@ -1,6 +1,7 @@
 package com.itsronald.twenty2020.timer
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -33,6 +34,33 @@ import javax.inject.Inject
  * status bar and navigation/system bar) with user interaction.
  */
 class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
+
+    companion object {
+        /**
+         * Whether or not the system UI should be auto-hidden after
+         * [.AUTO_HIDE_DELAY_MILLIS] milliseconds.
+         */
+        private val AUTO_HIDE = true
+
+        /**
+         * If [.AUTO_HIDE] is set, the number of milliseconds to wait after
+         * user interaction before hiding the system UI.
+         */
+        private val AUTO_HIDE_DELAY_MILLIS = 3000
+
+        /**
+         * Some older devices needs a small delay between UI widget updates
+         * and a change of the status and navigation bar.
+         */
+        private val UI_ANIMATION_DELAY = 300
+
+        /**
+         * @return An explicit intent to start this activity.
+         */
+        fun intent(context: Context): Intent = Intent(context, TimerActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .setComponent(ComponentName(context, TimerActivity::class.java))
+    }
 
     //region Fullscreen handlers
 
@@ -340,24 +368,4 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     //endregion
-
-    companion object {
-        /**
-         * Whether or not the system UI should be auto-hidden after
-         * [.AUTO_HIDE_DELAY_MILLIS] milliseconds.
-         */
-        private val AUTO_HIDE = true
-
-        /**
-         * If [.AUTO_HIDE] is set, the number of milliseconds to wait after
-         * user interaction before hiding the system UI.
-         */
-        private val AUTO_HIDE_DELAY_MILLIS = 3000
-
-        /**
-         * Some older devices needs a small delay between UI widget updates
-         * and a change of the status and navigation bar.
-         */
-        private val UI_ANIMATION_DELAY = 300
-    }
 }
