@@ -95,7 +95,7 @@ class Notifier
                 .setContentText(makePhaseCompleteMessage(phaseCompleted))
                 .setContentIntent(timerContentIntent())
                 .addAction(
-                        android.R.drawable.ic_media_pause,
+                        R.drawable.ic_alarm_off_black_24dp,
                         context.getString(R.string.notification_action_timer_pause),
                         pauseTimerIntent()
                 )
