@@ -26,8 +26,8 @@
     <string name="tutorial_content_title_start">Start the cycle</string>
     <string name="tutorial_content_message_start">Use this button to start or stop the 20&#8211;20&#8211;20 cycle.</string>
 
-    <string name="tutorial_content_title_skip_phase">Skip to next phase</string>
-    <string name="tutorial_content_message_skip_phase">Use this button to skip directly to the next phase whenever you\'re ready to take your next break or get back to your computer.</string>
+    <string name="tutorial_content_title_skip_phase">Change timer phase</string>
+    <string name="tutorial_content_message_skip_phase">Press either time to switch between your work or break phases.</string>
 
     <string name="tutorial_content_title_restart_phase">Restart current phase</string>
     <string name="tutorial_content_message_restart_phase">Use this button to restart the current timer if you get distracted.</string>

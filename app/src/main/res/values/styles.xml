@@ -13,9 +13,20 @@
     </style>
 
     <style name="FullscreenTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/TransparentActionBar</item>
         <item name="android:windowActionBarOverlay">true</item>
+
+        <item name="actionBarStyle">@style/TransparentActionBar</item>
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
         <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+    
+    <style name="TransparentActionBar" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@null</item>
+
+        <!-- support v7 -->
+        <item name="background">@null</item>
     </style>
 
     <!--activity_timer-->
@@ -30,12 +41,21 @@
         <item name="android:textColor">@color/tutorial_title_color</item>
     </style>
 
-    <style name="timer_button_secondary">
+    <style name="TimerButton">
         <item name="android:layout_width">@dimen/timer_button_layout_width</item>
-        <item name="android:layout_height">@dimen/timer_button_layout_height</item>
-        <item name="android:padding">@dimen/timer_padding_button</item>
+        <item name="android:layout_height">@dimen/timer_button_layout_width</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item tools:targetApi="JELLY_BEAN_MR1" name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_margin">@dimen/timer_button_layout_margin</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:tint">@color/colorPrimaryDark</item>
+        <item name="android:tint">#eeffffff</item>
+    </style>
+
+    <style name="TimerText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
     <!-- Feedback Activity -->

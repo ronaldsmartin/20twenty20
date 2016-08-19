@@ -4,15 +4,13 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
-import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.AttributeSet
+import android.support.v7.content.res.AppCompatResources
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -26,6 +24,7 @@ import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
 import com.itsronald.twenty2020.timer.TimerContract.TimerView.Companion.TutorialState
 import kotlinx.android.synthetic.main.activity_timer.*
+import me.tankery.lib.circularseekbar.CircularSeekBar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -52,7 +51,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
          * Some older devices needs a small delay between UI widget updates
          * and a change of the status and navigation bar.
          */
-        private val UI_ANIMATION_DELAY = 300
+        private val UI_ANIMATION_DELAY = 300L
 
         /**
          * @return An explicit intent to start this activity.
@@ -66,15 +65,14 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     private val mHideHandler = Handler()
 
-    // Normally we'd suppress "InlinedApi" here, but Kotlin doesn't support this yet.
-    @SuppressLint("NewApi")
+    @SuppressLint("InlinedApi")
     private val mHidePart2Runnable = Runnable {
         // Delayed removal of status and navigation bar
 
         // Note that some of these constants are new as of API 16 (Jelly Bean)
         // and API 19 (KitKat). It is safe to use them, as they are inlined
         // at compile-time and do nothing on earlier devices.
-        constraint_layout.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+        coordinator_layout.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -83,9 +81,8 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
     private val mShowPart2Runnable = Runnable {
         // Delayed display of UI elements
-        val actionBar = supportActionBar
-        actionBar?.show()
-        controls_layout.visibility = View.VISIBLE
+        supportActionBar?.show()
+        secondaryControls.forEach { it.visibility = View.VISIBLE }
     }
     private var mVisible: Boolean = false
     private val mHideRunnable = Runnable { hide() }
@@ -100,6 +97,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         }
         false
     }
+
+    private val secondaryControls: Array<View>
+        get() = arrayOf(btn_restart_phase)
 
     //endregion
 
@@ -131,7 +131,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     private fun setTouchListeners() {
         // Set up the user interaction to manually show or hide the system UI.
-        constraint_layout.setOnClickListener { toggle() }
+        content_layout.setOnClickListener { toggle() }
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
@@ -139,8 +139,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         timer_fab.setOnTouchListener(mDelayHideTouchListener)
 
         btn_restart_phase.setOnClickListener { presenter.restartPhase() }
-        timer_fab.setOnClickListener { fab -> presenter.toggleRunning() }
-        btn_next_phase.setOnClickListener { presenter.startNextPhase() }
+        timer_fab.setOnClickListener { presenter.toggleRunning() }
+
+        work_text.setOnClickListener { presenter.onWorkTimerClicked() }
+        break_text.setOnClickListener { presenter.onBreakTimerClicked() }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -213,27 +215,26 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         }
 
         // Hide UI first
-        val actionBar = supportActionBar
-        actionBar?.hide()
-        controls_layout.visibility = View.GONE
+        supportActionBar?.hide()
+        secondaryControls.forEach { it.visibility = View.GONE }
         mVisible = false
 
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable)
-        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY.toLong())
+        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY)
     }
 
     // Normally we'd suppress "InlinedApi" here, but Kotlin doesn't support this yet.
     @SuppressLint("NewApi")
     private fun show() {
         // Show the system bar
-        constraint_layout.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        coordinator_layout.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
         mVisible = true
 
         // Schedule a runnable to display UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable)
-        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY.toLong())
+        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY)
     }
 
     /**
@@ -257,8 +258,8 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override val context: Context = this
 
     override var keepScreenOn: Boolean
-        get() = constraint_layout.keepScreenOn
-        set(value) { constraint_layout.keepScreenOn = value }
+        get() = content_layout.keepScreenOn
+        set(value) { content_layout.keepScreenOn = value }
 
     override var fullScreenAllowed = false
 
@@ -292,7 +293,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
             showcaseView?.setContentTitle(getString(R.string.tutorial_content_title_skip_phase))
             showcaseView?.setContentText(getString(R.string.tutorial_content_message_skip_phase))
-            showcaseView?.setShowcase(ViewTarget(btn_next_phase), true)
+            showcaseView?.setShowcase(ViewTarget(break_text), true)
 
             Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_SKIP.")
         }
@@ -318,53 +319,86 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     //endregion
 
-    override fun showTimeRemaining(formattedTime: String) {
-        center_text.text = formattedTime
+    @TimerContract.TimerView.Companion.TimerMode
+    override var timerMode: Long = TimerContract.TimerView.TIMER_MODE_WORK
+        set(value) {
+            Timber.v("timerMode changed to $value.")
+            field = value
+            when (value) {
+                TimerContract.TimerView.TIMER_MODE_WORK -> {
+                    Timber.v("Switching TimerMode to TIMER_MODE_WORK.")
+                    unfocusTimer(seekBar = break_seek_bar)
+                    focusTimer(seekBar = work_seek_bar)
+                }
+                TimerContract.TimerView.TIMER_MODE_BREAK -> {
+                    Timber.v("Switching TimerMode to TIMER_MODE_BREAK.")
+                    unfocusTimer(seekBar = work_seek_bar)
+                    focusTimer(seekBar = break_seek_bar)
+                }
+            }
+        }
+
+    private fun focusTimer(seekBar: CircularSeekBar) {
+        bringSeekbarToFront(seekBar)
+        seekBar.isEnabled = true
+        seekBar.pointerAlpha = 1
+
+        (seekBar.parent as? View)?.alpha = 1f
     }
 
-    override fun showMajorProgress(progress: Int, maxProgress: Int) {
-        val progressPercent = (progress.toDouble() / maxProgress.toDouble()) * 100
-        wave_view.setProgress(progressPercent.toInt())
+    private fun bringSeekbarToFront(seekBar: View) {
+        val timerContainer = seekBar.parent
+        if (timerContainer is View) {
+            timerContainer.bringToFront()
+            val containerParent = seekBar.parent.parent
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT
+                    && containerParent is View) {
+                containerParent.requestLayout()
+                containerParent.invalidate()
+            }
+        }
     }
 
-    override fun showMinorProgress(progress: Int, maxProgress: Int) {
-        throw UnsupportedOperationException()
+    private fun unfocusTimer(seekBar: CircularSeekBar) {
+        seekBar.isEnabled = false
+        seekBar.pointerAlpha = 0
+
+        (seekBar.parent as? View)?.alpha = 0.65f
+
+        seekBar.progress = 0f
+    }
+
+    override fun showWorkTimeRemaining(formattedTime: String) {
+        work_text.setTime(formattedTime)
+    }
+
+    override fun showBreakTimeRemaining(formattedTime: String) {
+        break_text.setTime(formattedTime)
+    }
+
+    override fun showWorkProgress(progress: Int, maxProgress: Int) {
+        if (work_seek_bar.max != maxProgress.toFloat()) {
+            work_seek_bar.max = maxProgress.toFloat()
+        }
+        work_seek_bar.progress = -progress.toFloat()
+    }
+
+    override fun showBreakProgress(progress: Int, maxProgress: Int) {
+        if (break_seek_bar.max != maxProgress.toFloat()) {
+            break_seek_bar.max = maxProgress.toFloat()
+        }
+        break_seek_bar.progress = progress.toFloat()
     }
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {
-        val drawable = ContextCompat.getDrawable(this, drawableId)
+        val drawable = AppCompatResources.getDrawable(this, drawableId)
         timer_fab.setImageDrawable(drawable)
     }
 
     override fun showMessage(message: String) {
         Timber.v("Showing message in view: \"$message\"")
-        ViewCompat.setFitsSystemWindows(coordinator_layout, true)
         Snackbar.make(coordinator_layout, message, Snackbar.LENGTH_SHORT)
                 .show()
-    }
-
-    //endregion
-
-    //region CoordinatorLayout.Behavior
-
-    /**
-     * A custom CoordinatorLayout Behavior that pushes the layout child up when a Snackbar is
-     * shown in the layout.
-     */
-    class SnackbarPushesUpBehavior(context: Context, attributeSet: AttributeSet)
-            : CoordinatorLayout.Behavior<View>(context, attributeSet) {
-
-        override fun layoutDependsOn(parent: CoordinatorLayout?, child: View?,
-                                     dependency: View?): Boolean =
-                dependency is Snackbar.SnackbarLayout
-
-        override fun onDependentViewChanged(parent: CoordinatorLayout?, child: View?, dependency: View?): Boolean {
-            // Based off of http://stackoverflow.com/a/32805667/4499783
-            if (dependency == null) return false
-
-            child?.translationY = Math.min(0f, dependency.translationY - dependency.height)
-            return true
-        }
     }
 
     //endregion

@@ -133,26 +133,6 @@ class Cycle
     val remainingTimeMillis: Long
         get() = (remainingTime * 1000).toLong()
 
-    /** The time left in the current phase, formatted as HH:mm:ss */
-    val remainingTimeText: String
-        get() {
-            val secondsLeft = remainingTime % 60
-            val minutesLeft = (remainingTime / 60).toInt() % 60
-            val hoursLeft   = (remainingTime / (60 * 60)).toInt()
-            return when {
-                hoursLeft > 0   -> {
-                    val minutes = "$minutesLeft".padStart(2, padChar = '0')
-                    val seconds = "$secondsLeft".padStart(2, padChar = '0')
-                    "$hoursLeft:$minutes:$seconds"
-                }
-                minutesLeft > 0 -> {
-                    val seconds = "$secondsLeft".padStart(2, padChar = '0')
-                    "$minutesLeft:$seconds"
-                }
-                else            -> "$secondsLeft"
-            }
-        }
-
     /**
      * Retrieve the persisted full duration for a given phase.
      *
