@@ -184,6 +184,22 @@ class TimerPresenter
         else -> throw IllegalArgumentException("$currentState is not a valid @TutorialState value.")
     })
 
+    override fun onWorkTimerClicked() {
+        if (cycle.phase == Cycle.Phase.WORK) {
+            Timber.v("Ignoring work timer click - cycle is already in phase WORK.")
+            return
+        }
+        startNextPhase()
+    }
+
+    override fun onBreakTimerClicked() {
+        if (cycle.phase == Cycle.Phase.BREAK) {
+            Timber.v("Ignoring break timer click - cycle is already in phase BREAK.")
+            return
+        }
+        startNextPhase()
+    }
+
 
     //endregion
 
@@ -204,8 +220,6 @@ class TimerPresenter
         val intent = aboutPresenter.buildIntent(context)
         context.startActivity(intent)
     }
-
-
 
     override fun openSettings() {
         Timber.i("Starting SettingsActivity.")

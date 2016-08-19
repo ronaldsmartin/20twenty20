@@ -99,7 +99,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     private val secondaryControls: Array<View>
-        get() = arrayOf(btn_restart_phase, btn_next_phase)
+        get() = arrayOf(btn_restart_phase)
 
     //endregion
 
@@ -140,7 +140,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
         btn_restart_phase.setOnClickListener { presenter.restartPhase() }
         timer_fab.setOnClickListener { presenter.toggleRunning() }
-        btn_next_phase.setOnClickListener { presenter.startNextPhase() }
+
+        work_text.setOnClickListener { presenter.onWorkTimerClicked() }
+        break_text.setOnClickListener { presenter.onBreakTimerClicked() }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -291,7 +293,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
             showcaseView?.setContentTitle(getString(R.string.tutorial_content_title_skip_phase))
             showcaseView?.setContentText(getString(R.string.tutorial_content_message_skip_phase))
-            showcaseView?.setShowcase(ViewTarget(btn_next_phase), true)
+            showcaseView?.setShowcase(ViewTarget(break_text), true)
 
             Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_SKIP.")
         }

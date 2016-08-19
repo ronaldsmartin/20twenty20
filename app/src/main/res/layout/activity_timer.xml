@@ -91,13 +91,6 @@
             app:srcCompat="@drawable/ic_restore_black_24dp"
             style="@style/timer_button_secondary" />
 
-        <ImageButton
-            android:id="@+id/btn_next_phase"
-            android:layout_above="@+id/btn_restart_phase"
-            android:contentDescription="@string/timer_skip_to_next_cycle"
-            app:srcCompat="@drawable/ic_alarm_on_black_24dp"
-            style="@style/timer_button_secondary" />
-
     </android.support.percent.PercentRelativeLayout>
 
     <android.support.design.widget.FloatingActionButton

@@ -141,6 +141,16 @@ interface TimerContract {
          * @param currentState The state of the tutorial that was clicked.
          */
         fun onTutorialNextClicked(@TimerView.Companion.TutorialState currentState: Long)
+
+        /**
+         * Notify the listener that the work timer was clicked.
+         */
+        fun onWorkTimerClicked()
+
+        /**
+         * Notify the listener that the break timer was clicked.
+         */
+        fun onBreakTimerClicked()
     }
 
 }
