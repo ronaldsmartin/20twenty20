@@ -36,6 +36,7 @@
                 app:cs_start_angle="90"
                 app:cs_end_angle="90"
                 app:cs_circle_progress_color="@color/colorAccent"
+                app:cs_circle_color="@color/timer_progress_ring_background_color"
                 app:cs_pointer_color="@color/colorAccent"
                 app:cs_pointer_halo_color="@color/colorAccent"
                 app:cs_circle_stroke_width="@dimen/timer_ring_stroke_width"
@@ -55,6 +56,7 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/work_container"
             android:layout_marginTop="-16dp"
+            android:alpha="0.65"
             app:layout_widthPercent="100%"
             app:layout_heightPercent="40%">
 
@@ -64,6 +66,7 @@
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 app:cs_circle_progress_color="@color/colorAccent"
+                app:cs_circle_color="@color/timer_progress_ring_background_color"
                 app:cs_pointer_color="@color/colorAccent"
                 app:cs_pointer_halo_color="@color/colorAccent"
                 app:cs_circle_stroke_width="@dimen/timer_ring_stroke_width"

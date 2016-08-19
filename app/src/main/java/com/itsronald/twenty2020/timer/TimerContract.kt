@@ -39,6 +39,18 @@ interface TimerContract {
             const val TUTORIAL_TARGET_TIMER_RESTART = 3L
 
             //endregion
+
+            //region Timer mode
+
+            @IntDef(TIMER_MODE_WORK, TIMER_MODE_BREAK)
+            @Retention(AnnotationRetention.SOURCE)
+            annotation class TimerMode
+
+            const val TIMER_MODE_WORK = 1L
+
+            const val TIMER_MODE_BREAK = 2L
+
+            //endregion
         }
 
         val context: Context
@@ -52,6 +64,9 @@ interface TimerContract {
         /** The current state of the tutorial for first-time users. */
         @TutorialState
         var tutorialState: Long
+
+        @TimerMode
+        var timerMode: Long
 
         /**
          * Display a short tutorial to first-time users.
@@ -73,18 +88,18 @@ interface TimerContract {
         fun showBreakTimeRemaining(formattedTime: String)
 
         /**
-         * Display major progress in the view.
+         * Display work phase progress in the view.
          * @param progress The current progress value to display.
          * @param maxProgress The maximum progress value the can be displayed.
          */
-        fun showMajorProgress(progress: Int, maxProgress: Int)
+        fun showWorkProgress(progress: Int, maxProgress: Int)
 
         /**
-         * Display minor progress in the view.
+         * Display break phase progress in the view.
          * @param progress The current progress value to display.
          * @param maxProgress The maximum progress value the can be displayed.
          */
-        fun showMinorProgress(progress: Int, maxProgress: Int)
+        fun showBreakProgress(progress: Int, maxProgress: Int)
 
         /**
          * Change the FloatingActionButton's drawable icon in the view.

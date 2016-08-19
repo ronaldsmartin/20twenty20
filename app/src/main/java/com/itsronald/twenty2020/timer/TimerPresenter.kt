@@ -72,6 +72,18 @@ class TimerPresenter
     private fun breakProgress(): Observable<Pair<Int, Int>> = cycleProgress()
             .filter { cycle.phase == Cycle.Phase.BREAK }
 
+    private fun timerViewMode(): Observable<Long> = cycle.timer
+            .map { timerModeForPhase(phase = it.phase) }
+            .distinctUntilChanged()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onError { Timber.e(it, "Unable to switch TimerView mode.") }
+
+    private fun timerModeForPhase(phase: Cycle.Phase): Long = when (phase) {
+        Cycle.Phase.WORK  -> TimerContract.TimerView.TIMER_MODE_WORK
+        Cycle.Phase.BREAK -> TimerContract.TimerView.TIMER_MODE_BREAK
+    }
+
     /**
      * Watch changes to the user's display_keep_screen_on preference.
      */
@@ -128,8 +140,9 @@ class TimerPresenter
                 }
             }
         }
-        subscriptions += workProgress().subscribe { view.showMajorProgress(it.first, it.second) }
-        subscriptions += breakProgress().subscribe { view.showMinorProgress(it.first, it.second) }
+        subscriptions += workProgress().subscribe { view.showWorkProgress(it.first, it.second) }
+        subscriptions += breakProgress().subscribe { view.showBreakProgress(it.first, it.second) }
+        subscriptions += timerViewMode().subscribe { view.timerMode = it }
 
         subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
         subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }

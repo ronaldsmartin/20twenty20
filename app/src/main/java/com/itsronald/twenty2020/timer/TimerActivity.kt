@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
@@ -23,6 +24,7 @@ import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.PreferencesModule
 import com.itsronald.twenty2020.timer.TimerContract.TimerView.Companion.TutorialState
 import kotlinx.android.synthetic.main.activity_timer.*
+import me.tankery.lib.circularseekbar.CircularSeekBar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -315,6 +317,49 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     //endregion
 
+    @TimerContract.TimerView.Companion.TimerMode
+    override var timerMode: Long = TimerContract.TimerView.TIMER_MODE_WORK
+        set(value) {
+            Timber.v("timerMode changed to $value.")
+            field = value
+            when (value) {
+                TimerContract.TimerView.TIMER_MODE_WORK -> {
+                    Timber.v("Switching TimerMode to TIMER_MODE_WORK.")
+                    unfocusTimer(seekBar = break_seek_bar)
+                    focusTimer(seekBar = work_seek_bar)
+                }
+                TimerContract.TimerView.TIMER_MODE_BREAK -> {
+                    Timber.v("Switching TimerMode to TIMER_MODE_BREAK.")
+                    unfocusTimer(seekBar = work_seek_bar)
+                    focusTimer(seekBar = break_seek_bar)
+                }
+            }
+        }
+
+    private fun focusTimer(seekBar: CircularSeekBar) {
+        bringSeekbarToFront(seekBar)
+        seekBar.isEnabled = true
+        seekBar.pointerAlpha = 1
+
+        (seekBar.parent as? View)?.alpha = 1f
+    }
+
+    private fun bringSeekbarToFront(seekBar: View) {
+        seekBar.bringToFront()
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            content_layout.requestLayout()
+        }
+    }
+
+    private fun unfocusTimer(seekBar: CircularSeekBar) {
+        seekBar.isEnabled = false
+        seekBar.pointerAlpha = 0
+
+        (seekBar.parent as? View)?.alpha = 0.65f
+
+        seekBar.progress = 0f
+    }
+
     override fun showWorkTimeRemaining(formattedTime: String) {
         work_text.setTime(formattedTime)
     }
@@ -323,20 +368,14 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         break_text.setTime(formattedTime)
     }
 
-    override fun showMajorProgress(progress: Int, maxProgress: Int) {
-        if (break_seek_bar.progress != 0f) {
-            break_seek_bar.progress = 0f
-        }
+    override fun showWorkProgress(progress: Int, maxProgress: Int) {
         if (work_seek_bar.max != maxProgress.toFloat()) {
             work_seek_bar.max = maxProgress.toFloat()
         }
         work_seek_bar.progress = -progress.toFloat()
     }
 
-    override fun showMinorProgress(progress: Int, maxProgress: Int) {
-        if (work_seek_bar.progress != 0f) {
-            work_seek_bar.progress = 0f
-        }
+    override fun showBreakProgress(progress: Int, maxProgress: Int) {
         if (break_seek_bar.max != maxProgress.toFloat()) {
             break_seek_bar.max = maxProgress.toFloat()
         }
