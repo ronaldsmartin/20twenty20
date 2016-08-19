@@ -60,19 +60,16 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update time string.") }
 
-    private fun cycleProgress(): Observable<Int> = cycle.timer
-            .map { cycle ->
-                val progress = (cycle.elapsedTime.toDouble() / cycle.duration.toDouble()) * 100
-                progress.toInt()
-            }
+    private fun cycleProgress(): Observable<Pair<Int, Int>> = cycle.timer
+            .map { Pair(it.elapsedTime, it.duration) }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update major progress bar.") }
 
-    private fun workProgress(): Observable<Int> = cycleProgress()
+    private fun workProgress(): Observable<Pair<Int, Int>> = cycleProgress()
             .filter { cycle.phase == Cycle.Phase.WORK }
 
-    private fun breakProgress(): Observable<Int> = cycleProgress()
+    private fun breakProgress(): Observable<Pair<Int, Int>> = cycleProgress()
             .filter { cycle.phase == Cycle.Phase.BREAK }
 
     /**
@@ -131,8 +128,8 @@ class TimerPresenter
                 }
             }
         }
-        subscriptions += workProgress().subscribe { view.showMajorProgress(it, 100) }
-        subscriptions += breakProgress().subscribe { view.showMinorProgress(it, 100) }
+        subscriptions += workProgress().subscribe { view.showMajorProgress(it.first, it.second) }
+        subscriptions += breakProgress().subscribe { view.showMinorProgress(it.first, it.second) }
 
         subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
         subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
