@@ -24,6 +24,7 @@
         <RelativeLayout
             android:id="@+id/work_container"
             android:layout_centerHorizontal="true"
+            android:animateLayoutChanges="true"
             app:layout_widthPercent="100%"
             app:layout_heightPercent="55%">
 
@@ -56,6 +57,7 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/work_container"
             android:layout_marginTop="-16dp"
+            android:animateLayoutChanges="true"
             android:alpha="0.65"
             app:layout_widthPercent="100%"
             app:layout_heightPercent="40%">
