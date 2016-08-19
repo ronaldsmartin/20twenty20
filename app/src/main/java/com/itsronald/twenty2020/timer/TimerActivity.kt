@@ -345,9 +345,15 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     private fun bringSeekbarToFront(seekBar: View) {
-        seekBar.bringToFront()
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            content_layout.requestLayout()
+        val timerContainer = seekBar.parent
+        if (timerContainer is View) {
+            timerContainer.bringToFront()
+            val containerParent = seekBar.parent.parent
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT
+                    && containerParent is View) {
+                containerParent.requestLayout()
+                containerParent.invalidate()
+            }
         }
     }
 
