@@ -14,6 +14,10 @@
     <color name="tutorial_button_color">@color/colorPrimary</color>
     <color name="tutorial_title_color">@android:color/white</color>
 
+    <!-- activity_timer -->
+    <color name="timer_background_gradient_start">#175853</color>
+    <color name="timer_background_gradient_end">#2aa198</color>
+
     <!--Solarized color scheme by Ethan Schoonover-->
     <!--http://ethanschoonover.com/solarized-->
     <color name="solarized_base03">#002b36</color>
