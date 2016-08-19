@@ -5,28 +5,23 @@
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/action_bar_offset"
     android:background="@drawable/timer_background"
     tools:context="com.itsronald.twenty2020.timer.TimerActivity">
 
-    <LinearLayout
-        android:id="@+id/constraint_layout"
+    <android.support.percent.PercentRelativeLayout
+        android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:clipChildren="false"
         android:animateLayoutChanges="true"
-        app:layout_behavior="com.itsronald.twenty2020.timer.TimerActivity$SnackbarPushesUpBehavior">
+        android:fitsSystemWindows="true"
+        app:layout_dodgeInsetEdges="bottom">
 
         <!-- Work display -->
         <RelativeLayout
             android:id="@+id/work_container"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:baselineAligned="false"
-            android:clipChildren="false"
-            android:gravity="center">
+            android:layout_centerHorizontal="true"
+            app:layout_widthPercent="100%"
+            app:layout_heightPercent="67%">
 
             <me.tankery.lib.circularseekbar.CircularSeekBar
                 android:id="@+id/work_seek_bar"
@@ -50,11 +45,11 @@
 
         <!-- Break display -->
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:clipChildren="false"
-            android:gravity="center">
+            android:id="@+id/break_container"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/work_container"
+            app:layout_widthPercent="100%"
+            app:layout_heightPercent="33%">
 
             <me.tankery.lib.circularseekbar.CircularSeekBar
                 android:id="@+id/break_seek_bar"
@@ -74,32 +69,32 @@
         </RelativeLayout>
 
         <!--Controls-->
-        <LinearLayout
-            android:id="@+id/controls_layout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.75"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:fitsSystemWindows="true"
-            style="?metaButtonBarStyle">
 
-            <ImageButton
-                android:id="@+id/btn_restart_phase"
-                android:layout_weight="1"
-                android:contentDescription="@string/timer_restart_current_cycle"
-                app:srcCompat="@drawable/ic_restore_black_24dp"
-                style="@style/timer_button_secondary" />
+        <ImageButton
+            android:id="@+id/btn_restart_phase"
+            android:layout_alignParentBottom="true"
+            android:contentDescription="@string/timer_restart_current_cycle"
+            app:srcCompat="@drawable/ic_restore_black_24dp"
+            style="@style/timer_button_secondary" />
 
-            <ImageButton
-                android:id="@+id/btn_next_phase"
-                android:layout_weight="1"
-                android:contentDescription="@string/timer_skip_to_next_cycle"
-                app:srcCompat="@drawable/ic_alarm_on_black_24dp"
-                style="@style/timer_button_secondary" />
+        <ImageButton
+            android:id="@+id/btn_next_phase"
+            android:layout_above="@+id/btn_restart_phase"
+            android:contentDescription="@string/timer_skip_to_next_cycle"
+            app:srcCompat="@drawable/ic_alarm_on_black_24dp"
+            style="@style/timer_button_secondary" />
 
-        </LinearLayout>
+    </android.support.percent.PercentRelativeLayout>
 
-    </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/timer_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:fitsSystemWindows="true"
+        android:src="@android:drawable/ic_media_play"
+        app:layout_anchor="@+id/content_layout"
+        app:layout_anchorGravity="bottom|right|end"
+        app:useCompatPadding="true" />
 
 </android.support.design.widget.CoordinatorLayout>
