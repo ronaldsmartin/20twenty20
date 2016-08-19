@@ -16,5 +16,8 @@
     <dimen name="timer_ring_inner_thickness">50dp</dimen>
     <item name="timer_ring_inner_radius_ratio" format="float" type="dimen">5.0</item>
 
+    <dimen name="timer_ring_stroke_width">6dp</dimen>
+    <dimen name="timer_pointer_stroke_width">10dp</dimen>
+
 
 </resources>

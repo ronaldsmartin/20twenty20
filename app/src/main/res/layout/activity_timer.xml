@@ -12,6 +12,10 @@
         android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
         android:animateLayoutChanges="true"
         android:fitsSystemWindows="true"
         app:layout_dodgeInsetEdges="bottom">
@@ -21,7 +25,7 @@
             android:id="@+id/work_container"
             android:layout_centerHorizontal="true"
             app:layout_widthPercent="100%"
-            app:layout_heightPercent="67%">
+            app:layout_heightPercent="55%">
 
             <me.tankery.lib.circularseekbar.CircularSeekBar
                 android:id="@+id/work_seek_bar"
@@ -33,7 +37,9 @@
                 app:cs_end_angle="90"
                 app:cs_circle_progress_color="@color/colorAccent"
                 app:cs_pointer_color="@color/colorAccent"
-                app:cs_pointer_halo_color="@color/colorAccent"/>
+                app:cs_pointer_halo_color="@color/colorAccent"
+                app:cs_circle_stroke_width="@dimen/timer_ring_stroke_width"
+                app:cs_pointer_stroke_width="@dimen/timer_pointer_stroke_width"/>
 
             <com.bydavy.morpher.DigitalClockView
                 android:id="@+id/work_text"
@@ -48,8 +54,9 @@
             android:id="@+id/break_container"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/work_container"
+            android:layout_marginTop="-16dp"
             app:layout_widthPercent="100%"
-            app:layout_heightPercent="33%">
+            app:layout_heightPercent="40%">
 
             <me.tankery.lib.circularseekbar.CircularSeekBar
                 android:id="@+id/break_seek_bar"
@@ -58,7 +65,9 @@
                 android:layout_centerInParent="true"
                 app:cs_circle_progress_color="@color/colorAccent"
                 app:cs_pointer_color="@color/colorAccent"
-                app:cs_pointer_halo_color="@color/colorAccent"/>
+                app:cs_pointer_halo_color="@color/colorAccent"
+                app:cs_circle_stroke_width="@dimen/timer_ring_stroke_width"
+                app:cs_pointer_stroke_width="@dimen/timer_pointer_stroke_width"/>
 
             <com.bydavy.morpher.DigitalClockView
                 android:id="@+id/break_text"
