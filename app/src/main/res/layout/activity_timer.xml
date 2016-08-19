@@ -45,9 +45,7 @@
 
             <com.bydavy.morpher.DigitalClockView
                 android:id="@+id/work_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                style="@style/TimerText" />
 
         </RelativeLayout>
 
@@ -76,9 +74,7 @@
 
             <com.bydavy.morpher.DigitalClockView
                 android:id="@+id/break_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                style="@style/TimerText" />
 
         </RelativeLayout>
 
@@ -89,7 +85,7 @@
             android:layout_alignParentBottom="true"
             android:contentDescription="@string/timer_restart_current_cycle"
             app:srcCompat="@drawable/ic_restore_black_24dp"
-            style="@style/timer_button_secondary" />
+            style="@style/TimerButton" />
 
     </android.support.percent.PercentRelativeLayout>
 

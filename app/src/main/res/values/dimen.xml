@@ -2,11 +2,10 @@
 <resources>
 
     <!--activity_timer-->
-    <dimen name="timer_layout_margin_fab">30dp</dimen>
-    <dimen name="timer_padding_button">8dp</dimen>
 
     <dimen name="timer_button_layout_width">56dp</dimen>
     <dimen name="timer_button_layout_height">@dimen/timer_button_layout_width</dimen>
+    <dimen name="timer_button_layout_margin">16dp</dimen>
 
     <dimen name="timer_ring_stroke_width">6dp</dimen>
     <dimen name="timer_pointer_stroke_width">10dp</dimen>
