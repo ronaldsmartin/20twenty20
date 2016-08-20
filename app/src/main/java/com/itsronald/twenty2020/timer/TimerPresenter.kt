@@ -149,8 +149,8 @@ class TimerPresenter
 
         subscriptions += isCycleRunning().subscribe { running ->
             Timber.v("Switching play/pause icon.")
-            view.setFABDrawable(if (running) android.R.drawable.ic_media_pause
-                                else android.R.drawable.ic_media_play)
+            view.setFABDrawable(if (running) R.drawable.ic_pause
+                                else R.drawable.ic_play_arrow)
         }
     }
 
