@@ -15,7 +15,8 @@
     <style name="FullscreenTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/TransparentActionBar</item>
         <item name="android:windowActionBarOverlay">true</item>
-
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/TransparentActionBar</item>
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
         <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
@@ -24,9 +25,10 @@
     
     <style name="TransparentActionBar" parent="@style/Widget.AppCompat.ActionBar">
         <item name="android:background">@null</item>
-
+        <item tools:targetApi="LOLLIPOP" name="android:elevation">0dp</item>
         <!-- support v7 -->
         <item name="background">@null</item>
+        <item name="elevation">0dp</item>
     </style>
 
     <!--activity_timer-->
