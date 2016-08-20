@@ -3,6 +3,8 @@
 
     <!--activity_timer-->
 
+    <dimen name="timer_clock_text_size">56sp</dimen>
+
     <dimen name="timer_button_layout_width">56dp</dimen>
     <dimen name="timer_button_layout_height">@dimen/timer_button_layout_width</dimen>
     <dimen name="timer_button_layout_margin">16dp</dimen>
