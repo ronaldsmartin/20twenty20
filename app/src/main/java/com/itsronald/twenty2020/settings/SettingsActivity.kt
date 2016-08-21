@@ -1,7 +1,6 @@
 package com.itsronald.twenty2020.settings
 
 
-import android.content.Context
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +13,7 @@ import android.view.ViewGroup
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -155,6 +155,14 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
         presenter.onStop()
     }
 
+    override fun onBackPressed() {
+        // 2016-08-21, using Support Libs v24.2.0
+        // When the back button is pressed to finish this activity, night mode changes are not
+        // applied in Marshmallow. however, using the up button does this correctly.
+        Timber.v("Back button pressed.")
+        NavUtils.navigateUpFromSameTask(this)
+    }
+
     //endregion
 
     //region SettingsContract.SettingsView
@@ -170,7 +178,9 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
         get() = fragmentManager.findFragmentByTag(TAG_SETTINGS_FRAGMENT) as? SettingsFragment
 
     override fun refreshNightMode(nightMode: Int) {
-        if (delegate.applyDayNight()) recreate()
+        val applyDayNight = delegate.applyDayNight()
+        Timber.i("Applying DayNight mode: $applyDayNight")
+        if (applyDayNight) recreate()
     }
 
     override fun setPreferenceChecked(@StringRes prefKeyID: Int, checked: Boolean): Boolean {

@@ -171,6 +171,12 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         }
     }
 
+    override fun onRestart() {
+        val applyDayNight = delegate.applyDayNight()
+        Timber.v("Applying DayNight mode: $applyDayNight")
+        super.onRestart()
+    }
+
     override fun onStop() {
         super.onStop()
         presenter.onStop()
