@@ -83,15 +83,9 @@ class Notifier
      */
     private fun buildPhaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification =
             NotificationCompat.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setColor(ContextCompat.getColor(context, when(phaseCompleted) {
-                    Cycle.Phase.WORK  -> R.color.solarized_red
-                    Cycle.Phase.BREAK -> R.color.solarized_green
-                }))
-                .setContentTitle(context.getString(when(phaseCompleted) {
-                    Cycle.Phase.WORK  -> R.string.notification_title_work_cycle_complete
-                    Cycle.Phase.BREAK -> R.string.notification_title_break_cycle_complete
-                }))
+                .setSmallIcon(R.drawable.ic_notification_small)
+                .setColor(phaseCompleteColor(phaseCompleted = phaseCompleted))
+                .setContentTitle(phaseCompleteContentTitle(phaseCompleted = phaseCompleted))
                 .setContentText(makePhaseCompleteMessage(phaseCompleted))
                 .setContentIntent(timerContentIntent())
                 .addAction(
@@ -111,6 +105,18 @@ class Notifier
                 )
                 .setSound(preferredNotificationSound)
                 .build()
+
+    private fun phaseCompleteColor(phaseCompleted: Cycle.Phase) = ContextCompat
+            .getColor(context, when(phaseCompleted) {
+                Cycle.Phase.WORK  -> R.color.solarized_red
+                Cycle.Phase.BREAK -> R.color.solarized_cyan
+            })
+
+    private fun phaseCompleteContentTitle(phaseCompleted: Cycle.Phase) = context
+            .getString(when(phaseCompleted) {
+                Cycle.Phase.WORK  -> R.string.notification_title_work_cycle_complete
+                Cycle.Phase.BREAK -> R.string.notification_title_break_cycle_complete
+            })
 
     /**
      * A URI for the notification sound chosen by the user in Settings.
@@ -236,7 +242,7 @@ class Notifier
      * @return A new notification displaying the progress of [cycle].
      */
     fun buildProgressNotification(cycle: Cycle): Notification = NotificationCompat.Builder(context)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_notification_small)
             .setContentTitle(context.getString(R.string.notification_title_foreground_progress))
             .setContentText(progressNotificationMessage(cycle))
             .setColor(ContextCompat.getColor(context, R.color.colorAccent))

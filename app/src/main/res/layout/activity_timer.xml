@@ -87,7 +87,7 @@
             android:id="@+id/btn_restart_phase"
             android:layout_alignParentBottom="true"
             android:contentDescription="@string/timer_restart_current_cycle"
-            app:srcCompat="@drawable/ic_restore_black_24dp"
+            android:src="@drawable/ic_restore_black_24dp"
             style="@style/TimerButton" />
 
     </android.support.percent.PercentRelativeLayout>
@@ -98,7 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:fitsSystemWindows="true"
-        android:src="@android:drawable/ic_media_play"
+        android:src="@drawable/ic_play_arrow"
         app:layout_anchor="@+id/content_layout"
         app:layout_anchorGravity="bottom|right|end"
         app:useCompatPadding="true" />
