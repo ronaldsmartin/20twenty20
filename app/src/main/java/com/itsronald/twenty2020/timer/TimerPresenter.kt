@@ -113,11 +113,23 @@ class TimerPresenter
 
     override fun onStart() {
         super.onStart()
-        view.showWorkTimeRemaining(Cycle.Phase.WORK.duration(resources).toTimeString())
-        view.showBreakTimeRemaining(Cycle.Phase.BREAK.duration(resources).toTimeString())
+        updateTimeText()
 
         startSubscriptions()
         showTutorialOnFirstRun()
+    }
+
+    private fun updateTimeText() {
+        val nextPhase = cycle.phase.nextPhase
+        val nextDurationText = cycle.durationOfPhase(nextPhase).toTimeString()
+        updateTimeTextForPhase(phase = nextPhase, timeText = nextDurationText)
+
+        updateTimeTextForPhase(phase = cycle.phase, timeText = cycle.remainingTime.toTimeString())
+    }
+
+    private fun updateTimeTextForPhase(phase: Cycle.Phase, timeText: String) = when (phase) {
+        Cycle.Phase.WORK  -> view.showWorkTimeRemaining(formattedTime = timeText)
+        Cycle.Phase.BREAK -> view.showBreakTimeRemaining(formattedTime = timeText)
     }
 
     override fun onStop() {
