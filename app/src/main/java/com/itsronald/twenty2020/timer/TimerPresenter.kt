@@ -3,6 +3,7 @@ package com.itsronald.twenty2020.timer
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.BuildConfig
 import com.itsronald.twenty2020.R
@@ -282,22 +283,20 @@ class TimerPresenter
 
     //endregion
 
-    /** Format a time in seconds as HH:mm:ss */
-    private fun Int.toTimeString(): String {
-        val secondsLeft = this % 60
-        val minutesLeft = (this / 60).toInt() % 60
-        val hoursLeft   = (this / (60 * 60)).toInt()
-        return when {
-            hoursLeft > 0   -> {
-                val minutes = "$minutesLeft".padStart(2, padChar = '0')
-                val seconds = "$secondsLeft".padStart(2, padChar = '0')
-                "$hoursLeft:$minutes:$seconds"
-            }
-            minutesLeft > 0 -> {
-                val seconds = "$secondsLeft".padStart(2, padChar = '0')
-                "$minutesLeft:$seconds"
-            }
-            else            -> "$secondsLeft"
-        }
-    }
+    //region Formatting
+
+    /**
+     * A recyclable StringBuilder to use when formatting times.
+     */
+    private val timeStringBuilder = StringBuilder(8)
+
+    /**
+     * Format a time in seconds as HH:mm:ss when hours are present, mm:ss if the time is less
+     * than an hour, or just as seconds if the time is less than a minute.
+     */
+    private fun Int.toTimeString(): String =
+            if (this >= 60) DateUtils.formatElapsedTime(timeStringBuilder, this.toLong())
+            else "$this"
+
+    //endregion
 }
