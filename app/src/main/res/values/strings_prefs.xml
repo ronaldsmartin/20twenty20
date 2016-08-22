@@ -86,6 +86,7 @@
 
     <!-- Display settings -->
     <string name="pref_header_display">Display</string>
+    <string name="pref_key_category_display">com.itsronald.settings.key.category.display</string>
 
     <string name="pref_title_display_night_mode">Night mode</string>
     <string name="pref_key_display_night_mode"

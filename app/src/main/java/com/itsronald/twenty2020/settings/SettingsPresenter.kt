@@ -79,7 +79,11 @@ class SettingsPresenter
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             // No need to opt-into locations runtime permission; it is granted by default.
-            view.removePreference(R.string.pref_key_display_location_based_night_mode)
+            Timber.i("Removing preference display_location_based_night_mode: not needed before Android Marshmallow.")
+            view.removePreference(
+                    prefKeyID = R.string.pref_key_display_location_based_night_mode,
+                    inCategory = R.string.pref_key_category_display
+            )
         } else {
             // Runtime permissions are in effect. Continue any ongoing requests.
             Dexter.continuePendingRequestIfPossible(buildDexterPermissionDeniedListener())
