@@ -11,13 +11,13 @@ import com.itsronald.twenty2020.BuildConfig
 class FeedbackActivity : IssueReporterActivity() {
 
     companion object {
-        const val TARGET_USERNAME = "ronaldsmartin"
-        const val TARGET_REPOSITORY = "20twenty20"
+        private const val TARGET_USERNAME = "ronaldsmartin"
+        private const val TARGET_REPOSITORY = "20twenty20"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setGuestEmailRequired(true)
+        // TODO: Enable setGuestEmailRequired(true) when android-issue-reporter is updated.
     }
 
     override fun getTarget(): GithubTarget = GithubTarget(TARGET_USERNAME, TARGET_REPOSITORY)
