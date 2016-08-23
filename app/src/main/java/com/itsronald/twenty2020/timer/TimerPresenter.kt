@@ -7,6 +7,7 @@ import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.BuildConfig
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.about.AboutPresenter
 import com.itsronald.twenty2020.about.DaggerAboutComponent
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
@@ -37,6 +38,22 @@ class TimerPresenter
 
     private val context: Context
         get() = view.context
+
+    /**
+     * Lazily instantiated presenter for the About screen.
+     * We create the presenter here because the view is generated programatically by AboutLibraries
+     * instead of by one of our own activities.
+     */
+    private val aboutPresenter: AboutPresenter by lazy {
+        Timber.v("Building AboutPresenter")
+        val resourceComponent = DaggerResourceComponent.builder()
+                .resourceModule(ResourceModule(context))
+                .build()
+        val aboutComponent = DaggerAboutComponent.builder()
+                .resourceComponent(resourceComponent)
+                .build()
+        aboutComponent.aboutPresenter()
+    }
 
     //region Observers
 
@@ -219,16 +236,7 @@ class TimerPresenter
     //region Menu interaction
 
     override fun openAboutApp() {
-        Timber.v("Building AboutPresenter")
         eventTracker.reportEvent(EventTracker.Event.AboutAppClicked())
-
-        val resourceComponent = DaggerResourceComponent.builder()
-                .resourceModule(ResourceModule(context))
-                .build()
-        val aboutComponent = DaggerAboutComponent.builder()
-                .resourceComponent(resourceComponent)
-                .build()
-        val aboutPresenter = aboutComponent.aboutPresenter()
 
         val intent = aboutPresenter.buildIntent(context)
         context.startActivity(intent)

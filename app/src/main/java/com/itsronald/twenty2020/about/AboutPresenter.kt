@@ -81,9 +81,12 @@ class AboutPresenter
 
     //region LibsConfiguration.LibsListener
 
+    private val aboutURLString = resources.getString(R.string.url_about)
+    private val sourceCodeURLString = resources.getString(R.string.url_github)
+
+
     override fun onIconClicked(v: View?) {
-        val aboutURL = resources.getString(R.string.url_about)
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(aboutURL))
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(aboutURLString))
         v?.context?.startActivity(intent)
     }
 
@@ -99,8 +102,7 @@ class AboutPresenter
 
     private fun onSourceCodeButtonClick(view: View?): Boolean {
         Timber.i("Opening source code website in browser.")
-        val sourceURL = resources.getString(R.string.url_github)
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(sourceURL))
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(sourceCodeURLString))
         view?.context?.startActivity(intent)
         return true
     }
