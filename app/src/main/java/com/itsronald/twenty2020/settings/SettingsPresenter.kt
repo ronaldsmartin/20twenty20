@@ -4,18 +4,13 @@ import android.Manifest
 import android.annotation.TargetApi
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.settings.injection.SettingsComponent
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.onError
@@ -33,6 +28,9 @@ class SettingsPresenter
     : SettingsContract.Presenter {
 
     override lateinit var settingsComponent: SettingsComponent
+
+    private val permissionListener: PermissionListener
+        get() = settingsComponent.permissionsListener()
 
     //region Observers
 
@@ -196,49 +194,6 @@ class SettingsPresenter
         Timber.v("Requesting permission ${Manifest.permission.ACCESS_COARSE_LOCATION}.")
         Dexter.checkPermission(permissionListener,
                 Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    /**
-     * A lazily instantiated listener for permissions requests.
-     */
-    private val permissionListener: PermissionListener by lazy {
-        val baseSnackbarPermissionListener = SnackbarOnDeniedPermissionListener.Builder
-                .with(view.contentView, R.string.location_permission_rationale)
-                .withOpenSettingsButton(R.string.settings)
-                .withCallback(object : Snackbar.Callback() {
-                    override fun onShown(snackbar: Snackbar?) {
-                        super.onShown(snackbar)
-                        // If the Snackbar is shown, the permission was denied.
-                        // Un-check the setting that requires the permission.
-                        Timber.w("Permission request was denied. Disabling automatic night mode.")
-                        view.setPreferenceChecked(
-                                prefKeyID = R.string.pref_key_display_location_based_night_mode,
-                                checked = false
-                        )
-                    }
-                })
-                .build()
-        SnackbarPermissionListener(baseListener = baseSnackbarPermissionListener)
-    }
-
-    /**
-     * A subclass of [SnackbarOnDeniedPermissionListener] that additionally implements
-     * [onPermissionRationaleShouldBeShown]. Since it responds to a user action, it assumes that
-     * the permission is not permanently denied so as to alert the user that the setting cannot be
-     * set.
-     */
-    @TargetApi(Build.VERSION_CODES.M)
-    private class SnackbarPermissionListener(baseListener: PermissionListener) :
-            PermissionListener by baseListener {
-
-        override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest,
-                                                        token: PermissionToken) {
-            token.cancelPermissionRequest()
-
-            val reconstructedRequest = PermissionRequest(permission.name)
-            val permanentlyDenied = false
-            onPermissionDenied(PermissionDeniedResponse(reconstructedRequest, permanentlyDenied))
-        }
     }
 
     //endregion
