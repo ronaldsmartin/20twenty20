@@ -16,6 +16,7 @@
         <item name="android:actionBarStyle">@style/TransparentActionBar</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/timer_background_gradient_end</item>
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/TransparentActionBar</item>
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
