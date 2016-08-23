@@ -3,6 +3,7 @@ package com.itsronald.twenty2020.settings
 import android.support.annotation.StringRes
 import android.view.ViewGroup
 import com.itsronald.twenty2020.base.View
+import com.itsronald.twenty2020.settings.injection.SettingsComponent
 
 
 interface SettingsContract {
@@ -57,5 +58,6 @@ interface SettingsContract {
 
     interface Presenter : com.itsronald.twenty2020.base.Presenter<SettingsView> {
 
+        var settingsComponent: SettingsComponent
     }
 }

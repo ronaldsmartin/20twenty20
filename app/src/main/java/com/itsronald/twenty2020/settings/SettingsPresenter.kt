@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
+import com.itsronald.twenty2020.settings.injection.SettingsComponent
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
@@ -30,6 +31,8 @@ class SettingsPresenter
                         val resources: ResourceRepository,
                         val preferences: RxSharedPreferences)
     : SettingsContract.Presenter {
+
+    override lateinit var settingsComponent: SettingsComponent
 
     //region Observers
 

@@ -128,19 +128,24 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
             fragmentManager.executePendingTransactions()
         }
 
+        injectDependencies()
+        presenter.onCreate(savedInstanceState)
+    }
+
+    private fun injectDependencies() {
         val preferencesComponent = DaggerPreferencesComponent.builder()
                 .preferencesModule(PreferencesModule(this))
                 .build()
         val resourceComponent = DaggerResourceComponent.builder()
                 .resourceModule(ResourceModule(this))
                 .build()
-        DaggerSettingsComponent.builder()
+        val settingsComponent =  DaggerSettingsComponent.builder()
                 .preferencesComponent(preferencesComponent)
                 .resourceComponent(resourceComponent)
                 .settingsModule(SettingsModule(this))
                 .build()
-                .inject(this)
-        presenter.onCreate(savedInstanceState)
+        settingsComponent.inject(this)
+        presenter.settingsComponent = settingsComponent
     }
 
     override fun onStart() {
