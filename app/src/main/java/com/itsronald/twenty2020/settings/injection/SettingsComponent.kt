@@ -1,7 +1,8 @@
-package com.itsronald.twenty2020.settings
+package com.itsronald.twenty2020.settings.injection
 
 import com.itsronald.twenty2020.base.Activity
 import com.itsronald.twenty2020.data.ResourceComponent
+import com.itsronald.twenty2020.settings.SettingsActivity
 import dagger.Component
 
 @Activity

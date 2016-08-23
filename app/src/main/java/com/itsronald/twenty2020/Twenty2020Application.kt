@@ -9,8 +9,8 @@ import com.itsronald.twenty2020.base.ContextModule
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.reporting.CrashLogTree
-import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
-import com.itsronald.twenty2020.settings.PreferencesModule
+import com.itsronald.twenty2020.settings.injection.DaggerPreferencesComponent
+import com.itsronald.twenty2020.settings.injection.PreferencesModule
 import com.karumi.dexter.Dexter
 import com.squareup.leakcanary.LeakCanary
 import io.fabric.sdk.android.Fabric

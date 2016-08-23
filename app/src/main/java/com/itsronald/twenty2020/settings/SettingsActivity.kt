@@ -14,6 +14,10 @@ import android.view.ViewGroup
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
+import com.itsronald.twenty2020.settings.injection.DaggerPreferencesComponent
+import com.itsronald.twenty2020.settings.injection.DaggerSettingsComponent
+import com.itsronald.twenty2020.settings.injection.PreferencesModule
+import com.itsronald.twenty2020.settings.injection.SettingsModule
 import timber.log.Timber
 import javax.inject.Inject
 
