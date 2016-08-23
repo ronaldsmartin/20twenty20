@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
+import android.support.v4.content.ContextCompat
 import android.view.View
 import com.itsronald.twenty2020.BuildConfig.APPLICATION_ID
 import com.itsronald.twenty2020.R
@@ -21,7 +22,7 @@ import javax.inject.Inject
  */
 class AboutPresenter
     @Inject constructor(val resources: ResourceRepository)
-    : LibsConfiguration.LibsListener {
+    : LibsConfiguration.LibsListener, LibsConfiguration.LibsUIListener {
 
     /**
      * Build an intent for a new About activity.
@@ -50,6 +51,7 @@ class AboutPresenter
 
         return this.withActivityStyle(activityStyle)
                 .withActivityTitle(activityTitle)
+                .withUiListener(this@AboutPresenter)
     }
 
     private fun LibsBuilder.withAboutOptions(context: Context): LibsBuilder {
@@ -74,6 +76,20 @@ class AboutPresenter
                 .withAboutSpecial2(rateAppButtonTitle)
                 .withAboutSpecial2Description(rateAppButtonDescription)
                 .withListener(this@AboutPresenter)
+    }
+
+    //endregion
+
+
+    //region LibsConfiguration.LibsUIListener
+
+    override fun preOnCreateView(view: View): View = view
+
+    override fun postOnCreateView(view: View): View {
+        val backgroundColor = ContextCompat.getColor(view.context, R.color.windowBackground)
+        Timber.v("Setting custom background color on AboutLibraries view: $backgroundColor")
+        view.setBackgroundColor(backgroundColor)
+        return view
     }
 
     //endregion

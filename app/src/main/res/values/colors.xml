@@ -17,6 +17,10 @@
     <color name="timer_background_gradient_start">#175853</color>
     <color name="timer_background_gradient_end">#2aa198</color>
     <color name="timer_progress_ring_background_color">@android:color/white</color>
+    
+    <!-- About Activity -->
+    <color name="about_libraries_card">@color/solarized_base2</color>
+    <color name="about_libraries_card_dark">@color/solarized_base01</color>
 
     <!--Solarized color scheme by Ethan Schoonover-->
     <!--http://ethanschoonover.com/solarized-->
