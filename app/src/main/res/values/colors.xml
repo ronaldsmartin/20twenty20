@@ -9,8 +9,8 @@
     <color name="windowBackground">@color/solarized_base3</color>
 
     <!-- tutorial -->
-    <color name="tutorial_background_color">#d5268bd2</color>
-    <color name="tutorial_button_color">@color/colorPrimary</color>
+    <color name="tutorial_background_color">#e5586e75</color>
+    <color name="tutorial_button_color">@color/colorAccent</color>
     <color name="tutorial_title_color">@android:color/white</color>
 
     <!-- activity_timer -->
