@@ -109,7 +109,16 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timer)
+        injectDependencies()
 
+        presenter.onCreate(savedInstanceState)
+
+        mVisible = true
+
+        setTouchListeners()
+    }
+
+    private fun injectDependencies() {
         val appComponent = (application as? Twenty2020Application)?.appComponent
         val settingsComponent = DaggerPreferencesComponent.builder()
                 .preferencesModule(PreferencesModule(this))
@@ -123,11 +132,6 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
                 .preferencesComponent(settingsComponent)
                 .timerModule(TimerModule(this))
                 .build().inject(this)
-        presenter.onCreate(savedInstanceState)
-
-        mVisible = true
-
-        setTouchListeners()
     }
 
     private fun setTouchListeners() {
@@ -144,6 +148,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
         work_text.setOnClickListener { presenter.onWorkTimerClicked() }
         break_text.setOnClickListener { presenter.onBreakTimerClicked() }
+
+        // TODO: Reenable these when timer seeking feature is implemented.
+        work_seek_bar.isEnabled = false
+        break_seek_bar.isEnabled = false
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -364,7 +372,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     private fun focusTimer(seekBar: CircularSeekBar) {
         bringSeekbarToFront(seekBar)
-        seekBar.isEnabled = true
+//        seekBar.isEnabled = false    TODO: Reenable when timer seeking is implemented.
         seekBar.pointerAlpha = 1
 
         (seekBar.parent as? View)?.alpha = 1f
