@@ -61,7 +61,11 @@
         <!-- Receivers -->
         <receiver
             android:name=".alarms.AlarmReceiver"
-            android:exported="false" />
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.itsronald.twenty2020.action.alarm.notify" />
+            </intent-filter>
+        </receiver>
 
         <receiver
             android:name=".notifications.NotificationActionReceiver"

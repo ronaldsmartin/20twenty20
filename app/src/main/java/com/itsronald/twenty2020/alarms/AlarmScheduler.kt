@@ -86,6 +86,7 @@ class AlarmScheduler
         // Passing the name of the phase instead is a suitable workaround.
         // See http://stackoverflow.com/q/2307476/4499783 for more details.
         get() = Intent(context, AlarmReceiver::class.java)
+                .setAction(AlarmReceiver.ACTION_NOTIFY)
                 .putExtra(EXTRA_PHASE, cycle.phase.name)
 
     /**
@@ -145,7 +146,7 @@ class AlarmScheduler
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Using AlarmManager.setAlarmClock() here instead of setExactAndAllowWhileIdle()
             // to prevent interference from Doze mode, which can defer alarms up to 15 minutes
-            // when active and prevents alarms that are two frequent.
+            // when active and prevents alarms that are too frequent.
             alarmManager.setAlarmClock(
                     AlarmManager.AlarmClockInfo(nextNotificationTime, buildShowAlarmIntent()),
                     alarmIntent
