@@ -49,8 +49,10 @@ android {
                 fabric_api_key: FABRIC_API_KEY
             ]
 
+            // Increase local build speed by running minify only for CI builds.
+            def isCiEnvironment = project.hasProperty('CI')
             shrinkResources false
-            minifyEnabled true
+            minifyEnabled isCiEnvironment
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
