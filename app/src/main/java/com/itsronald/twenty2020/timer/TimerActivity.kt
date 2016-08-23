@@ -14,6 +14,7 @@ import android.support.v7.content.res.AppCompatResources
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.RelativeLayout
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.ViewTarget
 import com.itsronald.twenty2020.R
@@ -282,17 +283,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override fun showTutorial(@TutorialState state: Long) = when (state) {
         TimerContract.TimerView.TUTORIAL_TARGET_TIMER_START -> {
             tutorialState = state
-
-            showcaseView = ShowcaseView.Builder(this)
-                    .withMaterialShowcase()
-                    .setContentTitle(R.string.tutorial_content_title_start)
-                    .setContentText(R.string.tutorial_content_message_start)
-                    .setTarget(ViewTarget(timer_fab))
-                    .setStyle(R.style.TutorialTheme)
-                    .setOnClickListener { presenter.onTutorialNextClicked(tutorialState) }
-                    .build()
-
-            Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_START.")
+            showTutorialStart()
         }
         TimerContract.TimerView.TUTORIAL_TARGET_TIMER_SKIP -> {
             tutorialState = state
@@ -322,6 +313,33 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         }
         else -> throw IllegalArgumentException("$state is not a valid @TutorialState value.")
     }
+
+    private fun showTutorialStart() {
+        showcaseView = ShowcaseView.Builder(this)
+                .withMaterialShowcase()
+                .setContentTitle(R.string.tutorial_content_title_start)
+                .setContentText(R.string.tutorial_content_message_start)
+                .setTarget(ViewTarget(timer_fab))
+                .setStyle(R.style.TutorialTheme)
+                .setOnClickListener { presenter.onTutorialNextClicked(tutorialState) }
+                .build()
+
+        showcaseView?.setButtonPosition(showcaseViewButtonPositionParams())
+
+        Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_START.")
+    }
+
+    private fun showcaseViewButtonPositionParams(): RelativeLayout.LayoutParams {
+        val nextButtonLayoutParams = RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        )
+        nextButtonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        nextButtonLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
+        nextButtonLayoutParams.bottomMargin = resources.getDimensionPixelOffset(R.dimen.activity_vertical_margin)
+        return nextButtonLayoutParams
+    }
+
 
     //endregion
 
