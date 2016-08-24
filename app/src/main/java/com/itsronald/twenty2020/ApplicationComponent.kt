@@ -9,7 +9,7 @@ import com.itsronald.twenty2020.notifications.ForegroundProgressService
 import com.itsronald.twenty2020.notifications.Notifier
 import com.itsronald.twenty2020.reporting.AnalyticsModule
 import com.itsronald.twenty2020.reporting.EventTracker
-import com.itsronald.twenty2020.settings.PreferencesComponent
+import com.itsronald.twenty2020.settings.injection.PreferencesComponent
 import dagger.Component
 import javax.inject.Singleton
 

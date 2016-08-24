@@ -1,7 +1,6 @@
 package com.itsronald.twenty2020.timer
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -14,14 +13,15 @@ import android.support.v7.content.res.AppCompatResources
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.RelativeLayout
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.ViewTarget
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.Twenty2020Application
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
-import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
-import com.itsronald.twenty2020.settings.PreferencesModule
+import com.itsronald.twenty2020.settings.injection.DaggerPreferencesComponent
+import com.itsronald.twenty2020.settings.injection.PreferencesModule
 import com.itsronald.twenty2020.timer.TimerContract.TimerView.Companion.TutorialState
 import kotlinx.android.synthetic.main.activity_timer.*
 import me.tankery.lib.circularseekbar.CircularSeekBar
@@ -58,7 +58,6 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
          */
         fun intent(context: Context): Intent = Intent(context, TimerActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                .setComponent(ComponentName(context, TimerActivity::class.java))
     }
 
     //region Fullscreen handlers
@@ -72,7 +71,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // Note that some of these constants are new as of API 16 (Jelly Bean)
         // and API 19 (KitKat). It is safe to use them, as they are inlined
         // at compile-time and do nothing on earlier devices.
-        coordinator_layout.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -108,7 +107,16 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timer)
+        injectDependencies()
 
+        presenter.onCreate(savedInstanceState)
+
+        mVisible = true
+
+        setTouchListeners()
+    }
+
+    private fun injectDependencies() {
         val appComponent = (application as? Twenty2020Application)?.appComponent
         val settingsComponent = DaggerPreferencesComponent.builder()
                 .preferencesModule(PreferencesModule(this))
@@ -122,11 +130,6 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
                 .preferencesComponent(settingsComponent)
                 .timerModule(TimerModule(this))
                 .build().inject(this)
-        presenter.onCreate(savedInstanceState)
-
-        mVisible = true
-
-        setTouchListeners()
     }
 
     private fun setTouchListeners() {
@@ -143,6 +146,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
         work_text.setOnClickListener { presenter.onWorkTimerClicked() }
         break_text.setOnClickListener { presenter.onBreakTimerClicked() }
+
+        // TODO: Reenable these when timer seeking feature is implemented.
+        work_seek_bar.isEnabled = false
+        break_seek_bar.isEnabled = false
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -169,6 +176,12 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         if (intent?.action == TimerContract.ACTION_PAUSE && presenter.running) {
             presenter.toggleRunning()
         }
+    }
+
+    override fun onRestart() {
+        val applyDayNight = delegate.applyDayNight()
+        Timber.v("Applying DayNight mode: $applyDayNight")
+        super.onRestart()
     }
 
     override fun onStop() {
@@ -228,7 +241,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     @SuppressLint("NewApi")
     private fun show() {
         // Show the system bar
-        coordinator_layout.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
         mVisible = true
 
@@ -276,17 +289,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     override fun showTutorial(@TutorialState state: Long) = when (state) {
         TimerContract.TimerView.TUTORIAL_TARGET_TIMER_START -> {
             tutorialState = state
-
-            showcaseView = ShowcaseView.Builder(this)
-                    .withMaterialShowcase()
-                    .setContentTitle(R.string.tutorial_content_title_start)
-                    .setContentText(R.string.tutorial_content_message_start)
-                    .setTarget(ViewTarget(timer_fab))
-                    .setStyle(R.style.TutorialTheme)
-                    .setOnClickListener { presenter.onTutorialNextClicked(tutorialState) }
-                    .build()
-
-            Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_START.")
+            showTutorialStart()
         }
         TimerContract.TimerView.TUTORIAL_TARGET_TIMER_SKIP -> {
             tutorialState = state
@@ -317,6 +320,33 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         else -> throw IllegalArgumentException("$state is not a valid @TutorialState value.")
     }
 
+    private fun showTutorialStart() {
+        showcaseView = ShowcaseView.Builder(this)
+                .withMaterialShowcase()
+                .setContentTitle(R.string.tutorial_content_title_start)
+                .setContentText(R.string.tutorial_content_message_start)
+                .setTarget(ViewTarget(timer_fab))
+                .setStyle(R.style.TutorialTheme)
+                .setOnClickListener { presenter.onTutorialNextClicked(tutorialState) }
+                .build()
+
+        showcaseView?.setButtonPosition(showcaseViewButtonPositionParams())
+
+        Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_START.")
+    }
+
+    private fun showcaseViewButtonPositionParams(): RelativeLayout.LayoutParams {
+        val nextButtonLayoutParams = RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        )
+        nextButtonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        nextButtonLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
+        nextButtonLayoutParams.bottomMargin = resources.getDimensionPixelOffset(R.dimen.activity_vertical_margin)
+        return nextButtonLayoutParams
+    }
+
+
     //endregion
 
     @TimerContract.TimerView.Companion.TimerMode
@@ -340,7 +370,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     private fun focusTimer(seekBar: CircularSeekBar) {
         bringSeekbarToFront(seekBar)
-        seekBar.isEnabled = true
+//        seekBar.isEnabled = false    TODO: Reenable when timer seeking is implemented.
         seekBar.pointerAlpha = 1
 
         (seekBar.parent as? View)?.alpha = 1f

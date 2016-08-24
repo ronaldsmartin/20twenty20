@@ -21,3 +21,11 @@
 #   https://docs.fabric.io/android/crashlytics/dex-and-proguard.html
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
+
+# AboutLibraries Support
+# For more details, see
+#   https://github.com/mikepenz/AboutLibraries/
+-keep class .R
+-keep class **.R$* {
+    <fields>;
+}

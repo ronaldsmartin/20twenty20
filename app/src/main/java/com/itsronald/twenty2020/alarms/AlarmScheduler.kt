@@ -7,6 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
 import android.os.SystemClock
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
@@ -22,6 +23,9 @@ import javax.inject.Singleton
  * An [AlarmScheduler] schedules system alarm broadcasts based on the current state of the app
  * [Cycle]. Broadcasts are consumed by an [AlarmReceiver], which then posts system notifications
  * based on the scheduled alarm broadcast.
+ *
+ * Alarms longer than one minute are exposed to the user via the Alarm API. However, alarms shorter
+ * than a minute are managed by a private [Handler]. See [scheduleNextNotification] for details.
  *
  * There should only be one instance of [AlarmScheduler] active at any given time; since there is
  * only one type of broadcast, any additional [AlarmScheduler]s will override any alarms scheduled
@@ -49,6 +53,12 @@ class AlarmScheduler
     }
 
     /**
+     * A handler to schedule short alarms (< 60 seconds). The AlarmManager is unreliable in that
+     * interval.
+     */
+    private val shortAlarmHandler = Handler()
+
+    /**
      * Observe changes to the cycle's timer state.
      */
     @Suppress("unused")
@@ -74,7 +84,7 @@ class AlarmScheduler
                 context,
                 REQUEST_CODE_NOTIFY_PHASE_COMPLETE,
                 broadcastIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_CANCEL_CURRENT
         )
 
     /**
@@ -85,7 +95,7 @@ class AlarmScheduler
         // possible for a ClassNotFoundException to occur while de-serializing the extra.
         // Passing the name of the phase instead is a suitable workaround.
         // See http://stackoverflow.com/q/2307476/4499783 for more details.
-        get() = Intent(context, AlarmReceiver::class.java)
+        get() = Intent(AlarmReceiver.ACTION_NOTIFY)
                 .putExtra(EXTRA_PHASE, cycle.phase.name)
 
     /**
@@ -131,21 +141,50 @@ class AlarmScheduler
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) System.currentTimeMillis()
             else SystemClock.elapsedRealtime()
 
+    private fun phaseExpirationDate(cycle: Cycle): Date =
+            Date(System.currentTimeMillis()+ cycle.remainingTimeMillis)
+
     /**
      * Schedule an alarm to notify the user of an upcoming cycle phase completion.
      *
      * @param cycle The cycle for which to schedule the alarm broadcast.
      */
     private fun scheduleNextNotification(cycle: Cycle) {
+        // See: A flowchart for background work, alarms, and your Android app
+        //      https://plus.google.com/+AndroidDevelopers/posts/GdNrQciPwqo
+        if (cycle.remainingTime < 60) {
+            scheduleDelayedNotification(cycle = cycle)
+        } else {
+            scheduleNotificationAlarm(cycle = cycle)
+        }
+    }
+
+    private fun scheduleDelayedNotification(cycle: Cycle) {
+        Timber.i("Scheduling delayed notification for phase ${cycle.phaseName} - " +
+                "remaining time (${cycle.remainingTime}) is less than one minute.")
+
+        // Capture correct intent for later use.
+        val broadcastIntent = broadcastIntent
+        shortAlarmHandler.removeCallbacksAndMessages(null)
+        shortAlarmHandler.postDelayed({
+            Timber.i("Broadcasting phase complete alarm via Handler.")
+            context.sendBroadcast(broadcastIntent)
+        }, cycle.remainingTimeMillis)
+    }
+
+    private fun scheduleNotificationAlarm(cycle :Cycle) {
+
         val nextNotificationTime = phaseExpirationTime(cycle)
-        val nextNotificationDate = Date(nextNotificationTime)
-        Timber.i("Scheduling notification for phase ${cycle.phaseName} at time $nextNotificationDate")
+        val nextNotificationDate = phaseExpirationDate(cycle)
+
+        Timber.i("Scheduling notification for phase ${cycle.phaseName} at time " +
+                "$nextNotificationTime ($nextNotificationDate)")
 
         val alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Using AlarmManager.setAlarmClock() here instead of setExactAndAllowWhileIdle()
             // to prevent interference from Doze mode, which can defer alarms up to 15 minutes
-            // when active and prevents alarms that are two frequent.
+            // when active and prevents alarms that are too frequent.
             alarmManager.setAlarmClock(
                     AlarmManager.AlarmClockInfo(nextNotificationTime, buildShowAlarmIntent()),
                     alarmIntent
@@ -165,5 +204,6 @@ class AlarmScheduler
     private fun cancelNextNotification(cycle: Cycle) {
         Timber.i("Cancelling notification for phase ${cycle.phaseName}.")
         alarmManager.cancel(alarmIntent)
+        shortAlarmHandler.removeCallbacksAndMessages(null)
     }
 }

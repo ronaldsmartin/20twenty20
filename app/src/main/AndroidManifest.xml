@@ -31,7 +31,6 @@
         <!-- Activities -->
         <activity
             android:name=".timer.TimerActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
@@ -62,7 +61,11 @@
         <!-- Receivers -->
         <receiver
             android:name=".alarms.AlarmReceiver"
-            android:exported="false" />
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.itsronald.twenty2020.action.alarm.notify" />
+            </intent-filter>
+        </receiver>
 
         <receiver
             android:name=".notifications.NotificationActionReceiver"

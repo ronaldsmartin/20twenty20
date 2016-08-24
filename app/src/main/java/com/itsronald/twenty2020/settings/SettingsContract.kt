@@ -3,6 +3,7 @@ package com.itsronald.twenty2020.settings
 import android.support.annotation.StringRes
 import android.view.ViewGroup
 import com.itsronald.twenty2020.base.View
+import com.itsronald.twenty2020.settings.injection.SettingsComponent
 
 
 interface SettingsContract {
@@ -47,13 +48,16 @@ interface SettingsContract {
          * Remove a preference item with key [prefKeyID] from the view.
          *
          * @param prefKeyID The resource ID of the String key of the Preference to hide.
+         * @param inCategory The resource ID of the String key of the PreferenceCategory containing
+         * the preference, if it is enclosed in a category.
          *
          * @return Whether or not the preference was found and removed.
          */
-        fun removePreference(@StringRes prefKeyID: Int): Boolean
+        fun removePreference(@StringRes prefKeyID: Int, @StringRes inCategory: Int? = null): Boolean
     }
 
     interface Presenter : com.itsronald.twenty2020.base.Presenter<SettingsView> {
 
+        var settingsComponent: SettingsComponent
     }
 }

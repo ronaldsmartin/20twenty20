@@ -1,4 +1,4 @@
-package com.itsronald.twenty2020.settings
+package com.itsronald.twenty2020.settings.injection
 
 import android.content.Context
 import android.content.SharedPreferences

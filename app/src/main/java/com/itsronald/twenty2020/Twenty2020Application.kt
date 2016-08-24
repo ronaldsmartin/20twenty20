@@ -1,6 +1,7 @@
 package com.itsronald.twenty2020
 
 import android.app.Application
+import android.os.StrictMode
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatDelegate
 import com.crashlytics.android.Crashlytics
@@ -9,8 +10,8 @@ import com.itsronald.twenty2020.base.ContextModule
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.reporting.CrashLogTree
-import com.itsronald.twenty2020.settings.DaggerPreferencesComponent
-import com.itsronald.twenty2020.settings.PreferencesModule
+import com.itsronald.twenty2020.settings.injection.DaggerPreferencesComponent
+import com.itsronald.twenty2020.settings.injection.PreferencesModule
 import com.karumi.dexter.Dexter
 import com.squareup.leakcanary.LeakCanary
 import io.fabric.sdk.android.Fabric
@@ -55,6 +56,15 @@ class Twenty2020Application : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
             Timber.i("Timber logger planted.")
+
+            StrictMode.setVmPolicy(
+                    StrictMode.VmPolicy.Builder()
+                            .detectAll()
+                            .penaltyLog()
+                            .penaltyDeath()
+                            .build()
+            )
+            Timber.i("StrictMode is ON.")
         }
         LeakCanary.install(this)
         Dexter.initialize(this)

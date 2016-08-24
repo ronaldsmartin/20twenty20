@@ -6,7 +6,6 @@
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="?attr/actionBarSize"
     android:background="@drawable/timer_background"
     tools:context=".timer.TimerActivity">
 
@@ -14,6 +13,7 @@
         android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingBottom="@dimen/activity_vertical_margin"
@@ -23,19 +23,19 @@
         <!-- Work display -->
         <RelativeLayout
             android:id="@+id/work_container"
-            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:animateLayoutChanges="true"
-            app:layout_widthPercent="100%"
-            app:layout_heightPercent="55%">
+            app:layout_widthPercent="50%"
+            app:layout_heightPercent="100%">
 
             <me.tankery.lib.circularseekbar.CircularSeekBar
                 android:id="@+id/work_seek_bar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
+                app:cs_start_angle="0"
+                app:cs_end_angle="0"
                 app:cs_negative_enabled="true"
-                app:cs_start_angle="90"
-                app:cs_end_angle="90"
                 app:cs_circle_progress_color="@color/colorAccent"
                 app:cs_circle_color="@color/timer_progress_ring_background_color"
                 app:cs_pointer_color="@color/colorAccent"
@@ -53,19 +53,23 @@
         <!-- Break display -->
         <RelativeLayout
             android:id="@+id/break_container"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/work_container"
-            android:layout_marginTop="-16dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/work_container"
+            android:layout_toRightOf="@+id/work_container"
+            android:layout_marginStart="-16dp"
+            android:layout_marginLeft="-16dp"
             android:animateLayoutChanges="true"
             android:alpha="0.65"
-            app:layout_widthPercent="100%"
-            app:layout_heightPercent="40%">
+            app:layout_widthPercent="45%"
+            app:layout_heightPercent="100%">
 
             <me.tankery.lib.circularseekbar.CircularSeekBar
                 android:id="@+id/break_seek_bar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
+                app:cs_start_angle="180"
+                app:cs_end_angle="180"
                 app:cs_circle_progress_color="@color/colorAccent"
                 app:cs_circle_color="@color/timer_progress_ring_background_color"
                 app:cs_pointer_color="@color/colorAccent"
@@ -84,9 +88,9 @@
 
         <ImageButton
             android:id="@+id/btn_restart_phase"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
             android:contentDescription="@string/timer_restart_current_cycle"
             android:src="@drawable/ic_restore_black_24dp"
             style="@style/TimerButton" />
@@ -97,9 +101,10 @@
         android:id="@+id/timer_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:src="@drawable/ic_play_arrow"
-        app:useCompatPadding="true"
-        app:layout_anchor="@id/content_layout"
-        app:layout_anchorGravity="bottom|end|right"/>
+        app:layout_anchor="@+id/content_layout"
+        app:layout_anchorGravity="bottom|right|end"
+        app:useCompatPadding="true" />
 
 </android.support.design.widget.CoordinatorLayout>

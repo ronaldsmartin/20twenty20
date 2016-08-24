@@ -1,9 +1,9 @@
 package com.itsronald.twenty2020.settings
 
 
-import android.content.Context
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.preference.*
 import android.support.annotation.StringRes
@@ -14,6 +14,11 @@ import android.view.ViewGroup
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
+import com.itsronald.twenty2020.settings.injection.DaggerPreferencesComponent
+import com.itsronald.twenty2020.settings.injection.DaggerSettingsComponent
+import com.itsronald.twenty2020.settings.injection.PreferencesModule
+import com.itsronald.twenty2020.settings.injection.SettingsModule
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -110,23 +115,37 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
         super.onCreate(savedInstanceState)
         setupActionBar()
 
-        fragmentManager.beginTransaction()
+        val fragmentTransaction = fragmentManager.beginTransaction()
                 .replace(android.R.id.content, SettingsFragment(), TAG_SETTINGS_FRAGMENT)
-                .commit()
+        // Force the transaction to occur synchronously. Otherwise, the fragment will still be null
+        // by the time the presenter's onCreate() is called, which in turn may ask the fragment to
+        // remove a preference. The alternate would be to post onCreate() after a delay or to start
+        // the removal in onStart(), but those de-synchronize the presenter from the activity lifecycle.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            fragmentTransaction.commitNow()
+        } else {
+            fragmentTransaction.commit()
+            fragmentManager.executePendingTransactions()
+        }
 
+        injectDependencies()
+        presenter.onCreate(savedInstanceState)
+    }
+
+    private fun injectDependencies() {
         val preferencesComponent = DaggerPreferencesComponent.builder()
                 .preferencesModule(PreferencesModule(this))
                 .build()
         val resourceComponent = DaggerResourceComponent.builder()
                 .resourceModule(ResourceModule(this))
                 .build()
-        DaggerSettingsComponent.builder()
+        val settingsComponent =  DaggerSettingsComponent.builder()
                 .preferencesComponent(preferencesComponent)
                 .resourceComponent(resourceComponent)
                 .settingsModule(SettingsModule(this))
                 .build()
-                .inject(this)
-        presenter.onCreate(savedInstanceState)
+        settingsComponent.inject(this)
+        presenter.settingsComponent = settingsComponent
     }
 
     override fun onStart() {
@@ -135,12 +154,12 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
-            android.R.id.home -> {
-                NavUtils.navigateUpFromSameTask(this)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+        android.R.id.home -> {
+            NavUtils.navigateUpFromSameTask(this)
+            true
         }
+        else -> super.onOptionsItemSelected(item)
+    }
 
     /**
      * Set up the ActionBar, if the API is available.
@@ -155,6 +174,14 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
         presenter.onStop()
     }
 
+    override fun onBackPressed() {
+        // 2016-08-21, using Support Libs v24.2.0
+        // When the back button is pressed to finish this activity, night mode changes are not
+        // applied in Marshmallow. however, using the up button does this correctly.
+        Timber.v("Back button pressed.")
+        NavUtils.navigateUpFromSameTask(this)
+    }
+
     //endregion
 
     //region SettingsContract.SettingsView
@@ -166,15 +193,17 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
     override lateinit var presenter: SettingsContract.Presenter
 
     /** The SettingsFragment managing the PreferenceScreen. */
-    private val settingsFragment: SettingsFragment?
-        get() = fragmentManager.findFragmentByTag(TAG_SETTINGS_FRAGMENT) as? SettingsFragment
+    private val settingsFragment: SettingsFragment
+        get() = fragmentManager.findFragmentByTag(TAG_SETTINGS_FRAGMENT) as SettingsFragment
 
     override fun refreshNightMode(nightMode: Int) {
-        if (delegate.applyDayNight()) recreate()
+        val applyDayNight = delegate.applyDayNight()
+        Timber.i("Applying DayNight mode: $applyDayNight")
+        if (applyDayNight) recreate()
     }
 
     override fun setPreferenceChecked(@StringRes prefKeyID: Int, checked: Boolean): Boolean {
-        val preference = settingsFragment?.findPreference(getString(prefKeyID)) as? TwoStatePreference
+        val preference = settingsFragment.findPreference(getString(prefKeyID)) as? TwoStatePreference
         if (preference == null) {
             return false
         } else {
@@ -184,15 +213,22 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
     }
 
     override fun setPreferenceEnabled(@StringRes prefKeyID: Int, enabled: Boolean): Boolean =
-        settingsFragment?.findPreference(getString(prefKeyID))?.let {
-            it.isEnabled = enabled
-            true
-        } ?: false
+            settingsFragment.findPreference(getString(prefKeyID))?.let {
+                it.isEnabled = enabled
+                true
+            } ?: false
 
-    override fun removePreference(@StringRes prefKeyID: Int): Boolean =
-        settingsFragment?.findPreference(getString(prefKeyID))?.let {
-            settingsFragment?.preferenceScreen?.removePreference(it)
+    override fun removePreference(@StringRes prefKeyID: Int, @StringRes inCategory: Int?): Boolean {
+        val preferenceGroup: PreferenceGroup =
+                inCategory?.let { settingsFragment.findPreference(getString(it)) as? PreferenceGroup }
+                ?: settingsFragment.preferenceScreen
+
+        val prefKey = getString(prefKeyID)
+        return settingsFragment.findPreference(prefKey)?.let {
+            Timber.i("Removing preference: $it")
+            preferenceGroup.removePreference(it)
         } ?: false
+    }
 
     //endregion
 

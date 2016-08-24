@@ -15,6 +15,14 @@ import timber.log.Timber
  */
 class AlarmReceiver : BroadcastReceiver() {
 
+    companion object {
+        const val ACTION_NOTIFY = "com.itsronald.twenty2020.action.alarm.notify"
+    }
+
+    init {
+        Timber.i("Receiver created.")
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         Timber.i("Received broadcast: $intent")
 
@@ -26,12 +34,17 @@ class AlarmReceiver : BroadcastReceiver() {
         // See http://stackoverflow.com/q/2307476/4499783 for more details.
         val completedPhaseName = intent.getStringExtra(AlarmScheduler.EXTRA_PHASE)
         val completedPhase = Cycle.Phase.valueOf(completedPhaseName)
+        Timber.i("Notifying user for completion of phase: $completedPhaseName")
         appComponent.notifier().notifyPhaseComplete(completedPhase)
 
         val cycle = appComponent.cycle()
+
         if (cycle.phase == completedPhase) {
             Timber.i("Cycle is out of sync. Starting next phase.")
             cycle.startNextPhase()
+        }
+        if (!cycle.running) {
+            Timber.i("Cycle was killed. Restarting cycle.")
             cycle.start()
         }
 
@@ -40,6 +53,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val newEvent = EventTracker.Event.PhaseCompleted(cycle = cycle, phase = completedPhase)
         appComponent.eventTracker().reportEvent(newEvent)
+        Timber.i("Finished broadcast: $intent")
     }
 
 }

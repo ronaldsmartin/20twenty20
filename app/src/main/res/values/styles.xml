@@ -16,6 +16,7 @@
         <item name="android:actionBarStyle">@style/TransparentActionBar</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/timer_background_gradient_end</item>
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/TransparentActionBar</item>
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
@@ -46,9 +47,6 @@
     <style name="TimerButton">
         <item name="android:layout_width">@dimen/timer_button_layout_width</item>
         <item name="android:layout_height">@dimen/timer_button_layout_width</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item tools:targetApi="JELLY_BEAN_MR1" name="android:layout_alignParentStart">true</item>
-        <item name="android:layout_margin">@dimen/timer_button_layout_margin</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:tint">#eeffffff</item>
     </style>

@@ -26,8 +26,8 @@ android {
         applicationId "com.itsronald.twenty2020"
         minSdkVersion    rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "0.2.0"
+        versionCode 1       // Managed by BuddyBuild.
+        versionName "0.3.0"
 
         manifestPlaceholders = [
             android_backup_api_key: "",
@@ -49,8 +49,10 @@ android {
                 fabric_api_key: FABRIC_API_KEY
             ]
 
+            // Increase local build speed by running minify only for CI builds.
+            def isCiEnvironment = project.hasProperty('CI')
             shrinkResources false
-            minifyEnabled true
+            minifyEnabled isCiEnvironment
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

@@ -4,14 +4,13 @@ import android.Manifest
 import android.annotation.TargetApi
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
+import com.itsronald.twenty2020.settings.injection.SettingsComponent
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.single.PermissionListener
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.onError
@@ -27,6 +26,11 @@ class SettingsPresenter
                         val resources: ResourceRepository,
                         val preferences: RxSharedPreferences)
     : SettingsContract.Presenter {
+
+    override lateinit var settingsComponent: SettingsComponent
+
+    private val permissionListener: PermissionListener
+        get() = settingsComponent.permissionsListener()
 
     //region Observers
 
@@ -79,10 +83,14 @@ class SettingsPresenter
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             // No need to opt-into locations runtime permission; it is granted by default.
-            view.removePreference(R.string.pref_key_display_location_based_night_mode)
+            Timber.i("Removing preference display_location_based_night_mode: not needed before Android Marshmallow.")
+            view.removePreference(
+                    prefKeyID = R.string.pref_key_display_location_based_night_mode,
+                    inCategory = R.string.pref_key_category_display
+            )
         } else {
             // Runtime permissions are in effect. Continue any ongoing requests.
-            Dexter.continuePendingRequestIfPossible(buildDexterPermissionDeniedListener())
+            Dexter.continuePendingRequestIfPossible(permissionListener)
         }
     }
 
@@ -91,9 +99,6 @@ class SettingsPresenter
         Timber.v("SettingsPresenter created.")
 
         startSubscriptions()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            refreshNightModeLocationPreference(AppCompatDelegate.getDefaultNightMode())
-        }
     }
 
     override fun onStop() {
@@ -112,17 +117,13 @@ class SettingsPresenter
         Timber.i("Starting subscriptions.")
         subscriptions = CompositeSubscription()
 
-        subscriptions += nightModePreference().subscribe {
-            setNewNightMode(it)
+        subscriptions += nightModePreference().subscribe { setNewNightMode(it) }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                refreshNightModeLocationPreference(it)
-            }
-        }
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Below API 23, this option is hidden from the user.
+            Timber.v("Subscribed to nightModeLocationPreference.")
             subscriptions += nightModeLocationPreference().subscribe { enabled ->
+                Timber.v("Night mode location preference is enabled: $enabled")
                 if (enabled) ensureLocationPermission()
             }
         }
@@ -134,7 +135,7 @@ class SettingsPresenter
      *
      * @param nightMode The new night mode value to set as the default.
      */
-    private fun setNewNightMode(nightMode: Int) {
+    private fun setNewNightMode(@AppCompatDelegate.NightMode nightMode: Int) {
         val nightModeName = when (nightMode) {
             AppCompatDelegate.MODE_NIGHT_AUTO -> "MODE_NIGHT_AUTO"
             AppCompatDelegate.MODE_NIGHT_NO -> "MODE_NIGHT_NO"
@@ -147,10 +148,16 @@ class SettingsPresenter
             return
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            refreshNightModeLocationPreference(nightMode)
+        }
+
         Timber.i("Night mode changed to $nightModeName")
         AppCompatDelegate.setDefaultNightMode(nightMode)
         view.refreshNightMode(nightMode)
     }
+
+    //region Location-based night mode (API 23+ only)
 
     /**
      * Enable or disable the preference for display_location_based_night_mode based on the current
@@ -162,7 +169,7 @@ class SettingsPresenter
      * @param nightMode The current night mode.
      */
     @TargetApi(Build.VERSION_CODES.M)
-    private fun refreshNightModeLocationPreference(nightMode: Int) {
+    private fun refreshNightModeLocationPreference(@AppCompatDelegate.NightMode nightMode: Int) {
         val enabled = nightMode == AppCompatDelegate.MODE_NIGHT_AUTO
         Timber.v("Setting preference display_location_based_night_mode enabled to $enabled.")
         view.setPreferenceEnabled(
@@ -185,31 +192,9 @@ class SettingsPresenter
         }
 
         Timber.v("Requesting permission ${Manifest.permission.ACCESS_COARSE_LOCATION}.")
-        Dexter.checkPermission(buildDexterPermissionDeniedListener(),
+        Dexter.checkPermission(permissionListener,
                 Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    /**
-     * Create a PermissionListener to be used by Dexter for notifying the user when permissions
-     * are denied.
-     */
-    @TargetApi(Build.VERSION_CODES.M)
-    private fun buildDexterPermissionDeniedListener(): PermissionListener =
-            SnackbarOnDeniedPermissionListener.Builder
-                    .with(view.contentView, R.string.location_permission_rationale)
-                    .withOpenSettingsButton(R.string.settings)
-                    .withCallback(object : Snackbar.Callback() {
-                        override fun onShown(snackbar: Snackbar?) {
-                            super.onShown(snackbar)
-                            // If the Snackbar is shown, the permission was denied.
-                            // Un-check the setting that requires the permission.
-                            Timber.w("Permission request was denied. Disabling automatic night mode.")
-                            view.setPreferenceChecked(
-                                    prefKeyID = R.string.pref_key_display_location_based_night_mode,
-                                    checked = false
-                            )
-                        }
-                    })
-                    .build()
-
+    //endregion
 }

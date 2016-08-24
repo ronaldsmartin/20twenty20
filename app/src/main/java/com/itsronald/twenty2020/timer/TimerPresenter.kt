@@ -3,9 +3,11 @@ package com.itsronald.twenty2020.timer
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.BuildConfig
 import com.itsronald.twenty2020.R
+import com.itsronald.twenty2020.about.AboutPresenter
 import com.itsronald.twenty2020.about.DaggerAboutComponent
 import com.itsronald.twenty2020.data.DaggerResourceComponent
 import com.itsronald.twenty2020.data.ResourceModule
@@ -36,6 +38,22 @@ class TimerPresenter
 
     private val context: Context
         get() = view.context
+
+    /**
+     * Lazily instantiated presenter for the About screen.
+     * We create the presenter here because the view is generated programatically by AboutLibraries
+     * instead of by one of our own activities.
+     */
+    private val aboutPresenter: AboutPresenter by lazy {
+        Timber.v("Building AboutPresenter")
+        val resourceComponent = DaggerResourceComponent.builder()
+                .resourceModule(ResourceModule(context))
+                .build()
+        val aboutComponent = DaggerAboutComponent.builder()
+                .resourceComponent(resourceComponent)
+                .build()
+        aboutComponent.aboutPresenter()
+    }
 
     //region Observers
 
@@ -113,11 +131,23 @@ class TimerPresenter
 
     override fun onStart() {
         super.onStart()
-        view.showWorkTimeRemaining(Cycle.Phase.WORK.duration(resources).toTimeString())
-        view.showBreakTimeRemaining(Cycle.Phase.BREAK.duration(resources).toTimeString())
+        updateTimeText()
 
         startSubscriptions()
         showTutorialOnFirstRun()
+    }
+
+    private fun updateTimeText() {
+        val nextPhase = cycle.phase.nextPhase
+        val nextDurationText = cycle.durationOfPhase(nextPhase).toTimeString()
+        updateTimeTextForPhase(phase = nextPhase, timeText = nextDurationText)
+
+        updateTimeTextForPhase(phase = cycle.phase, timeText = cycle.remainingTime.toTimeString())
+    }
+
+    private fun updateTimeTextForPhase(phase: Cycle.Phase, timeText: String) = when (phase) {
+        Cycle.Phase.WORK  -> view.showWorkTimeRemaining(formattedTime = timeText)
+        Cycle.Phase.BREAK -> view.showBreakTimeRemaining(formattedTime = timeText)
     }
 
     override fun onStop() {
@@ -206,16 +236,7 @@ class TimerPresenter
     //region Menu interaction
 
     override fun openAboutApp() {
-        Timber.v("Building AboutPresenter")
         eventTracker.reportEvent(EventTracker.Event.AboutAppClicked())
-
-        val resourceComponent = DaggerResourceComponent.builder()
-                .resourceModule(ResourceModule(context))
-                .build()
-        val aboutComponent = DaggerAboutComponent.builder()
-                .resourceComponent(resourceComponent)
-                .build()
-        val aboutPresenter = aboutComponent.aboutPresenter()
 
         val intent = aboutPresenter.buildIntent(context)
         context.startActivity(intent)
@@ -270,22 +291,20 @@ class TimerPresenter
 
     //endregion
 
-    /** Format a time in seconds as HH:mm:ss */
-    private fun Int.toTimeString(): String {
-        val secondsLeft = this % 60
-        val minutesLeft = (this / 60).toInt() % 60
-        val hoursLeft   = (this / (60 * 60)).toInt()
-        return when {
-            hoursLeft > 0   -> {
-                val minutes = "$minutesLeft".padStart(2, padChar = '0')
-                val seconds = "$secondsLeft".padStart(2, padChar = '0')
-                "$hoursLeft:$minutes:$seconds"
-            }
-            minutesLeft > 0 -> {
-                val seconds = "$secondsLeft".padStart(2, padChar = '0')
-                "$minutesLeft:$seconds"
-            }
-            else            -> "$secondsLeft"
-        }
-    }
+    //region Formatting
+
+    /**
+     * A recyclable StringBuilder to use when formatting times.
+     */
+    private val timeStringBuilder = StringBuilder(8)
+
+    /**
+     * Format a time in seconds as HH:mm:ss when hours are present, mm:ss if the time is less
+     * than an hour, or just as seconds if the time is less than a minute.
+     */
+    private fun Int.toTimeString(): String =
+            if (this >= 60) DateUtils.formatElapsedTime(timeStringBuilder, this.toLong())
+            else "$this"
+
+    //endregion
 }

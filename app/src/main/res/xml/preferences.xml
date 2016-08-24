@@ -23,7 +23,8 @@
     </PreferenceCategory>
 
     <!-- Display -->
-    <PreferenceCategory android:title="@string/pref_header_display">
+    <PreferenceCategory android:title="@string/pref_header_display"
+        android:key="@string/pref_key_category_display">
 
         <ListPreference
             android:title="@string/pref_title_display_night_mode"
@@ -42,11 +43,6 @@
         <SwitchPreference
             android:title="@string/pref_title_display_keep_screen_on"
             android:key="@string/pref_key_display_keep_screen_on"
-            android:defaultValue="false" />
-
-        <SwitchPreference
-            android:title="@string/pref_title_display_allow_full_screen"
-            android:key="@string/pref_key_display_allow_full_screen"
             android:defaultValue="false" />
 
     </PreferenceCategory>

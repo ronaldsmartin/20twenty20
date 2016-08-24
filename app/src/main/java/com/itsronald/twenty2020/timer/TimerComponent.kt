@@ -3,7 +3,7 @@ package com.itsronald.twenty2020.timer
 import com.itsronald.twenty2020.ApplicationComponent
 import com.itsronald.twenty2020.base.Activity
 import com.itsronald.twenty2020.data.ResourceComponent
-import com.itsronald.twenty2020.settings.PreferencesComponent
+import com.itsronald.twenty2020.settings.injection.PreferencesComponent
 import dagger.Component
 
 @Activity
