@@ -62,6 +62,7 @@ class AboutPresenter
                 .withAboutVersionShown(true)
                 .withAboutDescription(appDescription)
                 .withLicenseShown(true)
+                .withFields(R.string::class.java.fields)
     }
 
     private fun LibsBuilder.withButtons(): LibsBuilder {
