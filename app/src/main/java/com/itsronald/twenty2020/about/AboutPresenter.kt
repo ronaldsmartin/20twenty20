@@ -40,6 +40,7 @@ class AboutPresenter
             .withAppStyle(context = context)
             .withAboutOptions(context = context)
             .withButtons()
+            .withLibs()
 
     private fun LibsBuilder.withAppStyle(context: Context): LibsBuilder {
         val nightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
@@ -77,6 +78,30 @@ class AboutPresenter
                 .withAboutSpecial2(rateAppButtonTitle)
                 .withAboutSpecial2Description(rateAppButtonDescription)
                 .withListener(this@AboutPresenter)
+    }
+
+    /**
+     * Specifies libraries to include on this screen. While autodetect works in DEBUG mode, the
+     * toolchain's minify and Proguard phases strip the build of the info necessary for it to work
+     * in the release config.
+     */
+    private fun LibsBuilder.withLibs(): LibsBuilder {
+        val includedLibraries = arrayOf(
+                "Dagger2",
+                "Gson",
+                "LeakCanary",
+                "Timber",
+                "rxjava",
+                "rxandroid",
+                "ShowcaseView",
+                "appcompat_v7",
+                "design",
+                "Crashlytics",
+                "recyclerview_v7",
+                "intellijannotations"
+        )
+        return this.withAutoDetect(false)
+                .withLibraries(*includedLibraries)
     }
 
     //endregion
