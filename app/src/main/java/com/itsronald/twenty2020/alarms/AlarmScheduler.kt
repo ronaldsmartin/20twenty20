@@ -85,8 +85,7 @@ class AlarmScheduler
         // possible for a ClassNotFoundException to occur while de-serializing the extra.
         // Passing the name of the phase instead is a suitable workaround.
         // See http://stackoverflow.com/q/2307476/4499783 for more details.
-        get() = Intent(context, AlarmReceiver::class.java)
-                .setAction(AlarmReceiver.ACTION_NOTIFY)
+        get() = Intent(AlarmReceiver.ACTION_NOTIFY)
                 .putExtra(EXTRA_PHASE, cycle.phase.name)
 
     /**

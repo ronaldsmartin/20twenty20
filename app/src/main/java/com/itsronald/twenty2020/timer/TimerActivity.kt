@@ -1,7 +1,6 @@
 package com.itsronald.twenty2020.timer
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -59,7 +58,6 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
          */
         fun intent(context: Context): Intent = Intent(context, TimerActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                .setComponent(ComponentName(context, TimerActivity::class.java))
     }
 
     //region Fullscreen handlers
