@@ -132,6 +132,9 @@ class AlarmScheduler
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) System.currentTimeMillis()
             else SystemClock.elapsedRealtime()
 
+    private fun phaseExpirationDate(cycle: Cycle): Date =
+            Date(System.currentTimeMillis()+ cycle.remainingTimeMillis)
+
     /**
      * Schedule an alarm to notify the user of an upcoming cycle phase completion.
      *
@@ -139,9 +142,10 @@ class AlarmScheduler
      */
     private fun scheduleNextNotification(cycle: Cycle) {
         val nextNotificationTime = phaseExpirationTime(cycle)
-        val nextNotificationDate = Date(nextNotificationTime)
-        Timber.i("Scheduling notification for phase ${cycle.phaseName} at time $nextNotificationDate")
-
+        val nextNotificationDate = phaseExpirationDate(cycle)
+        Timber.i("Scheduling notification for phase ${cycle.phaseName} at time " +
+                "$nextNotificationTime ($nextNotificationDate)")
+        Timber.v("Pending intent: $alarmIntent")
         val alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Using AlarmManager.setAlarmClock() here instead of setExactAndAllowWhileIdle()
