@@ -128,8 +128,10 @@ class AlarmScheduler
      * If the Cycle is running, updates the scheduled alarm broadcast to the time of the cycle
      * phase's expiration; otherwise, cancels the scheduled alarm broadcast.
      */
-    fun updateAlarms() =
-        if (cycle.running) scheduleNextNotification(cycle) else cancelNextNotification(cycle)
+    fun updateAlarms() {
+        cancelNextNotification(cycle)
+        if (cycle.running) scheduleNextNotification(cycle)
+    }
 
     /**
      * Calculate the system time at which a cycle's current phase will expire.
@@ -165,7 +167,6 @@ class AlarmScheduler
 
         // Capture correct intent for later use.
         val broadcastIntent = broadcastIntent
-        shortAlarmHandler.removeCallbacksAndMessages(null)
         shortAlarmHandler.postDelayed({
             Timber.i("Broadcasting phase complete alarm via Handler.")
             context.sendBroadcast(broadcastIntent)
