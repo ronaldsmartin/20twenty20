@@ -81,6 +81,7 @@ class AlarmScheduler
 
     /**
      * The pending intent to schedule alarm broadcasts.
+     * @see scheduleNotificationAlarm
      */
     private val alarmIntent: PendingIntent
         get() = PendingIntent.getBroadcast(
@@ -92,6 +93,7 @@ class AlarmScheduler
 
     /**
      * The intent that will be broadcast during system alarms.
+     * @see alarmIntent
      */
     private val broadcastIntent: Intent
         // While enums are Serializable and can be passed directly through an intent, it is
@@ -101,6 +103,11 @@ class AlarmScheduler
         get() = Intent(AlarmReceiver.ACTION_NOTIFY)
                 .putExtra(EXTRA_PHASE, cycle.phase.name)
 
+    /**
+     * Directly invokes [AlarmService] to play an alarm.
+     *
+     * @see scheduleDelayedNotification
+     */
     private val serviceIntent: Intent
         get() = Intent(context, AlarmService::class.java)
                 .putExtra(EXTRA_PHASE, cycle.phase.name)
@@ -115,17 +122,12 @@ class AlarmScheduler
      * @see scheduleNextNotification
      */
     @TargetApi(Build.VERSION_CODES.M)
-    private fun buildShowAlarmIntent(): PendingIntent {
-        val intent = Intent(context, TimerActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                .setComponent(ComponentName(context, TimerActivity::class.java))
-        return PendingIntent.getActivity(
-                context,
-                REQUEST_CODE_EDIT_ALARMS,
-                intent,
-                0
-        )
-    }
+    private fun buildShowAlarmIntent(): PendingIntent = PendingIntent.getActivity(
+            context,
+            REQUEST_CODE_EDIT_ALARMS,
+            TimerActivity.intent(context = context),
+            0
+    )
 
     //endregion
 
