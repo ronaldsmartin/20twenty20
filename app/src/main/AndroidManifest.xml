@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Optionally used by AppCompat for automatic Night Mode. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Used to ensure background alarm work completes even if the screen is off. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Application -->
     <application
@@ -24,10 +26,14 @@
         tools:replace="android:icon" >
         <!-- Services -->
         <service
+            android:name=".alarms.AlarmService"
+            android:exported="false" />
+        <service
             android:name=".notifications.ForegroundProgressService"
             android:enabled="true"
             android:exported="false">
         </service>
+
         <!-- Activities -->
         <activity
             android:name=".timer.TimerActivity"

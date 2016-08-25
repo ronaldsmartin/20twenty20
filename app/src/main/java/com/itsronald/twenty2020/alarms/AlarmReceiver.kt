@@ -1,11 +1,8 @@
 package com.itsronald.twenty2020.alarms
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.itsronald.twenty2020.Twenty2020Application
-import com.itsronald.twenty2020.model.Cycle
-import com.itsronald.twenty2020.reporting.EventTracker
+import android.support.v4.content.WakefulBroadcastReceiver
 import timber.log.Timber
 
 /**
@@ -13,10 +10,13 @@ import timber.log.Timber
  *
  * @see AlarmScheduler
  */
-class AlarmReceiver : BroadcastReceiver() {
+class AlarmReceiver : WakefulBroadcastReceiver() {
 
     companion object {
         const val ACTION_NOTIFY = "com.itsronald.twenty2020.action.alarm.notify"
+
+        fun completeWakefulIntent(intent: Intent): Boolean =
+                WakefulBroadcastReceiver.completeWakefulIntent(intent)
     }
 
     init {
@@ -26,33 +26,11 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Timber.i("Received broadcast: $intent")
 
-        val appComponent = Twenty2020Application.INSTANCE.appComponent
+        Timber.i("Passing broadcast to AlarmService.")
+        val serviceIntent = Intent(context, AlarmService::class.java)
+        serviceIntent.putExtras(intent)
+        startWakefulService(context, serviceIntent)
 
-        // While enums are Serializable and can be passed directly through an intent, it is
-        // possible for a ClassNotFoundException to occur while de-serializing the extra.
-        // Passing the name of the phase instead is a suitable workaround.
-        // See http://stackoverflow.com/q/2307476/4499783 for more details.
-        val completedPhaseName = intent.getStringExtra(AlarmScheduler.EXTRA_PHASE)
-        val completedPhase = Cycle.Phase.valueOf(completedPhaseName)
-        Timber.i("Notifying user for completion of phase: $completedPhaseName")
-        appComponent.notifier().notifyPhaseComplete(completedPhase)
-
-        val cycle = appComponent.cycle()
-
-        if (cycle.phase == completedPhase) {
-            Timber.i("Cycle is out of sync. Starting next phase.")
-            cycle.startNextPhase()
-        }
-        if (!cycle.running) {
-            Timber.i("Cycle was killed. Restarting cycle.")
-            cycle.start()
-        }
-
-        Timber.i("Updating alarms.")
-        appComponent.alarmScheduler().updateAlarms()
-
-        val newEvent = EventTracker.Event.PhaseCompleted(cycle = cycle, phase = completedPhase)
-        appComponent.eventTracker().reportEvent(newEvent)
         Timber.i("Finished broadcast: $intent")
     }
 
