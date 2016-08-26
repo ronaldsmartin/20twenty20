@@ -144,8 +144,8 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         btn_restart_phase.setOnClickListener { presenter.restartPhase() }
         timer_fab.setOnClickListener { presenter.toggleRunning() }
 
-        work_text.setOnClickListener { presenter.onWorkTimerClicked() }
-        break_text.setOnClickListener { presenter.onBreakTimerClicked() }
+        btn_switch_phase_work.setOnClickListener { presenter.onWorkTimerClicked() }
+        btn_switch_phase_break.setOnClickListener { presenter.onBreakTimerClicked() }
 
         // TODO: Reenable these when timer seeking feature is implemented.
         work_seek_bar.isEnabled = false
