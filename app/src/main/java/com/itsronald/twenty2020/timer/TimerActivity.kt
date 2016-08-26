@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
 import android.support.design.widget.Snackbar
+import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
 import android.view.Menu
@@ -374,6 +375,8 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         bringSeekbarToFront(seekBar)
 //        seekBar.isEnabled = false    TODO: Reenable when timer seeking is implemented.
         seekBar.pointerAlpha = 1
+        val elevation = resources.getDimensionPixelSize(R.dimen.timer_ring_elevation_focused)
+        ViewCompat.setElevation(seekBar, elevation.toFloat())
 
         (seekBar.parent as? View)?.alpha = 1f
     }
@@ -394,6 +397,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     private fun unfocusTimer(seekBar: CircularSeekBar) {
         seekBar.isEnabled = false
         seekBar.pointerAlpha = 0
+
+        val elevation = resources.getDimensionPixelSize(R.dimen.timer_ring_elevation_unfocused)
+        ViewCompat.setElevation(seekBar, elevation.toFloat())
 
         (seekBar.parent as? View)?.alpha = 0.65f
 
