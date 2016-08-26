@@ -296,7 +296,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
             showcaseView?.setContentTitle(getString(R.string.tutorial_content_title_skip_phase))
             showcaseView?.setContentText(getString(R.string.tutorial_content_message_skip_phase))
-            showcaseView?.setShowcase(ViewTarget(break_text), true)
+            showcaseView?.setShowcase(ViewTarget(break_container), true)
 
             Timber.v("Tutorial shown in state TUTORIAL_TARGET_TIMER_SKIP.")
         }
@@ -315,6 +315,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
             showcaseView?.setOnClickListener(null)
             showcaseView?.hide()
             showcaseView = null
+            presenter.onTutorialFinished()
             Timber.v("Tutorial hidden.")
         }
         else -> throw IllegalArgumentException("$state is not a valid @TutorialState value.")
@@ -342,7 +343,8 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         )
         nextButtonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
         nextButtonLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
-        nextButtonLayoutParams.bottomMargin = resources.getDimensionPixelOffset(R.dimen.activity_vertical_margin)
+        nextButtonLayoutParams.bottomMargin = resources
+                .getDimensionPixelOffset(R.dimen.activity_vertical_margin)
         return nextButtonLayoutParams
     }
 
