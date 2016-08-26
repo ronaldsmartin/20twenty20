@@ -194,13 +194,6 @@ class TimerPresenter
         if (firstInstalledVersion == null) {
             Timber.i("This is the first application launch. Showing tutorial.")
             view.showTutorial(TimerContract.TimerView.TUTORIAL_TARGET_TIMER_START)
-
-            Timber.i("Recording that the tutorial has been shown.")
-            resources.savePreferenceString(
-                    keyResId = R.string.pref_nobackup_key_first_installed_version,
-                    stringToSave = BuildConfig.VERSION_NAME,
-                    prefsFilename = resources.getString(R.string.pref_filename_no_backup)
-            )
         } else {
             Timber.v("Application was first launched as version $firstInstalledVersion. " +
                     "Skipping tutorial.")
@@ -213,6 +206,15 @@ class TimerPresenter
         TimerView.TUTORIAL_TARGET_TIMER_RESTART -> TimerView.TUTORIAL_NOT_SHOWN
         else -> throw IllegalArgumentException("$currentState is not a valid @TutorialState value.")
     })
+
+    override fun onTutorialFinished() {
+        Timber.i("Recording that the tutorial has been shown.")
+        resources.savePreferenceString(
+                keyResId = R.string.pref_nobackup_key_first_installed_version,
+                stringToSave = BuildConfig.VERSION_NAME,
+                prefsFilename = resources.getString(R.string.pref_filename_no_backup)
+        )
+    }
 
     override fun onWorkTimerClicked() {
         if (cycle.phase == Cycle.Phase.WORK) {

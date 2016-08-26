@@ -12,5 +12,7 @@
     <dimen name="timer_ring_stroke_width">6dp</dimen>
     <dimen name="timer_pointer_stroke_width">10dp</dimen>
 
+    <dimen name="timer_ring_elevation_focused">2dp</dimen>
+    <dimen name="timer_ring_elevation_unfocused">0dp</dimen>
 
 </resources>

@@ -143,6 +143,11 @@ interface TimerContract {
         fun onTutorialNextClicked(@TimerView.Companion.TutorialState currentState: Long)
 
         /**
+         * Callback to signify that the user finished the tutorial.
+         */
+        fun onTutorialFinished()
+
+        /**
          * Notify the listener that the work timer was clicked.
          */
         fun onWorkTimerClicked()
