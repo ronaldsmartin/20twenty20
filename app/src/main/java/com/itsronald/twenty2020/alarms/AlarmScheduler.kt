@@ -7,15 +7,18 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Handler
 import android.os.SystemClock
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.model.TimerControl
 import com.itsronald.twenty2020.timer.TimerActivity
+import rx.Observable
+import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
+import rx.lang.kotlin.onError
 import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Date
+import java.util.concurrent.TimeUnit.MILLISECONDS
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,7 +28,7 @@ import javax.inject.Singleton
  * based on the scheduled alarm broadcast.
  *
  * Alarms longer than one minute are exposed to the user via the Alarm API. However, alarms shorter
- * than a minute are managed by a private [Handler]. See [scheduleNextNotification] for details.
+ * than a minute are managed by a private [Subscription]. See [scheduleNextNotification] for details.
  *
  * There should only be one instance of [AlarmScheduler] active at any given time; since there is
  * only one type of broadcast, any additional [AlarmScheduler]s will override any alarms scheduled
@@ -53,10 +56,10 @@ class AlarmScheduler
     }
 
     /**
-     * A handler to schedule short alarms (< 60 seconds). The AlarmManager is unreliable in that
-     * interval.
+     * A handler to schedule short alarms (< 60 seconds). The AlarmManager is unreliable for
+     * frequent alarms at that interval.
      */
-    private val shortAlarmHandler = Handler()
+    private var shortAlarmSubscription: Subscription? = null
 
     /**
      * Observe changes to the cycle's timer state.
@@ -69,8 +72,8 @@ class AlarmScheduler
                 Timber.e(it, "Encountered an error while observing TimerControl events.")
                 cycle.timerEvents()
             }
-            .subscribe {
-                Timber.i("Received timer event: ${TimerControl.eventName(it)}")
+            .subscribe { event ->
+                Timber.i("Received timer event: ${TimerControl.eventName(event)}")
                 updateAlarms()
             }
 
@@ -78,6 +81,7 @@ class AlarmScheduler
 
     /**
      * The pending intent to schedule alarm broadcasts.
+     * @see scheduleNotificationAlarm
      */
     private val alarmIntent: PendingIntent
         get() = PendingIntent.getBroadcast(
@@ -89,6 +93,7 @@ class AlarmScheduler
 
     /**
      * The intent that will be broadcast during system alarms.
+     * @see alarmIntent
      */
     private val broadcastIntent: Intent
         // While enums are Serializable and can be passed directly through an intent, it is
@@ -96,6 +101,15 @@ class AlarmScheduler
         // Passing the name of the phase instead is a suitable workaround.
         // See http://stackoverflow.com/q/2307476/4499783 for more details.
         get() = Intent(AlarmReceiver.ACTION_NOTIFY)
+                .putExtra(EXTRA_PHASE, cycle.phase.name)
+
+    /**
+     * Directly invokes [AlarmService] to play an alarm.
+     *
+     * @see scheduleDelayedNotification
+     */
+    private val serviceIntent: Intent
+        get() = Intent(context, AlarmService::class.java)
                 .putExtra(EXTRA_PHASE, cycle.phase.name)
 
     /**
@@ -108,17 +122,12 @@ class AlarmScheduler
      * @see scheduleNextNotification
      */
     @TargetApi(Build.VERSION_CODES.M)
-    private fun buildShowAlarmIntent(): PendingIntent {
-        val intent = Intent(context, TimerActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                .setComponent(ComponentName(context, TimerActivity::class.java))
-        return PendingIntent.getActivity(
-                context,
-                REQUEST_CODE_EDIT_ALARMS,
-                intent,
-                0
-        )
-    }
+    private fun buildShowAlarmIntent(): PendingIntent = PendingIntent.getActivity(
+            context,
+            REQUEST_CODE_EDIT_ALARMS,
+            TimerActivity.intent(context = context),
+            0
+    )
 
     //endregion
 
@@ -129,6 +138,7 @@ class AlarmScheduler
      * phase's expiration; otherwise, cancels the scheduled alarm broadcast.
      */
     fun updateAlarms() {
+        Timber.v("Updating alarms.")
         cancelNextNotification(cycle)
         if (cycle.running) scheduleNextNotification(cycle)
     }
@@ -163,17 +173,24 @@ class AlarmScheduler
 
     private fun scheduleDelayedNotification(cycle: Cycle) {
         Timber.i("Scheduling delayed notification for phase ${cycle.phaseName} - " +
-                "remaining time (${cycle.remainingTime}) is less than one minute.")
+                "remaining time (${cycle.remainingTime} s) is less than one minute.")
 
-        // Capture correct intent for later use.
-        val broadcastIntent = broadcastIntent
-        shortAlarmHandler.postDelayed({
-            Timber.i("Broadcasting phase complete alarm via Handler.")
-            context.sendBroadcast(broadcastIntent)
-        }, cycle.remainingTimeMillis)
+        shortAlarmSubscription = shortAlarm(
+                intent = serviceIntent, timeUntilFire = cycle.remainingTimeMillis
+        ).subscribe {
+            Timber.i("Starting alarm service directly.")
+            context.startService(it)
+        }
     }
 
-    private fun scheduleNotificationAlarm(cycle :Cycle) {
+    private fun shortAlarm(intent: Intent, timeUntilFire: Long) = Observable.just(intent)
+            .delay(timeUntilFire, MILLISECONDS)
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onError { Timber.e(it, "Unable to post delayed short alarm.") }
+
+
+    private fun scheduleNotificationAlarm(cycle: Cycle) {
 
         val nextNotificationTime = phaseExpirationTime(cycle)
         val nextNotificationDate = phaseExpirationDate(cycle)
@@ -205,6 +222,6 @@ class AlarmScheduler
     private fun cancelNextNotification(cycle: Cycle) {
         Timber.i("Cancelling notification for phase ${cycle.phaseName}.")
         alarmManager.cancel(alarmIntent)
-        shortAlarmHandler.removeCallbacksAndMessages(null)
+        shortAlarmSubscription?.unsubscribe()
     }
 }
