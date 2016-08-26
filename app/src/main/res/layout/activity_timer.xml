@@ -33,6 +33,14 @@
                 app:textSize="@dimen/timer_clock_text_size"
                 style="@style/TimerText" />
 
+            <Button
+                android:id="@+id/btn_switch_phase_work"
+                android:layout_alignLeft="@+id/work_seek_bar"
+                android:layout_alignRight="@+id/work_seek_bar"
+                android:layout_alignStart="@+id/work_seek_bar"
+                android:layout_alignEnd="@+id/work_seek_bar"
+                style="@style/TimerToggle" />
+
             <me.tankery.lib.circularseekbar.CircularSeekBar
                 android:id="@+id/work_seek_bar"
                 android:layout_width="wrap_content"
@@ -47,14 +55,6 @@
                 app:cs_pointer_halo_color="@color/colorAccent"
                 app:cs_circle_stroke_width="@dimen/timer_ring_stroke_width"
                 app:cs_pointer_stroke_width="@dimen/timer_pointer_stroke_width"/>
-
-            <Button
-                android:id="@+id/btn_switch_phase_work"
-                android:layout_alignLeft="@+id/work_seek_bar"
-                android:layout_alignRight="@+id/work_seek_bar"
-                android:layout_alignStart="@+id/work_seek_bar"
-                android:layout_alignEnd="@+id/work_seek_bar"
-                style="@style/TimerToggle" />
 
         </RelativeLayout>
 
@@ -74,6 +74,14 @@
                 app:textSize="@dimen/timer_clock_text_size"
                 style="@style/TimerText" />
 
+            <Button
+                android:id="@+id/btn_switch_phase_break"
+                android:layout_alignLeft="@+id/break_seek_bar"
+                android:layout_alignRight="@+id/break_seek_bar"
+                android:layout_alignStart="@+id/break_seek_bar"
+                android:layout_alignEnd="@+id/break_seek_bar"
+                style="@style/TimerToggle" />
+
             <me.tankery.lib.circularseekbar.CircularSeekBar
                 android:id="@+id/break_seek_bar"
                 android:layout_width="wrap_content"
@@ -85,14 +93,6 @@
                 app:cs_pointer_halo_color="@color/colorAccent"
                 app:cs_circle_stroke_width="@dimen/timer_ring_stroke_width"
                 app:cs_pointer_stroke_width="@dimen/timer_pointer_stroke_width"/>
-
-            <Button
-                android:id="@+id/btn_switch_phase_break"
-                android:layout_alignLeft="@+id/break_seek_bar"
-                android:layout_alignRight="@+id/break_seek_bar"
-                android:layout_alignStart="@+id/break_seek_bar"
-                android:layout_alignEnd="@+id/break_seek_bar"
-                style="@style/TimerToggle" />
 
         </RelativeLayout>
 
