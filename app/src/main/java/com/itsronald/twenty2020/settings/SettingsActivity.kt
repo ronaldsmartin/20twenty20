@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.preference.*
 import android.support.annotation.StringRes
+import android.support.design.widget.Snackbar
 import android.support.v4.app.NavUtils
 import android.text.TextUtils
 import android.view.MenuItem
@@ -228,6 +229,11 @@ class SettingsActivity : AppCompatPreferenceActivity(), SettingsContract.Setting
             Timber.i("Removing preference: $it")
             preferenceGroup.removePreference(it)
         } ?: false
+    }
+
+    override fun showMessage(message: String) {
+        Snackbar.make(contentView, message, Snackbar.LENGTH_LONG)
+                .show()
     }
 
     //endregion

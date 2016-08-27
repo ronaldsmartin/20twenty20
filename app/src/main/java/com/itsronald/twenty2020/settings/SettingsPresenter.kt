@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.TargetApi
 import android.os.Build
 import android.os.Bundle
+import android.support.annotation.StringRes
 import android.support.v7.app.AppCompatDelegate
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
@@ -32,49 +33,9 @@ class SettingsPresenter
     private val permissionListener: PermissionListener
         get() = settingsComponent.permissionsListener()
 
-    //region Observers
-
     /** Subscriptions maintained by this presenter. */
     private lateinit var subscriptions: CompositeSubscription
 
-    /**
-     * Observe changes to the display_night_mode SharedPreference.
-     * The original value (the current setting when the Observer is started) is not sent to
-     * subscribers.
-     *
-     * @return A new Observable that reacts to changes to the display_night_mode setting.
-     */
-    private fun nightModePreference(): Observable<Int> = preferences
-            .getString(resources.getString(R.string.pref_key_display_night_mode))
-            .asObservable()
-            .map { it.toInt() }
-            .filter {
-                AppCompatDelegate.getDefaultNightMode() != it
-                        && (it == AppCompatDelegate.MODE_NIGHT_NO
-                        ||  it == AppCompatDelegate.MODE_NIGHT_YES
-                        ||  it == AppCompatDelegate.MODE_NIGHT_AUTO)
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .onError { Timber.e(it, "Unable to observe night mode setting.") }
-
-    /**
-     * Observe changes to the display_location_based_night_mode SharedPreference.
-     * The original value (the current setting when the Observer is started) is not sent to
-     * subscribers.
-     *
-     * @return A new Observable that reacts to changes to the display_location_based_night_mode
-     * setting.
-     */
-    @TargetApi(Build.VERSION_CODES.M)
-    private fun nightModeLocationPreference(): Observable<Boolean> = preferences
-            .getBoolean(resources.getString(R.string.pref_key_display_location_based_night_mode))
-            .asObservable()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .onError { Timber.e(it, "Unable to observe night mode location setting.") }
-
-    //endregion
 
     //region Activity lifecycle
 
@@ -126,6 +87,15 @@ class SettingsPresenter
                 Timber.v("Night mode location preference is enabled: $enabled")
                 if (enabled) ensureLocationPermission()
             }
+        }
+
+        subscriptions += workDurationPreference().subscribe {
+            val phaseName = resources.getString(R.string.phase_name_work).toLowerCase()
+            showPhaseRefreshMessage(phaseName = phaseName)
+        }
+        subscriptions += breakDurationPreference().subscribe {
+            val phaseName = resources.getString(R.string.phase_name_break).toLowerCase()
+            showPhaseRefreshMessage(phaseName = phaseName)
         }
     }
 
@@ -195,6 +165,68 @@ class SettingsPresenter
         Dexter.checkPermission(permissionListener,
                 Manifest.permission.ACCESS_FINE_LOCATION)
     }
+
+    private fun showPhaseRefreshMessage(phaseName: String) {
+        val message = resources
+                .getString(R.string.pref_message_length_changes_on_restart, phaseName)
+        Timber.v("Showing message in view: '$message'")
+        view.showMessage(message)
+    }
+
+    //endregion
+
+    //region Observables
+
+    private fun durationPreference(@StringRes prefKeyID: Int): Observable<String> = preferences
+            .getString(resources.getString(prefKeyID))
+            .asObservable()
+            .skip(1)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onError { Timber.e(it, "Unable to observe setting for duration $prefKeyID.") }
+
+    private fun workDurationPreference(): Observable<String> =
+            durationPreference(R.string.pref_key_general_work_phase_length)
+
+    private fun breakDurationPreference(): Observable<String> =
+            durationPreference(R.string.pref_key_general_break_phase_length)
+
+    /**
+     * Observe changes to the display_night_mode SharedPreference.
+     * The original value (the current setting when the Observer is started) is not sent to
+     * subscribers.
+     *
+     * @return A new Observable that reacts to changes to the display_night_mode setting.
+     */
+    private fun nightModePreference(): Observable<Int> = preferences
+            .getString(resources.getString(R.string.pref_key_display_night_mode))
+            .asObservable()
+            .map { it.toInt() }
+            .filter {
+                AppCompatDelegate.getDefaultNightMode() != it
+                        && (it == AppCompatDelegate.MODE_NIGHT_NO
+                        ||  it == AppCompatDelegate.MODE_NIGHT_YES
+                        ||  it == AppCompatDelegate.MODE_NIGHT_AUTO)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onError { Timber.e(it, "Unable to observe night mode setting.") }
+
+    /**
+     * Observe changes to the display_location_based_night_mode SharedPreference.
+     * The original value (the current setting when the Observer is started) is not sent to
+     * subscribers.
+     *
+     * @return A new Observable that reacts to changes to the display_location_based_night_mode
+     * setting.
+     */
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun nightModeLocationPreference(): Observable<Boolean> = preferences
+            .getBoolean(resources.getString(R.string.pref_key_display_location_based_night_mode))
+            .asObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onError { Timber.e(it, "Unable to observe night mode location setting.") }
 
     //endregion
 }

@@ -49,12 +49,12 @@ interface TimerControl {
     fun toggleRunning()
 
     /**
-     * Immediately end the current phase and start the next phase.
+     * Restart the time remaining in the current phase to its original duration.
      */
     fun restartPhase()
 
     /**
-     * Restart the time remaining in the current phase to its original duration.
+     * Immediately end the current phase and start the next phase.
      */
     fun startNextPhase(delay: Int = 0)
 }

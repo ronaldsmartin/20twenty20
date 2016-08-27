@@ -152,8 +152,10 @@ class Cycle
      * When the phase completes, the next phase will start automatically.
      *
      * @param delay If specified, the phase will wait [delay] seconds before starting.
+     * @param notifyObservers whether Observers should be notified that the timer state has changed.
+     *        The default is to notify them.
      */
-    fun start(delay: Int = 0) {
+    fun start(delay: Int = 0, notifyObservers: Boolean = true) {
         if (running) {
             Timber.i("Cycle.start() ignored: the cycle is already running.")
             return
@@ -161,7 +163,7 @@ class Cycle
         Timber.v("Starting ${phase.name} phase. Time elapsed: $elapsedTime; Time left: $remainingTime")
         startTimerCountdown(delay = delay)
 
-        if (timerEventSubject.hasObservers()) {
+        if (timerEventSubject.hasObservers() && notifyObservers) {
             timerEventSubject.onNext(TimerControl.TIMER_STARTED)
         }
     }
@@ -174,7 +176,7 @@ class Cycle
                 .serialize()
                 .subscribeOn(Schedulers.computation())
                 .onError { timerSubject.onError(it) }
-                .doOnCompleted { startNextPhase() }
+                .doOnCompleted { startNext(delay = 0) }
                 .doOnSubscribe { running = true }
                 .subscribe {
                     elapsedTime += 1
@@ -224,6 +226,14 @@ class Cycle
      * Start the next phase.
      */
     override fun startNextPhase(delay: Int) {
+        startNext(delay)
+
+        if (timerEventSubject.hasObservers()) {
+            timerEventSubject.onNext(TimerControl.TIMER_SKIPPED_PHASE)
+        }
+    }
+
+    private fun startNext(delay: Int) {
         countdown?.unsubscribe()
         phase = phase.nextPhase
         resetTime()
@@ -231,7 +241,7 @@ class Cycle
         // Only start the next phase if the timer was already running.
         if (running) {
             running = false
-            start(delay = delay)
+            start(delay = delay, notifyObservers = false)
         }
     }
 
