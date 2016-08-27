@@ -194,9 +194,13 @@ class TimerPresenter
         if (firstInstalledVersion == null) {
             Timber.i("This is the first application launch. Showing tutorial.")
             view.showTutorial(TimerContract.TimerView.TUTORIAL_TARGET_TIMER_START)
+            Timber.i("Disabling options menu.")
+            view.isMenuEnabled = false
         } else {
             Timber.v("Application was first launched as version $firstInstalledVersion. " +
                     "Skipping tutorial.")
+            Timber.i("Enabling options menu.")
+            view.isMenuEnabled = true
         }
     }
 
@@ -208,12 +212,14 @@ class TimerPresenter
     })
 
     override fun onTutorialFinished() {
-        Timber.i("Recording that the tutorial has been shown.")
+        Timber.v("Recording that the tutorial has been shown.")
         resources.savePreferenceString(
                 keyResId = R.string.pref_nobackup_key_first_installed_version,
                 stringToSave = BuildConfig.VERSION_NAME,
                 prefsFilename = resources.getString(R.string.pref_filename_no_backup)
         )
+        Timber.v("Re-enabling options menu.")
+        view.isMenuEnabled = true
     }
 
     override fun onWorkTimerClicked() {
