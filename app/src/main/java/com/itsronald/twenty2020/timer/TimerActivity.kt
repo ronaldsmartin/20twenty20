@@ -162,11 +162,6 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         delayedHide(100)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater?.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
     override fun onStart() {
         super.onStart()
         presenter.onStart()
@@ -193,6 +188,22 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     //endregion
 
     //region Menu interaction
+
+    override var isMenuEnabled: Boolean = false
+        set(value) {
+            field = value
+            invalidateOptionsMenu()
+        }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater?.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        return isMenuEnabled && super.onPrepareOptionsMenu(menu)
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when(item?.itemId) {
         R.id.menu_about -> {

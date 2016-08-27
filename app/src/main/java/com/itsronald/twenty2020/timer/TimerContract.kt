@@ -55,6 +55,9 @@ interface TimerContract {
 
         val context: Context
 
+        /** Whether or not the app bar overflow menu should be enabled. */
+        var isMenuEnabled: Boolean
+
         /** Whether or not the screen with this view should stay awake. */
         var keepScreenOn: Boolean
 
