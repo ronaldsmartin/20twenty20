@@ -325,6 +325,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     private fun showTutorialStart() {
         showcaseView = ShowcaseView.Builder(this)
                 .withMaterialShowcase()
+                .blockAllTouches()
                 .setContentTitle(R.string.tutorial_content_title_start)
                 .setContentText(R.string.tutorial_content_message_start)
                 .setTarget(ViewTarget(timer_fab))
