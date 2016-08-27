@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
     <!-- Strings related to Settings -->
 
     <!-- General settings -->
@@ -83,6 +83,8 @@
         <item>240</item>
         <item>300</item>
     </string-array>
+
+    <string name="pref_message_length_changes_on_restart">This change will take effect when your next <xliff:g id="phase_name">%s</xliff:g> phase starts.</string>
 
     <!-- Display settings -->
     <string name="pref_header_display">Display</string>
