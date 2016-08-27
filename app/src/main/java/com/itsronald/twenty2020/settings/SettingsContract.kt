@@ -54,6 +54,12 @@ interface SettingsContract {
          * @return Whether or not the preference was found and removed.
          */
         fun removePreference(@StringRes prefKeyID: Int, @StringRes inCategory: Int? = null): Boolean
+
+        /**
+         * Display a message in this view.
+         * @param message The message to display to the user.
+         */
+        fun showMessage(message: String)
     }
 
     interface Presenter : com.itsronald.twenty2020.base.Presenter<SettingsView> {
