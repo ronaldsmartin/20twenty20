@@ -334,6 +334,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     }
 
     private fun showTutorialStart() {
+        if (showcaseView != null) {
+            Timber.v("Tutorial is already present. Not creating a new ShowcaseView.")
+            return
+        }
+
         showcaseView = ShowcaseView.Builder(this)
                 .withMaterialShowcase()
                 .blockAllTouches()
