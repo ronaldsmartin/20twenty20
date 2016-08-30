@@ -8,16 +8,10 @@ import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
 import com.itsronald.twenty2020.model.Cycle
-import com.itsronald.twenty2020.model.TimerControl
 import com.itsronald.twenty2020.timer.TimerActivity
-import rx.Observable
 import rx.Subscription
-import rx.android.schedulers.AndroidSchedulers
-import rx.lang.kotlin.onError
-import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Date
-import java.util.concurrent.TimeUnit.MILLISECONDS
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -54,28 +48,6 @@ class AlarmScheduler
         Timber.i("Scheduler created.")
     }
 
-    /**
-     * A handler to schedule short alarms (< 60 seconds). The AlarmManager is unreliable for
-     * frequent alarms at that interval.
-     */
-    private var shortAlarmSubscription: Subscription? = null
-
-    /**
-     * Observe changes to the cycle's timer state.
-     */
-    @Suppress("unused")
-    private val timerEventSubscription = cycle.timerEvents()
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .onErrorResumeNext {
-                Timber.e(it, "Encountered an error while observing TimerControl events.")
-                cycle.timerEvents()
-            }
-            .subscribe { event ->
-                Timber.i("Received timer event: ${TimerControl.eventName(event)}")
-                updateAlarms()
-            }
-
     //region Intents
 
     /**
@@ -100,15 +72,6 @@ class AlarmScheduler
         // Passing the name of the phase instead is a suitable workaround.
         // See http://stackoverflow.com/q/2307476/4499783 for more details.
         get() = Intent(AlarmReceiver.ACTION_NOTIFY)
-                .putExtra(EXTRA_PHASE, cycle.phase.name)
-
-    /**
-     * Directly invokes [AlarmService] to play an alarm.
-     *
-     * @see scheduleDelayedNotification
-     */
-    private val serviceIntent: Intent
-        get() = Intent(context, AlarmService::class.java)
                 .putExtra(EXTRA_PHASE, cycle.phase.name)
 
     /**
@@ -163,31 +126,8 @@ class AlarmScheduler
     private fun scheduleNextNotification(cycle: Cycle) {
         // See: A flowchart for background work, alarms, and your Android app
         //      https://plus.google.com/+AndroidDevelopers/posts/GdNrQciPwqo
-        if (cycle.remainingTime < 60) {
-            scheduleDelayedNotification(cycle = cycle)
-        } else {
-            scheduleNotificationAlarm(cycle = cycle)
-        }
+        scheduleNotificationAlarm(cycle = cycle)
     }
-
-    private fun scheduleDelayedNotification(cycle: Cycle) {
-        Timber.i("Scheduling delayed notification for phase ${cycle.phaseName} - " +
-                "remaining time (${cycle.remainingTime} s) is less than one minute.")
-
-        shortAlarmSubscription = shortAlarm(
-                intent = serviceIntent, timeUntilFire = cycle.remainingTimeMillis
-        ).subscribe {
-            Timber.i("Starting alarm service directly.")
-            context.startService(it)
-        }
-    }
-
-    private fun shortAlarm(intent: Intent, timeUntilFire: Long) = Observable.just(intent)
-            .delay(timeUntilFire, MILLISECONDS)
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .onError { Timber.e(it, "Unable to post delayed short alarm.") }
-
 
     private fun scheduleNotificationAlarm(cycle: Cycle) {
 
@@ -221,6 +161,5 @@ class AlarmScheduler
     private fun cancelNextNotification(cycle: Cycle) {
         Timber.i("Cancelling notification for phase ${cycle.phaseName}.")
         alarmManager.cancel(alarmIntent)
-        shortAlarmSubscription?.unsubscribe()
     }
 }
