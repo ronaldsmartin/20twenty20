@@ -1,5 +1,6 @@
 package com.itsronald.twenty2020.timer
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import android.support.v7.content.res.AppCompatResources
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.RelativeLayout
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.ViewTarget
@@ -420,7 +422,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
         (seekBar.parent as? View)?.alpha = 0.65f
 
-        seekBar.progress = 0f
+        animate(seekBar, toProgress = 0f)
     }
 
     override fun showWorkTimeRemaining(formattedTime: String) {
@@ -435,14 +437,27 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         if (work_seek_bar.max != maxProgress.toFloat()) {
             work_seek_bar.max = maxProgress.toFloat()
         }
-        work_seek_bar.progress = -progress.toFloat()
+        animate(seekBar = work_seek_bar, toProgress = -progress.toFloat())
     }
 
     override fun showBreakProgress(progress: Int, maxProgress: Int) {
         if (break_seek_bar.max != maxProgress.toFloat()) {
             break_seek_bar.max = maxProgress.toFloat()
         }
-        break_seek_bar.progress = progress.toFloat()
+        animate(seekBar = break_seek_bar, toProgress = progress.toFloat())
+    }
+
+    private fun animate(seekBar: CircularSeekBar, toProgress: Float): ObjectAnimator {
+        val objectAnimator = ObjectAnimator
+                .ofFloat(seekBar, "progress", seekBar.progress, toProgress)
+        objectAnimator.interpolator = LinearInterpolator()
+        objectAnimator.duration = 2000
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            objectAnimator.setAutoCancel(true)
+        }
+
+        objectAnimator.start()
+        return objectAnimator
     }
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {
