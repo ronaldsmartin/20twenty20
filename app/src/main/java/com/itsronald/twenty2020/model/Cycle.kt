@@ -177,7 +177,12 @@ class Cycle
                 .subscribeOn(Schedulers.computation())
                 .onError { timerSubject.onError(it) }
                 .doOnCompleted { startNext(delay = 0) }
-                .doOnSubscribe { running = true }
+                .doOnSubscribe {
+                    running = true
+                    if (timerSubject.hasObservers()) {
+                        timerSubject.onNext(this)
+                    }
+                }
                 .subscribe {
                     elapsedTime += 1
                     if (timerSubject.hasObservers()) {
