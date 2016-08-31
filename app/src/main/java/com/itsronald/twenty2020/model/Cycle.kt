@@ -99,10 +99,6 @@ class Cycle
     val remainingTime: Int
         get() = duration - elapsedTime
 
-    /** Indicates whether the current phase time left is about to run out. */
-    val isFinishingPhase: Boolean
-        get() = elapsedTime == duration - 1
-
     //region Observables
 
     /** PublishSubject where we update the timer state. **/
