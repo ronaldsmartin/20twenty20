@@ -8,8 +8,11 @@ import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
 import com.itsronald.twenty2020.model.Cycle
+import com.itsronald.twenty2020.model.TimerControl
 import com.itsronald.twenty2020.timer.TimerActivity
 import rx.Subscription
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Date
 import javax.inject.Inject
@@ -29,9 +32,9 @@ import javax.inject.Singleton
  */
 @Singleton
 class AlarmScheduler
-    @Inject constructor(val context: Context,
-                        val alarmManager: AlarmManager,
-                        val cycle: Cycle) {
+    @Inject constructor(private val context: Context,
+                        private val alarmManager: AlarmManager,
+                        private val cycle: Cycle) {
 
     companion object {
         /** Request code for broadcast receivers to post a "cycle phase complete" notification. */
@@ -47,6 +50,23 @@ class AlarmScheduler
     init {
         Timber.i("Scheduler created.")
     }
+
+    /**
+     * Observe changes to the cycle's timer state.
+     */
+    @Suppress("unused")
+    private val timerEventSubscription = cycle.timerEvents()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onErrorResumeNext {
+                Timber.e(it, "Encountered an error while observing TimerControl events.")
+                cycle.timerEvents()
+            }
+            .subscribe { event ->
+                Timber.i("Received timer event: ${TimerControl.eventName(event)}")
+                updateAlarms()
+            }
+
 
     //region Intents
 
