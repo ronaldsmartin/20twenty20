@@ -32,9 +32,9 @@ import javax.inject.Singleton
  */
 @Singleton
 class AlarmScheduler
-    @Inject constructor(val context: Context,
-                        val alarmManager: AlarmManager,
-                        val cycle: Cycle) {
+    @Inject constructor(private val context: Context,
+                        private val alarmManager: AlarmManager,
+                        private val cycle: Cycle) {
 
     companion object {
         /** Request code for broadcast receivers to post a "cycle phase complete" notification. */
