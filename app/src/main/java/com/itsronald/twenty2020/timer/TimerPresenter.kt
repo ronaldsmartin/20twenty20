@@ -30,10 +30,10 @@ import javax.inject.Inject
 
 class TimerPresenter
     @Inject constructor(override var view: TimerContract.TimerView,
-                        val resources: ResourceRepository,
-                        val preferences: RxSharedPreferences,
-                        val cycle: Cycle,
-                        val eventTracker: EventTracker)
+                        private val resources: ResourceRepository,
+                        private val preferences: RxSharedPreferences,
+                        private val cycle: Cycle,
+                        private val eventTracker: EventTracker)
     : TimerContract.UserActionsListener, TimerControl by cycle {
 
     private val context: Context
