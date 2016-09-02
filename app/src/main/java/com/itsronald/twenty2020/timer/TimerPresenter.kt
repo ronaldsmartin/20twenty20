@@ -55,9 +55,74 @@ class TimerPresenter
         aboutComponent.aboutPresenter()
     }
 
-    //region Observers
-
     private lateinit var subscriptions: CompositeSubscription
+
+    /** A recyclable StringBuilder to use when formatting times. */
+    private val timeStringBuilder = StringBuilder(8)
+
+    //region Lifecycle
+
+    override fun onCreate(bundle: Bundle?) {
+        super.onCreate(bundle)
+        Timber.i("Presenter created.")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        updateTimeText()
+
+        startSubscriptions()
+        showTutorialOnFirstRun()
+    }
+
+    private fun updateTimeText(text: String = cycle.remainingTime.toTimeString()) {
+        val nextPhase = cycle.phase.nextPhase
+        val nextDurationText = cycle.durationOfPhase(nextPhase).toTimeString()
+        updateTimeTextForPhase(phase = nextPhase, timeText = nextDurationText)
+
+        updateTimeTextForPhase(phase = cycle.phase, timeText = text)
+    }
+
+    /**
+     * Format a time in seconds as HH:mm:ss when hours are present, mm:ss if the time is less
+     * than an hour, or just as seconds if the time is less than a minute.
+     */
+    private fun Int.toTimeString(): String =
+            if (this >= 60) DateUtils.formatElapsedTime(timeStringBuilder, this.toLong())
+            else "$this"
+
+    private fun updateTimeTextForPhase(phase: Cycle.Phase, timeText: String) = when (phase) {
+        Cycle.Phase.WORK  -> view.showWorkTimeRemaining(formattedTime = timeText)
+        Cycle.Phase.BREAK -> view.showBreakTimeRemaining(formattedTime = timeText)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        subscriptions.unsubscribe()
+    }
+
+    //endregion
+
+
+    //region Observables
+
+    private fun startSubscriptions() {
+        subscriptions = CompositeSubscription()
+
+        subscriptions += cycleTimeText().subscribe { updateTimeText(text = it) }
+        subscriptions += workProgress().subscribe { view.showWorkProgress(it.first, it.second) }
+        subscriptions += breakProgress().subscribe { view.showBreakProgress(it.first, it.second) }
+        subscriptions += timerViewMode().subscribe { view.timerMode = it }
+
+        subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
+        subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
+
+        subscriptions += isCycleRunning().subscribe { running ->
+            Timber.v("Switching play/pause icon.")
+            view.setFABDrawable(if (running) R.drawable.ic_pause
+                                else R.drawable.ic_play_arrow)
+        }
+    }
 
     /**
      * Observe the most recent formatted time for the cycle.
@@ -124,65 +189,6 @@ class TimerPresenter
 
     //endregion
 
-    override fun onCreate(bundle: Bundle?) {
-        super.onCreate(bundle)
-        Timber.i("Presenter created.")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        updateTimeText()
-
-        startSubscriptions()
-        showTutorialOnFirstRun()
-    }
-
-    private fun updateTimeText() {
-        val nextPhase = cycle.phase.nextPhase
-        val nextDurationText = cycle.durationOfPhase(nextPhase).toTimeString()
-        updateTimeTextForPhase(phase = nextPhase, timeText = nextDurationText)
-
-        updateTimeTextForPhase(phase = cycle.phase, timeText = cycle.remainingTime.toTimeString())
-    }
-
-    private fun updateTimeTextForPhase(phase: Cycle.Phase, timeText: String) = when (phase) {
-        Cycle.Phase.WORK  -> view.showWorkTimeRemaining(formattedTime = timeText)
-        Cycle.Phase.BREAK -> view.showBreakTimeRemaining(formattedTime = timeText)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        subscriptions.unsubscribe()
-    }
-
-    private fun startSubscriptions() {
-        subscriptions = CompositeSubscription()
-
-        subscriptions += cycleTimeText().subscribe {
-            when (cycle.phase) {
-                Cycle.Phase.WORK -> {
-                    view.showBreakTimeRemaining(Cycle.Phase.BREAK.duration(resources).toTimeString())
-                    view.showWorkTimeRemaining(it)
-                }
-                Cycle.Phase.BREAK -> {
-                    view.showWorkTimeRemaining(Cycle.Phase.WORK.duration(resources).toTimeString())
-                    view.showBreakTimeRemaining(it)
-                }
-            }
-        }
-        subscriptions += workProgress().subscribe { view.showWorkProgress(it.first, it.second) }
-        subscriptions += breakProgress().subscribe { view.showBreakProgress(it.first, it.second) }
-        subscriptions += timerViewMode().subscribe { view.timerMode = it }
-
-        subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
-        subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
-
-        subscriptions += isCycleRunning().subscribe { running ->
-            Timber.v("Switching play/pause icon.")
-            view.setFABDrawable(if (running) R.drawable.ic_pause
-                                else R.drawable.ic_play_arrow)
-        }
-    }
 
     //region Tutorial display
 
@@ -296,23 +302,6 @@ class TimerPresenter
                 cycle.phaseName.toLowerCase())
         view.showMessage(message = message)
     }
-
-    //endregion
-
-    //region Formatting
-
-    /**
-     * A recyclable StringBuilder to use when formatting times.
-     */
-    private val timeStringBuilder = StringBuilder(8)
-
-    /**
-     * Format a time in seconds as HH:mm:ss when hours are present, mm:ss if the time is less
-     * than an hour, or just as seconds if the time is less than a minute.
-     */
-    private fun Int.toTimeString(): String =
-            if (this >= 60) DateUtils.formatElapsedTime(timeStringBuilder, this.toLong())
-            else "$this"
 
     //endregion
 }
