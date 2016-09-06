@@ -110,8 +110,12 @@ class TimerPresenter
         subscriptions = CompositeSubscription()
 
         subscriptions += cycleTimeText().subscribe { updateTimeText(text = it) }
-        subscriptions += workProgress().subscribe { view.showWorkProgress(it.first, it.second) }
-        subscriptions += breakProgress().subscribe { view.showBreakProgress(it.first, it.second) }
+        subscriptions += workProgress().subscribe {
+            view.showWorkProgress(it.currentProgress, it.maxProgress)
+        }
+        subscriptions += breakProgress().subscribe {
+            view.showBreakProgress(it.currentProgress, it.maxProgress)
+        }
         subscriptions += timerViewMode().subscribe { view.timerMode = it }
 
         subscriptions += keepScreenOnPreference().subscribe { view.keepScreenOn = it }
@@ -143,16 +147,15 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update time string.") }
 
-    private fun cycleProgress(): Observable<Pair<Int, Int>> = cycle.timer
-            .map { Pair(it.elapsedTime, it.duration) }
+    private fun cycleProgress(): Observable<Cycle.PhaseProgress> = cycle.timerProgress
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update major progress bar.") }
 
-    private fun workProgress(): Observable<Pair<Int, Int>> = cycleProgress()
+    private fun workProgress(): Observable<Cycle.PhaseProgress> = cycleProgress()
             .filter { cycle.phase == Cycle.Phase.WORK }
 
-    private fun breakProgress(): Observable<Pair<Int, Int>> = cycleProgress()
+    private fun breakProgress(): Observable<Cycle.PhaseProgress> = cycleProgress()
             .filter { cycle.phase == Cycle.Phase.BREAK }
 
     private fun timerViewMode(): Observable<Long> = cycle.timer

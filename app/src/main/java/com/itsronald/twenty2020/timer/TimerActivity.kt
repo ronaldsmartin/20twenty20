@@ -433,18 +433,18 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         break_text.setTime(formattedTime)
     }
 
-    override fun showWorkProgress(progress: Int, maxProgress: Int) {
-        if (work_seek_bar.max != maxProgress.toFloat()) {
-            work_seek_bar.max = maxProgress.toFloat()
+    override fun showWorkProgress(progress: Float, maxProgress: Float) {
+        if (work_seek_bar.max != maxProgress) {
+            work_seek_bar.max = maxProgress
         }
-        animate(seekBar = work_seek_bar, toProgress = -progress.toFloat())
+        animate(seekBar = work_seek_bar, toProgress = -progress)
     }
 
-    override fun showBreakProgress(progress: Int, maxProgress: Int) {
-        if (break_seek_bar.max != maxProgress.toFloat()) {
-            break_seek_bar.max = maxProgress.toFloat()
+    override fun showBreakProgress(progress: Float, maxProgress: Float) {
+        if (break_seek_bar.max != maxProgress) {
+            break_seek_bar.max = maxProgress
         }
-        animate(seekBar = break_seek_bar, toProgress = progress.toFloat())
+        animate(seekBar = break_seek_bar, toProgress = progress)
     }
 
     private fun animate(seekBar: CircularSeekBar, toProgress: Float): ObjectAnimator {
