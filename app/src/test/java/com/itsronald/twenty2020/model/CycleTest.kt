@@ -103,25 +103,6 @@ class CycleTest {
     }
 
     @Test
-    fun isFinishingPhase() {
-        val newDuration = 3
-        doReturn("$newDuration").`when`(resources)
-                .getPreferenceString(R.string.pref_key_general_work_phase_length)
-
-        // Skip to next work Cycle to refresh duration to stubbed value.
-        cycle.startNextPhase()
-        cycle.startNextPhase()
-        assertThat(cycle.duration, `is`(newDuration))
-
-        assertThat(cycle.isFinishingPhase, `is`(false))
-
-        cycle.start()
-        Thread.sleep(2500)
-
-        assertThat(cycle.isFinishingPhase, `is`(true))
-    }
-
-    @Test
     fun getDurationMinutes() {
         assertThat(cycle.durationMinutes, `is`(cycle.duration / 60))
     }
