@@ -147,7 +147,7 @@ class TimerPresenter
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update time string.") }
 
-    private fun cycleProgress(): Observable<Cycle.Phase.Progress> = cycle.timerProgress
+    private fun cycleProgress(): Observable<Cycle.Phase.Progress> = cycle.phaseProgress()
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update major progress bar.") }

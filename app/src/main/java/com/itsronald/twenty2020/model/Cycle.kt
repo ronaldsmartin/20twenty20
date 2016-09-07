@@ -122,9 +122,8 @@ class Cycle
     /** Subject where TimerControl events should be published. */
     private val timerEventSubject = PublishSubject.create<@TimerEvent Long>().toSerialized()
 
+    /** Subject where phase progress updates should be published. */
     private val timerProgressSubject = PublishSubject.create<Phase.Progress>().toSerialized()
-
-    val timerProgress: Observable<Phase.Progress> = timerProgressSubject.asObservable().onBackpressureLatest()
 
     //endregion
 
@@ -149,6 +148,12 @@ class Cycle
      * @return The full duraton of [phase] in seconds.
      */
     fun durationOfPhase(phase: Phase): Int = phase.duration(resources = resources)
+
+    /**
+     * Observe the progress of the current phase.
+     */
+    fun phaseProgress(): Observable<Phase.Progress> =
+            timerProgressSubject.asObservable().onBackpressureLatest()
 
     //endregion
 
