@@ -36,6 +36,14 @@ class Cycle
         BREAK;
 
         /**
+         * The progress of a phase, measured by the relation of its elapsed time and total duration.
+         */
+        data class Progress(val current: Float, val max: Float) {
+            constructor(current: Number, max: Number) : this(current.toFloat(), max.toFloat())
+            constructor(ofCycle: Cycle) : this(ofCycle.elapsedTime, ofCycle.duration)
+        }
+
+        /**
          * The total duration of this phase, in seconds.
          *
          * @param resources The repository in which the preferred duration is stored.
@@ -114,11 +122,9 @@ class Cycle
     /** Subject where TimerControl events should be published. */
     private val timerEventSubject = PublishSubject.create<@TimerEvent Long>().toSerialized()
 
-    data class PhaseProgress(val currentProgress: Float, val maxProgress: Float)
+    private val timerProgressSubject = PublishSubject.create<Phase.Progress>().toSerialized()
 
-    private val timerProgressSubject = PublishSubject.create<PhaseProgress>().toSerialized()
-
-    val timerProgress: Observable<PhaseProgress> = timerProgressSubject.asObservable().onBackpressureLatest()
+    val timerProgress: Observable<Phase.Progress> = timerProgressSubject.asObservable().onBackpressureLatest()
 
     //endregion
 
@@ -176,21 +182,18 @@ class Cycle
         countdowns += Observable.interval(1, TimeUnit.SECONDS)
                 .take(remainingTime)
                 .delay(delay.toLong(), TimeUnit.SECONDS)
-                .map { it.toInt() }
                 .serialize()
                 .subscribeOn(Schedulers.computation())
                 .onError { timerSubject.onError(it) }
                 .doOnSubscribe {
                     running = true
+                    // Fire some extra events to prevent initial UI delay.
+                    // Otherwise, the observers won't update until interval emits its first item.
                     if (timerSubject.hasObservers()) {
                         timerSubject.onNext(this)
                     }
-                    // Fire an extra event to prevent initial UI delay.
                     if (timerProgressSubject.hasObservers()) {
-                        val progress = PhaseProgress(
-                                currentProgress = elapsedTime.toFloat() + 0.5f,
-                                maxProgress = duration.toFloat()
-                        )
+                        val progress = Phase.Progress(current = elapsedTime + 0.5f, max = duration)
                         timerProgressSubject.onNext(progress)
                     }
                 }
@@ -201,11 +204,7 @@ class Cycle
                         timerSubject.onNext(this)
                     }
                     if (timerProgressSubject.hasObservers()) {
-                        val progress = PhaseProgress(
-                                currentProgress = elapsedTime.toFloat(),
-                                maxProgress = duration.toFloat()
-                        )
-                        timerProgressSubject.onNext(progress)
+                        timerProgressSubject.onNext(Phase.Progress(ofCycle = this))
                     }
                 }
     }
@@ -277,8 +276,7 @@ class Cycle
             timerSubject.onNext(this)
         }
         if (timerProgressSubject.hasObservers()) {
-            val progress = PhaseProgress(currentProgress = 0f, maxProgress = duration.toFloat())
-            timerProgressSubject.onNext(progress)
+            timerProgressSubject.onNext(Phase.Progress(ofCycle = this))
         }
     }
 
