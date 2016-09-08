@@ -35,6 +35,8 @@ android {
         ]
         buildConfigField "String", "GITHUB_ISSUE_BOT_API_KEY", "\"$GITHUB_ISSUE_BOT_API_KEY\""
 
+        vectorDrawables.useSupportLibrary = true
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
