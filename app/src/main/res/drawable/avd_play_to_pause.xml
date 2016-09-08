@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/ic_play_arrow"
+    tools:targetApi="LOLLIPOP">
+    
+    <target
+        android:animation="@animator/timer_fab_play_to_pause"
+        android:name="@string/timer_fab_icon_path_name_play" />
+
+</animated-vector>
