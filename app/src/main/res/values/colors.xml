@@ -17,6 +17,7 @@
     <color name="timer_background_gradient_start">#175853</color>
     <color name="timer_background_gradient_end">#2aa198</color>
     <color name="timer_progress_ring_background_color">@android:color/white</color>
+    <color name="timer_fab_icon_color">@android:color/white</color>
     
     <!-- About Activity -->
     <color name="about_libraries_card">@color/solarized_base2</color>

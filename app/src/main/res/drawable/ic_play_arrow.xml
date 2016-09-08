@@ -4,6 +4,7 @@
         android:viewportWidth="24.0"
         android:viewportHeight="24.0">
     <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M8,5v14l11,-7z"/>
+        android:name="@string/timer_fab_icon_path_name_play"
+        android:fillColor="@color/timer_fab_icon_color"
+        android:pathData="@string/timer_fab_icon_path_data_play"/>
 </vector>
