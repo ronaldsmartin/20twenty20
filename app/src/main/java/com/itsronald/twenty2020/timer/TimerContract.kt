@@ -55,6 +55,8 @@ interface TimerContract {
 
         val context: Context
 
+        val isFabAnimationAvailable: Boolean
+
         /** Whether or not the app bar overflow menu should be enabled. */
         var isMenuEnabled: Boolean
 
@@ -108,7 +110,7 @@ interface TimerContract {
          * Change the FloatingActionButton's drawable icon in the view.
          * @param drawableId The resource ID of the icon to display in the FAB.
          */
-        fun setFABDrawable(@DrawableRes drawableId: Int)
+        fun setFABDrawable(@DrawableRes drawableId: Int, animated: Boolean = false)
 
         /**
          * Display a message in this view.

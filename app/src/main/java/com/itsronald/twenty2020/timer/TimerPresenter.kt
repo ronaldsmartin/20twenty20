@@ -122,9 +122,15 @@ class TimerPresenter
         subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
 
         subscriptions += isCycleRunning().subscribe { running ->
-            Timber.v("Switching play/pause icon.")
-            view.setFABDrawable(if (running) R.drawable.ic_pause
-                                else R.drawable.ic_play_arrow)
+            val canAnimateDrawable = view.isFabAnimationAvailable
+            val drawableId = when {
+                running && canAnimateDrawable   -> R.drawable.avd_play_to_pause
+                canAnimateDrawable              -> R.drawable.avd_pause_to_play
+                running                         -> R.drawable.ic_pause
+                else                            -> R.drawable.ic_play_arrow
+            }
+            Timber.v("Switching play/pause icon. Animation available: $canAnimateDrawable")
+            view.setFABDrawable(drawableId, animated = canAnimateDrawable)
         }
     }
 

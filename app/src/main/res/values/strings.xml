@@ -14,8 +14,8 @@
 
     <string name="timer_fab_icon_path_name_play" translatable="false">play</string>
     <string name="timer_fab_icon_path_name_pause" translatable="false">pause</string>
-    <string name="timer_fab_icon_path_data_play" translatable="false">M8,5v14l11,-7z</string>
-    <string name="timer_fab_icon_path_data_pause" translatable="false">M6,19h4L10,5L6,5v14zM14,5v14h4L18,5h-4z</string>
+    <string name="timer_fab_icon_path_data_play" translatable="false">M16,24L38,24L27.3,30.8L16,38ZM16,10L27.3,17.2L38,24L16,24Z</string>
+    <string name="timer_fab_icon_path_data_pause" translatable="false">M12,10L20,10L20,38L12,38ZM28,10L36,10L36,38L28,38Z</string>
 
     <!-- Menu -->
     <string name="about">About</string>
