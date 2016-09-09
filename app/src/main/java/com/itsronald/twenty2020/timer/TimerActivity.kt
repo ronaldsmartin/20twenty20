@@ -1,5 +1,6 @@
 package com.itsronald.twenty2020.timer
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import android.support.v7.content.res.AppCompatResources
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.RelativeLayout
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.ViewTarget
@@ -24,6 +26,7 @@ import com.itsronald.twenty2020.data.ResourceModule
 import com.itsronald.twenty2020.settings.injection.DaggerPreferencesComponent
 import com.itsronald.twenty2020.settings.injection.PreferencesModule
 import com.itsronald.twenty2020.timer.TimerContract.TimerView.Companion.TutorialState
+import com.itsronald.twenty2020.timer.TimerContract.TimerView.Companion.TimerMode
 import kotlinx.android.synthetic.main.activity_timer.*
 import me.tankery.lib.circularseekbar.CircularSeekBar
 import timber.log.Timber
@@ -40,19 +43,22 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
          * Whether or not the system UI should be auto-hidden after
          * [.AUTO_HIDE_DELAY_MILLIS] milliseconds.
          */
-        private val AUTO_HIDE = true
+        private const val AUTO_HIDE = true
 
         /**
          * If [.AUTO_HIDE] is set, the number of milliseconds to wait after
          * user interaction before hiding the system UI.
          */
-        private val AUTO_HIDE_DELAY_MILLIS = 3000
+        private const val AUTO_HIDE_DELAY_MILLIS = 3000
 
         /**
          * Some older devices needs a small delay between UI widget updates
          * and a change of the status and navigation bar.
          */
-        private val UI_ANIMATION_DELAY = 300L
+        private const val UI_ANIMATION_DELAY = 300L
+
+        /** Bundle extra key for preserving [timerMode] across config changes. */
+        private const val EXTRA_TIMER_MODE = "com.itsronald.twenty2020.timer.view.timer_mode"
 
         /**
          * @return An explicit intent to start this activity.
@@ -155,7 +161,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-
+        savedInstanceState?.getLong(EXTRA_TIMER_MODE)?.let { timerMode = it }
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
@@ -178,6 +184,11 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         val applyDayNight = delegate.applyDayNight()
         Timber.v("Applying DayNight mode: $applyDayNight")
         super.onRestart()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putLong(EXTRA_TIMER_MODE, timerMode)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onStop() {
@@ -369,7 +380,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     //endregion
 
-    @TimerContract.TimerView.Companion.TimerMode
+    @TimerMode
     override var timerMode: Long = TimerContract.TimerView.TIMER_MODE_WORK
         set(value) {
             Timber.v("timerMode changed to $value.")
@@ -420,7 +431,7 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
         (seekBar.parent as? View)?.alpha = 0.65f
 
-        seekBar.progress = 0f
+        animate(seekBar, toProgress = 0f)
     }
 
     override fun showWorkTimeRemaining(formattedTime: String) {
@@ -431,18 +442,31 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         break_text.setTime(formattedTime)
     }
 
-    override fun showWorkProgress(progress: Int, maxProgress: Int) {
-        if (work_seek_bar.max != maxProgress.toFloat()) {
-            work_seek_bar.max = maxProgress.toFloat()
+    override fun showWorkProgress(progress: Float, maxProgress: Float) {
+        if (work_seek_bar.max != maxProgress) {
+            work_seek_bar.max = maxProgress
         }
-        work_seek_bar.progress = -progress.toFloat()
+        animate(seekBar = work_seek_bar, toProgress = -progress)
     }
 
-    override fun showBreakProgress(progress: Int, maxProgress: Int) {
-        if (break_seek_bar.max != maxProgress.toFloat()) {
-            break_seek_bar.max = maxProgress.toFloat()
+    override fun showBreakProgress(progress: Float, maxProgress: Float) {
+        if (break_seek_bar.max != maxProgress) {
+            break_seek_bar.max = maxProgress
         }
-        break_seek_bar.progress = progress.toFloat()
+        animate(seekBar = break_seek_bar, toProgress = progress)
+    }
+
+    private fun animate(seekBar: CircularSeekBar, toProgress: Float): ObjectAnimator {
+        val objectAnimator = ObjectAnimator
+                .ofFloat(seekBar, "progress", seekBar.progress, toProgress)
+        objectAnimator.interpolator = LinearInterpolator()
+        objectAnimator.duration = 2000
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            objectAnimator.setAutoCancel(true)
+        }
+
+        objectAnimator.start()
+        return objectAnimator
     }
 
     override fun setFABDrawable(@DrawableRes drawableId: Int) {

@@ -27,7 +27,7 @@ android {
         minSdkVersion    rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1       // Managed by BuddyBuild.
-        versionName "1.0.1"
+        versionName "1.0.2"
 
         manifestPlaceholders = [
             android_backup_api_key: "",

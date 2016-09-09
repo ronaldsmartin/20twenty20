@@ -4,10 +4,11 @@ import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.data.ResourceRepository
 import com.itsronald.twenty2020.model.TimerControl.Companion.TimerEvent
 import rx.Observable
-import rx.Subscription
 import rx.lang.kotlin.onError
+import rx.lang.kotlin.plusAssign
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
+import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -33,6 +34,14 @@ class Cycle
          * The shorter phase of the cycle.
          */
         BREAK;
+
+        /**
+         * The progress of a phase, measured by the relation of its elapsed time and total duration.
+         */
+        data class Progress(val current: Float, val max: Float) {
+            constructor(current: Number, max: Number) : this(current.toFloat(), max.toFloat())
+            constructor(ofCycle: Cycle) : this(ofCycle.elapsedTime, ofCycle.duration)
+        }
 
         /**
          * The total duration of this phase, in seconds.
@@ -99,23 +108,22 @@ class Cycle
     val remainingTime: Int
         get() = duration - elapsedTime
 
-    /** Indicates whether the current phase time left is about to run out. */
-    val isFinishingPhase: Boolean
-        get() = elapsedTime == duration - 1
-
     //region Observables
+
+    /** Observable timers for the current phase. */
+    private var countdowns = CompositeSubscription()
 
     /** PublishSubject where we update the timer state. **/
     private val timerSubject = PublishSubject.create<Cycle>().toSerialized()
-
-    /** Observable timer for the current phase. */
-    private var countdown: Subscription? = null
 
     /** Observable state of the cycle. */
     val timer: Observable<Cycle> = timerSubject.asObservable().onBackpressureLatest()
 
     /** Subject where TimerControl events should be published. */
     private val timerEventSubject = PublishSubject.create<@TimerEvent Long>().toSerialized()
+
+    /** Subject where phase progress updates should be published. */
+    private val timerProgressSubject = PublishSubject.create<Phase.Progress>().toSerialized()
 
     //endregion
 
@@ -140,6 +148,12 @@ class Cycle
      * @return The full duraton of [phase] in seconds.
      */
     fun durationOfPhase(phase: Phase): Int = phase.duration(resources = resources)
+
+    /**
+     * Observe the progress of the current phase.
+     */
+    fun phaseProgress(): Observable<Phase.Progress> =
+            timerProgressSubject.asObservable().onBackpressureLatest()
 
     //endregion
 
@@ -169,19 +183,33 @@ class Cycle
     }
 
     private fun startTimerCountdown(delay: Int) {
-        countdown = Observable.interval(1, TimeUnit.SECONDS)
+        running = true
+        countdowns += Observable.interval(1, TimeUnit.SECONDS)
                 .take(remainingTime)
                 .delay(delay.toLong(), TimeUnit.SECONDS)
-                .map { it.toInt() }
                 .serialize()
                 .subscribeOn(Schedulers.computation())
                 .onError { timerSubject.onError(it) }
+                .doOnSubscribe {
+                    running = true
+                    // Fire some extra events to prevent initial UI delay.
+                    // Otherwise, the observers won't update until interval emits its first item.
+                    if (timerSubject.hasObservers()) {
+                        timerSubject.onNext(this)
+                    }
+                    if (timerProgressSubject.hasObservers()) {
+                        val progress = Phase.Progress(current = elapsedTime + 0.5f, max = duration)
+                        timerProgressSubject.onNext(progress)
+                    }
+                }
                 .doOnCompleted { startNext(delay = 0) }
-                .doOnSubscribe { running = true }
                 .subscribe {
                     elapsedTime += 1
                     if (timerSubject.hasObservers()) {
                         timerSubject.onNext(this)
+                    }
+                    if (timerProgressSubject.hasObservers()) {
+                        timerProgressSubject.onNext(Phase.Progress(ofCycle = this))
                     }
                 }
     }
@@ -196,7 +224,7 @@ class Cycle
             return
         }
         Timber.v("Pausing ${phase.name} phase. Time elapsed: $elapsedTime; Time left: $remainingTime")
-        countdown?.unsubscribe()
+        countdowns.clear()
         running = false
 
         // Notify Observers that the Cycle has paused.
@@ -234,7 +262,7 @@ class Cycle
     }
 
     private fun startNext(delay: Int) {
-        countdown?.unsubscribe()
+        countdowns.clear()
         phase = phase.nextPhase
         resetTime()
 
@@ -251,6 +279,9 @@ class Cycle
 
         if (timerSubject.hasObservers()) {
             timerSubject.onNext(this)
+        }
+        if (timerProgressSubject.hasObservers()) {
+            timerProgressSubject.onNext(Phase.Progress(ofCycle = this))
         }
     }
 

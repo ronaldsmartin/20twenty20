@@ -95,14 +95,14 @@ interface TimerContract {
          * @param progress The current progress value to display.
          * @param maxProgress The maximum progress value the can be displayed.
          */
-        fun showWorkProgress(progress: Int, maxProgress: Int)
+        fun showWorkProgress(progress: Float, maxProgress: Float)
 
         /**
          * Display break phase progress in the view.
          * @param progress The current progress value to display.
          * @param maxProgress The maximum progress value the can be displayed.
          */
-        fun showBreakProgress(progress: Int, maxProgress: Int)
+        fun showBreakProgress(progress: Float, maxProgress: Float)
 
         /**
          * Change the FloatingActionButton's drawable icon in the view.
