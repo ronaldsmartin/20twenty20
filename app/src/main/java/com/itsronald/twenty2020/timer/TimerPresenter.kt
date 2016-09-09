@@ -70,6 +70,7 @@ class TimerPresenter
     override fun onStart() {
         super.onStart()
         updateTimeText()
+        refreshFABDrawable()
 
         startSubscriptions()
         showTutorialOnFirstRun()
@@ -122,15 +123,7 @@ class TimerPresenter
         subscriptions += allowFullScreenPreference().subscribe { view.fullScreenAllowed = it }
 
         subscriptions += isCycleRunning().subscribe { running ->
-            val canAnimateDrawable = view.isFabAnimationAvailable
-            val drawableId = when {
-                running && canAnimateDrawable   -> R.drawable.avd_play_to_pause
-                canAnimateDrawable              -> R.drawable.avd_pause_to_play
-                running                         -> R.drawable.ic_pause
-                else                            -> R.drawable.ic_play_arrow
-            }
-            Timber.v("Switching play/pause icon. Animation available: $canAnimateDrawable")
-            view.setFABDrawable(drawableId, animated = canAnimateDrawable)
+            refreshFABDrawable(running = running)
         }
     }
 
@@ -139,16 +132,6 @@ class TimerPresenter
      */
     private fun cycleTimeText(): Observable<String> = cycle.timer
             .map { it.remainingTime.toTimeString() }
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .onError { Timber.e(it, "Unable to update time string.") }
-
-    /**
-     * Watch changes to the cycle's running state.
-     */
-    private fun isCycleRunning(): Observable<Boolean> = cycle.timer
-            .map { it.running }
-            .distinctUntilChanged()
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to update time string.") }
@@ -195,6 +178,28 @@ class TimerPresenter
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .onError { Timber.e(it, "Unable to observe KEEP_SCREEN_ON SharedPreference") }
+
+    /**
+     * Watch changes to the cycle's running state.
+     */
+    private fun isCycleRunning(): Observable<Boolean> = cycle.timer
+            .map { it.running }
+            .distinctUntilChanged()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .onError { Timber.e(it, "Unable to update time string.") }
+
+    private fun refreshFABDrawable(running: Boolean = this.running) {
+        val canAnimateDrawable = view.isFabAnimationAvailable
+        val drawableId = when {
+            running && canAnimateDrawable   -> R.drawable.avd_play_to_pause
+            canAnimateDrawable              -> R.drawable.avd_pause_to_play
+            running                         -> R.drawable.ic_pause
+            else                            -> R.drawable.ic_play_arrow
+        }
+        Timber.v("Switching play/pause icon. Animation available: $canAnimateDrawable")
+        view.setFABDrawable(drawableId, animated = canAnimateDrawable)
+    }
 
     //endregion
 
