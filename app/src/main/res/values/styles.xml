@@ -54,6 +54,7 @@
     <style name="TimerButton">
         <item name="android:layout_width">@dimen/timer_button_layout_width</item>
         <item name="android:layout_height">@dimen/timer_button_layout_width</item>
+        <item name="android:layout_margin">@dimen/timer_button_layout_margin</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:tint">#eeffffff</item>
     </style>

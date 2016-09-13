@@ -6,8 +6,8 @@
     <string name="phase_name_break">Break</string>
 
     <!-- activity_timer -->
-    <string name="timer_restart_current_cycle">Restart current cycle</string>
-    <string name="timer_skip_to_next_cycle">Skip to next cycle</string>
+    <string name="timer_restart_current_phase">Restart current phase</string>
+    <string name="timer_skip_to_next_phase">Skip to next phase</string>
 
     <string name="timer_message_restarting_phase">Restarted <xliff:g id="phase_name">%s</xliff:g> phase.</string>
     <string name="timer_message_skip_to_next_phase">Skipped to <xliff:g id="phase_name">%s</xliff:g> phase.</string>
