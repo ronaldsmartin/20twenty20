@@ -28,9 +28,9 @@ import javax.inject.Singleton
  */
 @Singleton
 class Notifier
-    @Inject constructor(val context: Context,
-                        val preferences: RxSharedPreferences,
-                        val resources: ResourceRepository) {
+    @Inject constructor(private val context: Context,
+                        private val preferences: RxSharedPreferences,
+                        private val resources: ResourceRepository) {
 
     companion object {
         //region Notification IDs
