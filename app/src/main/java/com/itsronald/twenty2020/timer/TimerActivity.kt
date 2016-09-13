@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
 import android.support.design.widget.Snackbar
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
@@ -293,6 +294,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override val context: Context = this
 
+    override val isFabAnimationAvailable: Boolean =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+
     override var keepScreenOn: Boolean
         get() = content_layout.keepScreenOn
         set(value) { content_layout.keepScreenOn = value }
@@ -469,9 +473,17 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         return objectAnimator
     }
 
-    override fun setFABDrawable(@DrawableRes drawableId: Int) {
-        val drawable = AppCompatResources.getDrawable(this, drawableId)
-        timer_fab.setImageDrawable(drawable)
+    override fun setFABDrawable(@DrawableRes drawableId: Int, animated: Boolean) {
+        if (animated) {
+            Timber.v("Animating FAB icon change.")
+            val drawable = AnimatedVectorDrawableCompat.create(this, drawableId)
+            timer_fab.setImageDrawable(drawable)
+            drawable?.start()
+        } else {
+            Timber.v("Changing FAB drawable with no animation.")
+            val drawable = AppCompatResources.getDrawable(this, drawableId)
+            timer_fab.setImageDrawable(drawable)
+        }
     }
 
     override fun showMessage(message: String) {
