@@ -164,12 +164,7 @@ class Notifier
      * @return The message to display in a notification.
      */
     private fun makePhaseCompleteMessage(phase: Cycle.Phase): CharSequence = when(phase) {
-        Cycle.Phase.WORK  -> {
-            // Choose a random exercise to suggest for the break.
-            val messages = context.resources
-                    .getStringArray(R.array.notification_messages_work_cycle_complete)
-            messages[random.nextInt(messages.size)]
-        }
+        Cycle.Phase.WORK  -> workPhaseCompleteMessage()
         Cycle.Phase.BREAK -> {
             // Notify the user what time the next break will occur.
             val breakCycleMilliseconds = Cycle.Phase.WORK.duration(resources) * 1000
@@ -177,6 +172,18 @@ class Notifier
             val nextTime = DateUtils.getRelativeTimeSpanString(context, nextCycleTime, true)
             context.getString(R.string.notification_message_break_cycle_complete, nextTime)
         }
+    }
+
+    private fun workPhaseCompleteMessage(): String {
+        val exercisePrefKey = resources.getString(R.string.pref_key_general_recommend_exercise)
+        val shouldRecommend = preferences.getBoolean(exercisePrefKey).get()
+        if (shouldRecommend != null && shouldRecommend) {
+            // Choose a random exercise to suggest for the break.
+            val messages = context.resources
+                    .getStringArray(R.array.notification_messages_work_cycle_complete)
+            return messages[random.nextInt(messages.size)]
+        }
+        return resources.getString(R.string.notification_message_work_cycle_complete_no_exercise)
     }
 
     /**
