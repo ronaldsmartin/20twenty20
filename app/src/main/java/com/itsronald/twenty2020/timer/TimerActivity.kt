@@ -2,8 +2,10 @@ package com.itsronald.twenty2020.timer
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Animatable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -17,6 +19,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.LinearInterpolator
+import android.widget.ImageButton
 import android.widget.RelativeLayout
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.ViewTarget
@@ -149,7 +152,12 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // while interacting with the UI.
         timer_fab.setOnTouchListener(mDelayHideTouchListener)
 
-        btn_restart_phase.setOnClickListener { presenter.restartPhase() }
+        btn_restart_phase.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && it is ImageButton) {
+                animateRestartPhaseButton(button = it)
+            }
+            presenter.restartPhase()
+        }
         timer_fab.setOnClickListener { presenter.toggleRunning() }
 
         btn_switch_phase_work.setOnClickListener { presenter.onWorkTimerClicked() }
@@ -158,6 +166,21 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // TODO: Reenable these when timer seeking feature is implemented.
         work_seek_bar.isEnabled = false
         break_seek_bar.isEnabled = false
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun animateRestartPhaseButton(button: ImageButton) {
+        val icon = button.drawable
+        if (icon is Animatable) {
+            Timber.v("Animating btn_restart_phase with cached AnimatedVectorDrawableCompat.")
+            icon.start()
+        } else {
+            Timber.v("Animating btn_restart_phase with new AnimatedVectorDrawableCompat.")
+            val drawable = AnimatedVectorDrawableCompat
+                    .create(button.context, R.drawable.avd_reset_timer)
+            button.setImageDrawable(drawable)
+            drawable?.start()
+        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {

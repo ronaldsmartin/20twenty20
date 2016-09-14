@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/ic_restore_black_24dp"
+    tools:targetApi="LOLLIPOP">
+
+    <target
+        android:animation="@animator/timer_reset"
+        android:name="@string/timer_reset_icon_path_name" />
+
+</animated-vector>
