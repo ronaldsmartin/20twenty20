@@ -33,7 +33,7 @@ ext {
     hahaVersion = "2.0.3"
 
     // App dependencies
-    supportLibraryVersion = "24.2.0"
+    supportLibraryVersion = "24.2.1"
 
     rxJavaVersion = "1.1.9"
     rxJavaProguardRulesVersion = "$rxJavaVersion.0"
