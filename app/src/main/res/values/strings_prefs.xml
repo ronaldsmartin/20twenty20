@@ -92,6 +92,12 @@
     <string name="pref_summary_general_recommend_exercise_on">Suggest an exercise for me during breaks</string>
     <string name="pref_summary_general_recommend_exercise_off">Just remind me to relax my eyes</string>
 
+    <string name="pref_title_general_auto_start_next_phase">Auto-start next 20&#8211;20&#8211;20 phase</string>
+    <string name="pref_key_general_auto_start_next_phase"
+        translatable="false">com.itsronald.settings.key.auto_start_next_phase</string>
+    <string name="pref_summary_general_auto_start_next_phase_on">Automatically start the next timer when one finishes</string>
+    <string name="pref_summary_general_auto_start_next_phase_off">Wait for me to start the next timer</string>
+
     <!-- Display settings -->
     <string name="pref_header_display">Display</string>
     <string name="pref_key_category_display"
