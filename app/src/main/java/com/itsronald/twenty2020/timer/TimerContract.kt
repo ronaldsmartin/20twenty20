@@ -14,7 +14,9 @@ interface TimerContract {
 
     companion object {
         /** Activity action: Pause the timer. */
-        val ACTION_PAUSE = "com.itsronald.twenty2020.timer.ACTION_PAUSE"
+        const val ACTION_PAUSE = "com.itsronald.twenty2020.timer.ACTION_PAUSE"
+        /** Activity action: Start the timer. */
+        const val ACTION_START = "com.itsronald.twenty2020.timer.ACTION_RESUME"
     }
 
     interface TimerView: View<UserActionsListener> {

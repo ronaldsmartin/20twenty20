@@ -48,6 +48,9 @@ class Notifier
         /** Action presented with [buildPhaseCompleteNotification] to pause the cycle. */
         const val ACTION_PAUSE_TIMER = "com.itsronald.twenty2020.action.timer.pause"
 
+        /** Action presented with [buildPhaseCompleteNotification] to resume the cycle. */
+        const val ACTION_RESUME_TIMER = "com.itsronald.twenty2020.action.timer.resume"
+
         //endregion
 
         //region Notification extras

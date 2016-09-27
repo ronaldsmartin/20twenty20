@@ -47,6 +47,10 @@
                 <action android:name="com.itsronald.twenty2020.timer.ACTION_PAUSE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.itsronald.twenty2020.timer.ACTION_START"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
@@ -78,6 +82,7 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.itsronald.twenty2020.action.timer.pause" />
+                <action android:name="com.itsronald.twenty2020.action.timer.resume" />
             </intent-filter>
         </receiver>
 
