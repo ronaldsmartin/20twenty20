@@ -258,6 +258,10 @@ class TimerPresenter
         startNextPhase()
     }
 
+    override fun onActionReceived(action: String) = when (action) {
+        TimerContract.ACTION_PAUSE -> cycle.pause()
+        else -> Timber.w("Unknown action received: $action")
+    }
 
     //endregion
 

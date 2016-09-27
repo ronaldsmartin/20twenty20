@@ -199,8 +199,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        if (intent?.action == TimerContract.ACTION_PAUSE && presenter.running) {
-            presenter.toggleRunning()
+
+        val action = intent?.action
+        if (action != null) {
+            presenter.onActionReceived(action)
         }
     }
 
