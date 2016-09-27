@@ -8,7 +8,7 @@ import android.net.Uri
 import android.support.annotation.StringRes
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.NotificationCompat
+import android.support.v4.app.NotificationCompat
 import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
@@ -84,18 +84,13 @@ class Notifier
      * @param phaseCompleted The phase that was completed.
      * @return a new notification for posting
      */
-    private fun buildPhaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification =
-            NotificationCompat.Builder(context)
+    private fun buildPhaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification {
+        val builder = NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setColor(phaseCompleteColor(phaseCompleted = phaseCompleted))
                 .setContentTitle(phaseCompleteContentTitle(phaseCompleted = phaseCompleted))
                 .setContentText(makePhaseCompleteMessage(phaseCompleted))
                 .setContentIntent(timerContentIntent())
-                .addAction(
-                        R.drawable.ic_alarm_off_white_24dp,
-                        context.getString(R.string.notification_action_timer_pause),
-                        pauseTimerIntent()
-                )
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_REMINDER)
@@ -107,7 +102,10 @@ class Notifier
                         ))
                 )
                 .setSound(preferredNotificationSound)
-                .build()
+
+        addPhaseCompleteActionsToBuilder(builder, phaseCompleted = phaseCompleted)
+        return builder.build()
+    }
 
     private fun phaseCompleteColor(phaseCompleted: Cycle.Phase) = ContextCompat
             .getColor(context, when(phaseCompleted) {
@@ -201,6 +199,31 @@ class Notifier
             PendingIntent.FLAG_CANCEL_CURRENT
     )
 
+    private fun addPhaseCompleteActionsToBuilder(builder: NotificationCompat.Builder,
+                                                 phaseCompleted: Cycle.Phase): NotificationCompat.Builder {
+        val autostartPrefKey = resources.getString(R.string.pref_key_general_auto_start_next_phase)
+        val shouldAutoStartNextPhase = preferences.getBoolean(autostartPrefKey).get() ?: true
+
+        if (shouldAutoStartNextPhase) {
+            builder.addAction(
+                    R.drawable.ic_alarm_off_white_24dp,
+                    resources.getString(R.string.notification_action_timer_pause),
+                    pauseTimerIntent()
+            )
+        } else {
+            val startPhaseActionTitle = resources.getString(when (phaseCompleted) {
+                Cycle.Phase.WORK -> R.string.notification_action_timer_start_break_phase
+                Cycle.Phase.BREAK -> R.string.notification_action_timer_start_work_phase
+            })
+            builder.addAction(
+                    R.drawable.ic_alarm_on_white_24dp,
+                    startPhaseActionTitle,
+                    startNextTimerIntent()
+            )
+        }
+        return builder
+    }
+
     /**
      * Build an intent that pauses the cycle timer.
      */
@@ -208,6 +231,13 @@ class Notifier
             context,
             0,
             actionBroadcastIntent(action = ACTION_PAUSE_TIMER, notificationID = ID_PHASE_COMPLETE),
+            PendingIntent.FLAG_CANCEL_CURRENT
+    )
+
+    private fun startNextTimerIntent(): PendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            actionBroadcastIntent(action = ACTION_RESUME_TIMER, notificationID = ID_PHASE_COMPLETE),
             PendingIntent.FLAG_CANCEL_CURRENT
     )
 

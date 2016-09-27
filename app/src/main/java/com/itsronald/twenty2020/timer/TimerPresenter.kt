@@ -260,6 +260,7 @@ class TimerPresenter
 
     override fun onActionReceived(action: String) = when (action) {
         TimerContract.ACTION_PAUSE -> cycle.pause()
+        TimerContract.ACTION_START -> cycle.start()
         else -> Timber.w("Unknown action received: $action")
     }
 
