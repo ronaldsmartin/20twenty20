@@ -14,7 +14,9 @@ interface TimerContract {
 
     companion object {
         /** Activity action: Pause the timer. */
-        val ACTION_PAUSE = "com.itsronald.twenty2020.timer.ACTION_PAUSE"
+        const val ACTION_PAUSE = "com.itsronald.twenty2020.timer.ACTION_PAUSE"
+        /** Activity action: Start the timer. */
+        const val ACTION_START = "com.itsronald.twenty2020.timer.ACTION_RESUME"
     }
 
     interface TimerView: View<UserActionsListener> {
@@ -161,6 +163,16 @@ interface TimerContract {
          * Notify the listener that the break timer was clicked.
          */
         fun onBreakTimerClicked()
+
+        /**
+         * Called when an action is received (via Intent) by [view].
+         *
+         * For possible actions, see [TimerContract.Companion]. Other actions will not be handled
+         * by the presenter.
+         *
+         * @param action The action received by [view].
+         */
+        fun onActionReceived(action: String)
     }
 
 }

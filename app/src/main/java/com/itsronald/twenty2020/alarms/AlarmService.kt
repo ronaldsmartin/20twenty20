@@ -2,6 +2,8 @@ package com.itsronald.twenty2020.alarms
 
 import android.app.IntentService
 import android.content.Intent
+import android.preference.PreferenceManager
+import com.itsronald.twenty2020.R
 import com.itsronald.twenty2020.Twenty2020Application
 import com.itsronald.twenty2020.model.Cycle
 import com.itsronald.twenty2020.reporting.EventTracker
@@ -13,6 +15,13 @@ class AlarmService() : IntentService(SERVICE_NAME) {
     private companion object {
         const val SERVICE_NAME = "com.itsronald.twenty2020.alarms.alarm_service"
     }
+
+    private val shouldAutoStartNextPhase: Boolean
+        get() {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            val prefKey = getString(R.string.pref_key_general_auto_start_next_phase)
+            return prefs.getBoolean(prefKey, true)
+        }
 
     override fun onHandleIntent(intent: Intent) {
         Timber.i("Received intent: $intent")
@@ -51,9 +60,13 @@ class AlarmService() : IntentService(SERVICE_NAME) {
             Timber.i("Cycle is out of sync. Starting next phase.")
             cycle.startNextPhase()
         }
-        if (!cycle.running) {
+
+        if (shouldAutoStartNextPhase) {
             Timber.i("Cycle was killed. Restarting cycle.")
             cycle.start()
+        } else {
+            Timber.v("Cycle is not permitted to auto-start. Pausing for next phase.")
+            cycle.pause()
         }
     }
 }

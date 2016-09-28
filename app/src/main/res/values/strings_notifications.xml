@@ -33,6 +33,8 @@
     </string-array>
 
     <string name="notification_action_timer_pause">Suspend</string>
+    <string name="notification_action_timer_start_work_phase">Start Work phase</string>
+    <string name="notification_action_timer_start_break_phase">Start Break</string>
 
     <string name="notification_title_foreground_progress">20&#8211;20&#8211;20 cycle</string>
     <!--The argument for this string is the time until the next notification.-->
