@@ -102,9 +102,8 @@
     <ImageButton
         android:id="@+id/btn_restart_phase"
         android:contentDescription="@string/timer_restart_current_phase"
+        android:layout_gravity="bottom|start"
         app:srcCompat="@drawable/ic_restore_black_24dp"
-        app:layout_anchor="@id/content_layout"
-        app:layout_anchorGravity="bottom|start|left"
         app:layout_dodgeInsetEdges="bottom"
         style="@style/TimerButton" />
 
@@ -112,9 +111,8 @@
         android:id="@+id/timer_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_play_arrow"
-        app:useCompatPadding="true"
-        app:layout_anchor="@id/content_layout"
-        app:layout_anchorGravity="bottom|end|right"/>
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/timer_button_layout_margin"
+        app:srcCompat="@drawable/ic_play_arrow"/>
 
 </android.support.design.widget.CoordinatorLayout>

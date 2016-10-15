@@ -117,9 +117,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        app:srcCompat="@drawable/ic_play_arrow"
-        app:layout_anchor="@+id/content_layout"
-        app:layout_anchorGravity="bottom|right|end"
-        app:useCompatPadding="true" />
+        android:layout_margin="@dimen/timer_button_layout_margin"
+        app:srcCompat="@drawable/ic_play_arrow" />
 
 </android.support.design.widget.CoordinatorLayout>
