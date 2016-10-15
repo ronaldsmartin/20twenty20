@@ -2,13 +2,16 @@ package com.itsronald.twenty2020.timer
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Animatable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.DrawableRes
 import android.support.design.widget.Snackbar
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
@@ -16,6 +19,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.LinearInterpolator
+import android.widget.ImageButton
 import android.widget.RelativeLayout
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.ViewTarget
@@ -148,7 +152,12 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // while interacting with the UI.
         timer_fab.setOnTouchListener(mDelayHideTouchListener)
 
-        btn_restart_phase.setOnClickListener { presenter.restartPhase() }
+        btn_restart_phase.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && it is ImageButton) {
+                animateRestartPhaseButton(button = it)
+            }
+            presenter.restartPhase()
+        }
         timer_fab.setOnClickListener { presenter.toggleRunning() }
 
         btn_switch_phase_work.setOnClickListener { presenter.onWorkTimerClicked() }
@@ -157,6 +166,21 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         // TODO: Reenable these when timer seeking feature is implemented.
         work_seek_bar.isEnabled = false
         break_seek_bar.isEnabled = false
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun animateRestartPhaseButton(button: ImageButton) {
+        val icon = button.drawable
+        if (icon is Animatable) {
+            Timber.v("Animating btn_restart_phase with cached AnimatedVectorDrawableCompat.")
+            icon.start()
+        } else {
+            Timber.v("Animating btn_restart_phase with new AnimatedVectorDrawableCompat.")
+            val drawable = AnimatedVectorDrawableCompat
+                    .create(button.context, R.drawable.avd_reset_timer)
+            button.setImageDrawable(drawable)
+            drawable?.start()
+        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -175,8 +199,10 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        if (intent?.action == TimerContract.ACTION_PAUSE && presenter.running) {
-            presenter.toggleRunning()
+
+        val action = intent?.action
+        if (action != null) {
+            presenter.onActionReceived(action)
         }
     }
 
@@ -292,6 +318,9 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
     //region TimerContract.TimerView
 
     override val context: Context = this
+
+    override val isFabAnimationAvailable: Boolean =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
 
     override var keepScreenOn: Boolean
         get() = content_layout.keepScreenOn
@@ -469,9 +498,17 @@ class TimerActivity : AppCompatActivity(), TimerContract.TimerView {
         return objectAnimator
     }
 
-    override fun setFABDrawable(@DrawableRes drawableId: Int) {
-        val drawable = AppCompatResources.getDrawable(this, drawableId)
-        timer_fab.setImageDrawable(drawable)
+    override fun setFABDrawable(@DrawableRes drawableId: Int, animated: Boolean) {
+        if (animated) {
+            Timber.v("Animating FAB icon change.")
+            val drawable = AnimatedVectorDrawableCompat.create(this, drawableId)
+            timer_fab.setImageDrawable(drawable)
+            drawable?.start()
+        } else {
+            Timber.v("Changing FAB drawable with no animation.")
+            val drawable = AppCompatResources.getDrawable(this, drawableId)
+            timer_fab.setImageDrawable(drawable)
+        }
     }
 
     override fun showMessage(message: String) {

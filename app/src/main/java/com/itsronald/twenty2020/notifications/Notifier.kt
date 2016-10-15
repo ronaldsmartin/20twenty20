@@ -8,7 +8,7 @@ import android.net.Uri
 import android.support.annotation.StringRes
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.NotificationCompat
+import android.support.v4.app.NotificationCompat
 import android.text.format.DateUtils
 import com.f2prateek.rx.preferences.RxSharedPreferences
 import com.itsronald.twenty2020.R
@@ -28,9 +28,9 @@ import javax.inject.Singleton
  */
 @Singleton
 class Notifier
-    @Inject constructor(val context: Context,
-                        val preferences: RxSharedPreferences,
-                        val resources: ResourceRepository) {
+    @Inject constructor(private val context: Context,
+                        private val preferences: RxSharedPreferences,
+                        private val resources: ResourceRepository) {
 
     companion object {
         //region Notification IDs
@@ -47,6 +47,9 @@ class Notifier
 
         /** Action presented with [buildPhaseCompleteNotification] to pause the cycle. */
         const val ACTION_PAUSE_TIMER = "com.itsronald.twenty2020.action.timer.pause"
+
+        /** Action presented with [buildPhaseCompleteNotification] to resume the cycle. */
+        const val ACTION_RESUME_TIMER = "com.itsronald.twenty2020.action.timer.resume"
 
         //endregion
 
@@ -81,18 +84,13 @@ class Notifier
      * @param phaseCompleted The phase that was completed.
      * @return a new notification for posting
      */
-    private fun buildPhaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification =
-            NotificationCompat.Builder(context)
+    private fun buildPhaseCompleteNotification(phaseCompleted: Cycle.Phase): Notification {
+        val builder = NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setColor(phaseCompleteColor(phaseCompleted = phaseCompleted))
                 .setContentTitle(phaseCompleteContentTitle(phaseCompleted = phaseCompleted))
                 .setContentText(makePhaseCompleteMessage(phaseCompleted))
                 .setContentIntent(timerContentIntent())
-                .addAction(
-                        R.drawable.ic_alarm_off_black_24dp,
-                        context.getString(R.string.notification_action_timer_pause),
-                        pauseTimerIntent()
-                )
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_REMINDER)
@@ -104,7 +102,10 @@ class Notifier
                         ))
                 )
                 .setSound(preferredNotificationSound)
-                .build()
+
+        addPhaseCompleteActionsToBuilder(builder, phaseCompleted = phaseCompleted)
+        return builder.build()
+    }
 
     private fun phaseCompleteColor(phaseCompleted: Cycle.Phase) = ContextCompat
             .getColor(context, when(phaseCompleted) {
@@ -164,12 +165,7 @@ class Notifier
      * @return The message to display in a notification.
      */
     private fun makePhaseCompleteMessage(phase: Cycle.Phase): CharSequence = when(phase) {
-        Cycle.Phase.WORK  -> {
-            // Choose a random exercise to suggest for the break.
-            val messages = context.resources
-                    .getStringArray(R.array.notification_messages_work_cycle_complete)
-            messages[random.nextInt(messages.size)]
-        }
+        Cycle.Phase.WORK  -> workPhaseCompleteMessage()
         Cycle.Phase.BREAK -> {
             // Notify the user what time the next break will occur.
             val breakCycleMilliseconds = Cycle.Phase.WORK.duration(resources) * 1000
@@ -177,6 +173,18 @@ class Notifier
             val nextTime = DateUtils.getRelativeTimeSpanString(context, nextCycleTime, true)
             context.getString(R.string.notification_message_break_cycle_complete, nextTime)
         }
+    }
+
+    private fun workPhaseCompleteMessage(): String {
+        val exercisePrefKey = resources.getString(R.string.pref_key_general_recommend_exercise)
+        val shouldRecommend = preferences.getBoolean(exercisePrefKey).get()
+        if (shouldRecommend != null && shouldRecommend) {
+            // Choose a random exercise to suggest for the break.
+            val messages = context.resources
+                    .getStringArray(R.array.notification_messages_work_cycle_complete)
+            return messages[random.nextInt(messages.size)]
+        }
+        return resources.getString(R.string.notification_message_work_cycle_complete_no_exercise)
     }
 
     /**
@@ -191,6 +199,31 @@ class Notifier
             PendingIntent.FLAG_CANCEL_CURRENT
     )
 
+    private fun addPhaseCompleteActionsToBuilder(builder: NotificationCompat.Builder,
+                                                 phaseCompleted: Cycle.Phase): NotificationCompat.Builder {
+        val autostartPrefKey = resources.getString(R.string.pref_key_general_auto_start_next_phase)
+        val shouldAutoStartNextPhase = preferences.getBoolean(autostartPrefKey).get() ?: true
+
+        if (shouldAutoStartNextPhase) {
+            builder.addAction(
+                    R.drawable.ic_alarm_off_white_24dp,
+                    resources.getString(R.string.notification_action_timer_pause),
+                    pauseTimerIntent()
+            )
+        } else {
+            val startPhaseActionTitle = resources.getString(when (phaseCompleted) {
+                Cycle.Phase.WORK -> R.string.notification_action_timer_start_break_phase
+                Cycle.Phase.BREAK -> R.string.notification_action_timer_start_work_phase
+            })
+            builder.addAction(
+                    R.drawable.ic_alarm_on_white_24dp,
+                    startPhaseActionTitle,
+                    startNextTimerIntent()
+            )
+        }
+        return builder
+    }
+
     /**
      * Build an intent that pauses the cycle timer.
      */
@@ -198,6 +231,13 @@ class Notifier
             context,
             0,
             actionBroadcastIntent(action = ACTION_PAUSE_TIMER, notificationID = ID_PHASE_COMPLETE),
+            PendingIntent.FLAG_CANCEL_CURRENT
+    )
+
+    private fun startNextTimerIntent(): PendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            actionBroadcastIntent(action = ACTION_RESUME_TIMER, notificationID = ID_PHASE_COMPLETE),
             PendingIntent.FLAG_CANCEL_CURRENT
     )
 

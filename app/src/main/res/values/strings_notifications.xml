@@ -4,7 +4,7 @@
     <string name="notification_title_work_cycle_complete">Time to take a break!</string>
     <string name="notification_title_break_cycle_complete">Break complete</string>
 
-    <string name="notification_message_work_cycle_complete">A short exercise or stretch might brighten your day!</string>
+    <string name="notification_message_work_cycle_complete_no_exercise">Blink and look at something 20 feet away.</string>
     <!--The argument for this string is the time until the next notification.-->
     <string name="notification_message_break_cycle_complete">Next break <xliff:g id="time" example="at 10:31">%s</xliff:g></string>
     <!-- A list of possible messages for display when the work phase is complete. -->
@@ -33,6 +33,8 @@
     </string-array>
 
     <string name="notification_action_timer_pause">Suspend</string>
+    <string name="notification_action_timer_start_work_phase">Start Work phase</string>
+    <string name="notification_action_timer_start_break_phase">Start Break</string>
 
     <string name="notification_title_foreground_progress">20&#8211;20&#8211;20 cycle</string>
     <!--The argument for this string is the time until the next notification.-->

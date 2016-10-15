@@ -17,8 +17,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingBottom="@dimen/activity_vertical_margin"
-        android:animateLayoutChanges="true"
-        app:layout_dodgeInsetEdges="bottom">
+        android:animateLayoutChanges="true">
 
         <!-- Work display -->
         <RelativeLayout
@@ -96,26 +95,24 @@
 
         </RelativeLayout>
 
-        <!--Controls-->
-
-        <ImageButton
-            android:id="@+id/btn_restart_phase"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
-            android:contentDescription="@string/timer_restart_current_cycle"
-            android:src="@drawable/ic_restore_black_24dp"
-            style="@style/TimerButton" />
-
     </android.support.percent.PercentRelativeLayout>
+
+    <!--Controls-->
+
+    <ImageButton
+        android:id="@+id/btn_restart_phase"
+        android:contentDescription="@string/timer_restart_current_phase"
+        android:layout_gravity="bottom|start"
+        app:srcCompat="@drawable/ic_restore_black_24dp"
+        app:layout_dodgeInsetEdges="bottom"
+        style="@style/TimerButton" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/timer_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_play_arrow"
-        app:useCompatPadding="true"
-        app:layout_anchor="@id/content_layout"
-        app:layout_anchorGravity="bottom|end|right"/>
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/timer_button_layout_margin"
+        app:srcCompat="@drawable/ic_play_arrow"/>
 
 </android.support.design.widget.CoordinatorLayout>

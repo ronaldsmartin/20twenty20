@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 buildscript {
-    ext.kotlin_version = '1.0.3'
+    ext.kotlin_version = '1.0.4'
     repositories {
         jcenter()
         maven { url "https://maven.fabric.io/public" }
@@ -27,13 +27,15 @@ android {
         minSdkVersion    rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1       // Managed by BuddyBuild.
-        versionName "1.0.2"
+        versionName "1.1.0"
 
         manifestPlaceholders = [
             android_backup_api_key: "",
             fabric_api_key: ""
         ]
         buildConfigField "String", "GITHUB_ISSUE_BOT_API_KEY", "\"$GITHUB_ISSUE_BOT_API_KEY\""
+
+        vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -88,8 +90,6 @@ dependencies {
     debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
-    // Silences warnings from LeakCanary v1.4-beta2; see http://stackoverflow.com/a/38255810/4499783
-    debugCompile "com.squareup.haha:haha:$rootProject.hahaVersion"
 
     // Android Support Libs
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"

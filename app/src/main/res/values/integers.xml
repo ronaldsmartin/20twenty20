@@ -9,6 +9,10 @@
 
     <!-- Default duration for the break phase, in seconds. -->
     <integer name="pref_default_break_phase_length">20</integer>
+    
+    <!-- activity_timer -->
+    <integer name="timer_fab_animation_duration">450</integer>
+    <integer name="timer_reset_animation_duration">1000</integer>
 
 
 </resources>

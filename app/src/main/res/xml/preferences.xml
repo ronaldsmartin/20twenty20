@@ -20,6 +20,20 @@
             android:entryValues="@array/pref_list_values_break_phase_length"
             android:defaultValue="@integer/pref_default_break_phase_length"/>
 
+        <SwitchPreference
+            android:title="@string/pref_title_general_recommend_exercise"
+            android:key="@string/pref_key_general_recommend_exercise"
+            android:defaultValue="true"
+            android:summaryOn="@string/pref_summary_general_recommend_exercise_on"
+            android:summaryOff="@string/pref_summary_general_recommend_exercise_off"/>
+
+        <SwitchPreference
+            android:title="@string/pref_title_general_auto_start_next_phase"
+            android:key="@string/pref_key_general_auto_start_next_phase"
+            android:defaultValue="true"
+            android:summaryOn="@string/pref_summary_general_auto_start_next_phase_on"
+            android:summaryOff="@string/pref_summary_general_auto_start_next_phase_off"/>
+
     </PreferenceCategory>
 
     <!-- Display -->

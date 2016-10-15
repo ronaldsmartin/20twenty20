@@ -6,11 +6,17 @@
     <string name="phase_name_break">Break</string>
 
     <!-- activity_timer -->
-    <string name="timer_restart_current_cycle">Restart current cycle</string>
-    <string name="timer_skip_to_next_cycle">Skip to next cycle</string>
+    <string name="timer_restart_current_phase">Restart current phase</string>
+    <string name="timer_skip_to_next_phase">Skip to next phase</string>
 
     <string name="timer_message_restarting_phase">Restarted <xliff:g id="phase_name">%s</xliff:g> phase.</string>
     <string name="timer_message_skip_to_next_phase">Skipped to <xliff:g id="phase_name">%s</xliff:g> phase.</string>
+
+    <string name="timer_fab_icon_path_name_play" translatable="false">play</string>
+    <string name="timer_fab_icon_path_name_pause" translatable="false">pause</string>
+    <string name="timer_fab_icon_path_data_play" translatable="false">M16,24L38,24L27.3,30.8L16,38ZM16,10L27.3,17.2L38,24L16,24Z</string>
+    <string name="timer_fab_icon_path_data_pause" translatable="false">M12,10L20,10L20,38L12,38ZM28,10L36,10L36,38L28,38Z</string>
+    <string name="timer_reset_icon_path_name" translatable="false">reset_path</string>
 
     <!-- Menu -->
     <string name="about">About</string>

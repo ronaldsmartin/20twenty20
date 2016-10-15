@@ -14,7 +14,9 @@ interface TimerContract {
 
     companion object {
         /** Activity action: Pause the timer. */
-        val ACTION_PAUSE = "com.itsronald.twenty2020.timer.ACTION_PAUSE"
+        const val ACTION_PAUSE = "com.itsronald.twenty2020.timer.ACTION_PAUSE"
+        /** Activity action: Start the timer. */
+        const val ACTION_START = "com.itsronald.twenty2020.timer.ACTION_RESUME"
     }
 
     interface TimerView: View<UserActionsListener> {
@@ -54,6 +56,8 @@ interface TimerContract {
         }
 
         val context: Context
+
+        val isFabAnimationAvailable: Boolean
 
         /** Whether or not the app bar overflow menu should be enabled. */
         var isMenuEnabled: Boolean
@@ -108,7 +112,7 @@ interface TimerContract {
          * Change the FloatingActionButton's drawable icon in the view.
          * @param drawableId The resource ID of the icon to display in the FAB.
          */
-        fun setFABDrawable(@DrawableRes drawableId: Int)
+        fun setFABDrawable(@DrawableRes drawableId: Int, animated: Boolean = false)
 
         /**
          * Display a message in this view.
@@ -159,6 +163,16 @@ interface TimerContract {
          * Notify the listener that the break timer was clicked.
          */
         fun onBreakTimerClicked()
+
+        /**
+         * Called when an action is received (via Intent) by [view].
+         *
+         * For possible actions, see [TimerContract.Companion]. Other actions will not be handled
+         * by the presenter.
+         *
+         * @param action The action received by [view].
+         */
+        fun onActionReceived(action: String)
     }
 
 }

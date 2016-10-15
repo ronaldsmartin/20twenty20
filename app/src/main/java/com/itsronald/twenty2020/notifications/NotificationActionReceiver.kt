@@ -36,6 +36,9 @@ class NotificationActionReceiver : BroadcastReceiver() {
             Notifier.ACTION_PAUSE_TIMER -> context.startActivity(
                     timerActivityIntent(context = context).setAction(TimerContract.ACTION_PAUSE)
             )
+            Notifier.ACTION_RESUME_TIMER -> context.startActivity(
+                    timerActivityIntent(context = context).setAction(TimerContract.ACTION_START)
+            )
             // Additional notification action handlers can be added here.
             else -> {
                 val exception = IllegalArgumentException("Unknown notification action name: $action")
